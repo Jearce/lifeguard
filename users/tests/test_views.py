@@ -7,5 +7,5 @@ from .. import views
 class SignUpPageTest(TestCase):
 
     def test_uses_signup_template(self):
-        response = self.client.get('/signup/')
+        response = self.client.get('/users/signup/')
         self.assertTemplateUsed(response,'users/signup.html')
