@@ -34,6 +34,10 @@ class SignUpTest(BaseTestFixture):
 
 class LogInTest(BaseTestFixture):
 
+    def setUp(self):
+        super().setUp()
+        self.credentials = {'username':'test@example.com', 'password':'u7efd!hd'}
+
     def test_at_login_page(self):
         self.browser.get('%s%s' % (self.live_server_url,'/users/login'))
         self.assertIn('Login',self.browser.title)
@@ -42,3 +46,6 @@ class LogInTest(BaseTestFixture):
         self.browser.get('%s%s' % (self.live_server_url,'/users/login'))
         username = self.browser.find_element_by_id('id_username')
         password = self.browser.find_element_by_id('id_password')
+        username.send_keys(self.credentials['username'])
+        password.send_keys(self.credentials['password'])
+        self.browser.find_element_by_id('login-form').submit()
