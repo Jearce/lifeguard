@@ -5,12 +5,16 @@ from selenium.webdriver.common.keys import Keys
 import time
 import unittest
 
-class SignUpTest(LiveServerTestCase):
+class BaseTestFixture(LiveServerTestCase):
     def setUp(self):
         self.browser = webdriver.Chrome()
 
     def tearDown(self):
         self.browser.quit()
+
+
+
+class SignUpTest(BaseTestFixture):
 
     def test_at_signup_page(self):
         self.browser.get('%s%s' % (self.live_server_url,'/users/signup'))
@@ -27,3 +31,6 @@ class SignUpTest(LiveServerTestCase):
         password1_input.send_keys(test_password)
         password2_input.send_keys(test_password)
         self.browser.find_element_by_id('signup-form').submit()
+
+class LogInView(BaseTestFixture):
+    pass
