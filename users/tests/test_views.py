@@ -26,7 +26,7 @@ class SignUpViewTest(TestCase):
 
     def test_redirect_after_signup(self):
         response = self.client.post('/users/signup/',data=self.credentials)
-        self.assertRedirects(response,'/users/dashboard/')
+        self.assertRedirects(response,'users/dashboard/')
 
 
 class LogInViewTest(TestCase):
@@ -46,3 +46,13 @@ class LogInViewTest(TestCase):
     def test_login(self):
         user_login = self.client.login(**self.credentials)
         self.assertTrue(user_login)
+
+class DashboardViewTest(TestCase):
+
+    def test_view_url_exists_at_desired_location(self):
+        response = self.client.get('/users/login/')
+        self.assertEqual(response.status_code,200)
+
+    def test_view_uses_correct_template(self):
+        response = self.client.get('/users/dashboard/')
+        self.assertTemplateUsed(response,'users/dashboard.html')
