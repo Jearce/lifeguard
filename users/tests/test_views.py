@@ -15,7 +15,11 @@ class SignUpViewTest(TestCase):
         response = self.client.get('/users/signup/')
         self.assertTemplateUsed(response,'users/signup.html')
 
-class LogInView(TestCase):
+class LogInViewTest(TestCase):
+
+    def setUp(self):
+        self.credentials = {'email':'test@example.com', 'password':'2dhd7!42'}
+        User.objects.create_user(**self.credentials)
 
     def test_view_url_exists_at_desired_location(self):
         response = self.client.get('/users/login/')
@@ -24,4 +28,8 @@ class LogInView(TestCase):
     def test_view_uses_correct_template(self):
         response = self.client.get('/users/login/')
         self.assertTemplateUsed(response,'users/login.html')
+
+    def test_login(self):
+        user_login = self.client.login(**self.credentials)
+        self.assertTrue(user_login)
 
