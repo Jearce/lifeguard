@@ -15,7 +15,9 @@ class SignUpView(CreateView):
 
 class LogInView(LoginView):
     template_name = 'users/login.html'
-    redirect_field_name = 'users/dashboard/'
+
+    def get_success_url(self):
+        return reverse_lazy('dashboard')
 
 class DashboardView(TemplateView):
     template_name = 'users/dashboard.html'

@@ -37,16 +37,26 @@ class LogInViewTest(TestCase):
         User.objects.create_user(**self.credentials)
 
     def test_view_url_exists_at_desired_location(self):
-        response = self.client.get('/users/login/')
+        response = self.client.get(reverse('login'))
         self.assertEqual(response.status_code,200)
 
     def test_view_uses_correct_template(self):
-        response = self.client.get('/users/login/')
+        response = self.client.get(reverse('login'))
         self.assertTemplateUsed(response,'users/login.html')
 
     def test_login(self):
         user_login = self.client.login(**self.credentials)
         self.assertTrue(user_login)
+
+    def test_redirect_after_login(self):
+        response = self.client.post(
+            reverse('login'),
+            data={'username':self.credentials['email'],
+                'password':self.credentials['password']})
+        self.assertRedirects(response,reverse('dashboard'))
+
+
+
 
 class DashboardViewTest(TestCase):
 
