@@ -32,5 +32,13 @@ class SignUpTest(BaseTestFixture):
         password2_input.send_keys(test_password)
         self.browser.find_element_by_id('signup-form').submit()
 
-class LogInView(BaseTestFixture):
-    pass
+class LogInTest(BaseTestFixture):
+
+    def test_at_login_page(self):
+        self.browser.get('%s%s' % (self.live_server_url,'/users/login'))
+        self.assertIn('Login',self.browser.title)
+
+    def test_login(self):
+        self.browser.get('%s%s' % (self.live_server_url,'/users/login'))
+        username = self.browser.find_element_by_id('id_username')
+        password = self.browser.find_element_by_id('id_password')
