@@ -6,6 +6,7 @@
 </head>
 <body>
     <form method="post" id='login-form'>
+        {% csrf_token %}
         {{ form.as_table }}
         <input type="submit" value="login">
     </form>
