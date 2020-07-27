@@ -33,3 +33,7 @@ class LogInViewTest(TestCase):
         user_login = self.client.login(**self.credentials)
         self.assertTrue(user_login)
 
+    def test_redirect_after_login(self):
+        response = self.client.post('/users/login/',**self.credentials)
+        self.assertRedirects(response,'/users/dashboard/')
+
