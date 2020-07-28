@@ -3,6 +3,7 @@ import unittest
 
 from django.test import LiveServerTestCase
 from django.core import mail
+from django.urls import reverse,reverse_lazy
 
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -54,6 +55,11 @@ class LogInTest(BaseTestFixture):
         username.send_keys(self.credentials['username'])
         password.send_keys(self.credentials['password'])
         self.browser.find_element_by_id('login-form').submit()
-
         #check user is redirected to dashboard on successful login
         self.assertIn('dashboard',self.browser.current_url)
+
+class PasswordResetTest(BaseTestFixture):
+
+    def test_at_password_reset_page(self):
+        self.browser.get('%s%s' % (self.live_server_url,'/users/password_reset/'))
+        self.assertIn('Password reset',self.browser.title)
