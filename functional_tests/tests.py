@@ -1,9 +1,11 @@
+import time
+import unittest
+
 from django.test import LiveServerTestCase
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 
-import time
-import unittest
+from users.models import User
 
 class BaseTestFixture(LiveServerTestCase):
     def setUp(self):
@@ -11,7 +13,6 @@ class BaseTestFixture(LiveServerTestCase):
 
     def tearDown(self):
         self.browser.quit()
-
 
 
 class SignUpTest(BaseTestFixture):
@@ -37,6 +38,7 @@ class LogInTest(BaseTestFixture):
     def setUp(self):
         super().setUp()
         self.credentials = {'username':'test@example.com', 'password':'u7efd!hd'}
+        User.objects.create_user(email=self.credentials['username'],password=self.credentials['password'])
 
     def test_at_login_page(self):
         self.browser.get('%s%s' % (self.live_server_url,'/users/login'))
@@ -49,3 +51,5 @@ class LogInTest(BaseTestFixture):
         username.send_keys(self.credentials['username'])
         password.send_keys(self.credentials['password'])
         self.browser.find_element_by_id('login-form').submit()
+        #check user is redirected to dashboard on successful login
+        self.assertIn('dashboard',self.browser.current_url)
