@@ -2,6 +2,8 @@ import time
 import unittest
 
 from django.test import LiveServerTestCase
+from django.core import mail
+
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 
@@ -13,7 +15,6 @@ class BaseTestFixture(LiveServerTestCase):
 
     def tearDown(self):
         self.browser.quit()
-
 
 class SignUpTest(BaseTestFixture):
 
@@ -32,6 +33,8 @@ class SignUpTest(BaseTestFixture):
         password1_input.send_keys(test_password)
         password2_input.send_keys(test_password)
         self.browser.find_element_by_id('signup-form').submit()
+        #check user is redirected to dashboard on successful sign up
+        self.assertIn('dashboard',self.browser.current_url)
 
 class LogInTest(BaseTestFixture):
 
@@ -51,5 +54,6 @@ class LogInTest(BaseTestFixture):
         username.send_keys(self.credentials['username'])
         password.send_keys(self.credentials['password'])
         self.browser.find_element_by_id('login-form').submit()
+
         #check user is redirected to dashboard on successful login
         self.assertIn('dashboard',self.browser.current_url)
