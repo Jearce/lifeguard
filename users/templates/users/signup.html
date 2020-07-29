@@ -1,14 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Sign-Up</title>
-</head>
-<body>
-    <form method="post" id="signup-form">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <input type='submit' value='create account'>
-    </form>
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %}
+<title>Sign-Up</title>
+{% endblock title %}
+
+{% block content %}
+<form method="post" id="signup-form">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type='submit' value='create account'>
+</form>
+{% endblock content %}
