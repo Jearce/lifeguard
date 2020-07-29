@@ -62,4 +62,9 @@ class PasswordResetTest(BaseTestFixture):
 
     def test_at_password_reset_page(self):
         self.browser.get('%s%s' % (self.live_server_url,'/users/password_reset/'))
-        self.assertIn('Password reset',self.browser.title)
+        self.assertIn('Password Reset',self.browser.title)
+
+    def test_can_reset_password(self):
+        self.browser.get('%s%s' % (self.live_server_url,'/users/password_reset/'))
+        self.browser.find_element_by_id('id_email')
+
