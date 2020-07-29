@@ -1,5 +1,6 @@
 import time
 import unittest
+import re
 
 from django.test import LiveServerTestCase
 from django.core import mail
@@ -65,6 +66,24 @@ class PasswordResetTest(BaseTestFixture):
         self.assertIn('Password Reset',self.browser.title)
 
     def test_can_reset_password(self):
+        email = 'test@example.com'
+        password = 'u7efd!hd'
+        user = User.objects.create_user(email=email,password=password)
+
         self.browser.get('%s%s' % (self.live_server_url,'/users/password_reset/'))
-        self.browser.find_element_by_id('id_email')
+        self.browser.find_element_by_id('id_email').send_keys(user.email)
+        self.browser.find_element_by_id('forgot-password-form').submit()
+
+        self.assertEqual(len(mail.outbox),1)
+        self.assertIn('reset',mail.outbox[0].subject)
+
+        match = re.search(r'http:\/\/[\w]+:[\w]+\/users\/password_reset_confirm\/[\w]+\/.+\/',mail.outbox[0].body)
+        self.assertTrue(match)
+
+        reset_url = match[0]
+        self.browser.get(reset_url)
+        self.assertIn('Change password',self.browser.page_source)
+        time.sleep(10)
+
+
 
