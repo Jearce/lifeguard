@@ -55,9 +55,6 @@ class LogInViewTest(TestCase):
                 'password':self.credentials['password']})
         self.assertRedirects(response,reverse('dashboard'))
 
-
-
-
 class DashboardViewTest(TestCase):
 
     def test_view_url_exists_at_desired_location(self):
