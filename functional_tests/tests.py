@@ -34,7 +34,6 @@ class SignUpTest(BaseTestFixture):
         self.browser.find_element_by_id('id_signup').click()
         self.assertIn('signup',self.browser.current_url)
 
-        #self.browser.get('%s%s' % (self.live_server_url,'/users/signup'))
         #signs up
         email_input = self.browser.find_element_by_id('id_email')
         password1_input = self.browser.find_element_by_id('id_password1')
@@ -47,6 +46,42 @@ class SignUpTest(BaseTestFixture):
 
         #redirected to dashboard on successful sign up
         self.assertIn('dashboard',self.browser.current_url)
+
+class LifeguardRegistrationTest(BaseTestFixture):
+
+    def setUp(self):
+        super().setUp()
+        #user already has an account
+        self.user = User.objects.create(email="test@example.com", password="u7hfdj4")
+
+    def test_new_lifeguard_registration(self):
+
+        #start at dashboard
+        self.browser.get('%s%s' % (self.live_server_url,'/users/dashboard'))
+
+        #clicks on LG registration form
+        self.browser.find_element_by_id('id_lifeguard_registration').click()
+        self.assertIn('lifeguard-registration',self.browser.current_url)
+
+        #fills out contact information form
+
+        #fills out emergency contact form
+
+        #is asked if they are already certified
+
+        #user is a new lifeguard
+
+        #fills out LG form
+
+        #picks a class to attend
+
+        #makes payment
+
+        #redirect to dashboard
+
+
+
+
 
 class LogInTest(BaseTestFixture):
 
