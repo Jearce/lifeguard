@@ -3,7 +3,7 @@
 {% block content %}
 <div id="applications">
     <ol>
-        <li><a href="{% url 'contact_information' %}" id="id_lifeguard_registration">Lifeguard Registration</a></li>
+        <li><a href="{% url 'contact_information' user.id %}" id="id_lifeguard_registration">Lifeguard Registration</a></li>
     </ol>
 </div>
 {% endblock content %}
