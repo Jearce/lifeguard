@@ -26,19 +26,19 @@ class ContactUpdateViewTest(TestCase):
 
     def test_view_uses_correct_template(self):
         response = self.client.get(reverse('contact_information',kwargs={'pk':self.user.id}))
-        self.assertTemplateUsed(response,'contact_information_form.html')
+        self.assertTemplateUsed(response,'lifeguard/contact_information_form.html')
 
     def test_contact_information_update(self):
-        user = User.objects.create(email='test@example.com',password='sdfh328j!')
         contact_information = {
+            "email":self.user.email,
             "first_name": "John",
             "last_name": "Doe",
             "phone":"712 434 2348",
-            "dob":"6/9/2000"
+            "dob":"2000-06-09"
         }
-        response = self.client.post(reverse('contact_information',kwargs={'pk':self.user.id}),data=contact_information)
+        response = self.client.post(reverse('contact_information',kwargs={'pk':self.user.id}),contact_information)
         self.assertEqual(response.status_code,302)
-        user.refresh_from_db()
-        self.assertEqual(user.first_name,'John')
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.first_name,'John')
 
 

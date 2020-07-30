@@ -11,4 +11,5 @@ class HomeView(TemplateView):
 class ContactInformationUpdate(UpdateView):
     model = User
     fields = ['email', 'first_name', 'last_name','phone','dob']
-    template_name = 'contact_information_form.html'
+    template_name = 'lifeguard/contact_information_form.html'
+    success_url = 'lifeguard-registration/emergency-contact/'
