@@ -66,24 +66,42 @@ class PasswordResetTest(BaseTestFixture):
         self.assertIn('Password Reset',self.browser.title)
 
     def test_can_reset_password(self):
+        #user already has an account
         email = 'test@example.com'
         password = 'u7efd!hd'
         user = User.objects.create_user(email=email,password=password)
 
+        #user forgot their password
         self.browser.get('%s%s' % (self.live_server_url,'/users/password_reset/'))
         self.browser.find_element_by_id('id_email').send_keys(user.email)
         self.browser.find_element_by_id('forgot-password-form').submit()
+        self.assertIn('done',self.browser.current_url)
 
+        #user recieved email for password reset
         self.assertEqual(len(mail.outbox),1)
-        self.assertIn('reset',mail.outbox[0].subject)
 
+        #user goes to password reset url
+        self.assertIn('reset',mail.outbox[0].subject)
         match = re.search(r'http:\/\/[\w]+:[\w]+\/users\/password_reset_confirm\/[\w]+\/.+\/',mail.outbox[0].body)
         self.assertTrue(match)
-
         reset_url = match[0]
         self.browser.get(reset_url)
         self.assertIn('Change password',self.browser.page_source)
-        time.sleep(10)
 
+        #user resets password
+        new_password = 'newPasswordTest123!'
+        self.browser.find_element_by_id('id_new_password1').send_keys(new_password)
+        self.browser.find_element_by_id('id_new_password2').send_keys(new_password)
+        self.browser.find_element_by_id('change-password-form').submit()
+        self.assertIn('complete',self.browser.current_url)
 
+        #user gets redirected to login page after resetting password
+        self.browser.find_element_by_id('id_login').click()
+        self.assertIn('login',self.browser.current_url)
+
+        #user logs in with new password
+        self.browser.find_element_by_id('id_username').send_keys(user.email)
+        self.browser.find_element_by_id('id_password').send_keys(new_password)
+        self.browser.find_element_by_id('login-form').submit()
+        self.assertIn('dashboard',self.browser.current_url)
 
