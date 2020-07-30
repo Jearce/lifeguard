@@ -26,7 +26,16 @@ class SignUpTest(BaseTestFixture):
 
 
     def test_sign_up(self):
-        self.browser.get('%s%s' % (self.live_server_url,'/users/signup'))
+        #user lands on homepage
+        self.browser.get('%s%s' % (self.live_server_url,'/home'))
+        self.assertIn('Home',self.browser.title)
+
+        #wants to sign up
+        self.browser.find_element_by_id('id_signup').click()
+        self.assertIn('signup',self.browser.current_url)
+
+        #self.browser.get('%s%s' % (self.live_server_url,'/users/signup'))
+        #signs up
         email_input = self.browser.find_element_by_id('id_email')
         password1_input = self.browser.find_element_by_id('id_password1')
         password2_input = self.browser.find_element_by_id('id_password2')
@@ -35,7 +44,8 @@ class SignUpTest(BaseTestFixture):
         password1_input.send_keys(test_password)
         password2_input.send_keys(test_password)
         self.browser.find_element_by_id('signup-form').submit()
-        #check user is redirected to dashboard on successful sign up
+
+        #redirected to dashboard on successful sign up
         self.assertIn('dashboard',self.browser.current_url)
 
 class LogInTest(BaseTestFixture):
