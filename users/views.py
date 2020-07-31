@@ -1,7 +1,8 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from django.urls import reverse,reverse_lazy
 from django.views.generic import CreateView,TemplateView
 from django.contrib.auth.views import LoginView
+from django.contrib.auth import logout
 
 from .forms import CustomUserCreationForm
 from .models import User
@@ -21,3 +22,9 @@ class LogInView(LoginView):
 
 class DashboardView(TemplateView):
     template_name = 'users/dashboard.html'
+
+def logout_user(request):
+    logout(request)
+    return redirect('home')
+
+
