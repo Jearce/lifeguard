@@ -6,6 +6,7 @@ from django.contrib.auth import get_user_model
 
 from .. import views
 from users.models import User
+from ..models import EmergencyContact
 
 class HomeViewTest(TestCase):
     def test_view_url_exists_at_desired_location(self):
@@ -44,9 +45,10 @@ class ContactUpdateViewTest(TestCase):
 
 class EmergencyContactCreateTest(TestCase):
     def setUp(self):
-        self.user = User.objects.create(email='test@example.com',password='sdfh328j!')
+        self.email = 'test@example.com'
+        self.password = 'sdfh328j!'
+        self.user = User.objects.create_user(email=self.email,password=self.password)
         self.response = self.client.get(reverse('emergency_contact'))
-
 
     def test_view_url_exists_at_desired_location(self):
         self.assertEqual(self.response.status_code,200)
@@ -55,11 +57,19 @@ class EmergencyContactCreateTest(TestCase):
         self.assertTemplateUsed(self.response,'lifeguard/emergency_contact_form.html')
 
     def test_emergency_contact_create(self):
+        user_login = self.client.login(email=self.email,password=self.password)
+        self.assertTrue(user_login)
         emergency_contact = {
             "name":"Mary",
             "relationship":"mom",
             "phone":"712 434 2348"
         }
         response = self.client.post(reverse('emergency_contact'),emergency_contact)
-        self.assertEqual(response.status_code,304)
+        self.assertEqual(response.status_code,302)
+
+        em_contacts = EmergencyContact.objects.filter(user=self.user)
+        for em_contact in em_contacts:
+            self.assertEqual(em_contact.user.email,self.user.email)
+
+        self.assertRedirects(response,reverse('address'))
 
