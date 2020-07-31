@@ -40,5 +40,26 @@ class ContactUpdateViewTest(TestCase):
         self.assertEqual(response.status_code,302)
         self.user.refresh_from_db()
         self.assertEqual(self.user.first_name,'John')
+        self.assertRedirects(response,reverse('emergency_contact'))
 
+class EmergencyContactCreateTest(TestCase):
+    def setUp(self):
+        self.user = User.objects.create(email='test@example.com',password='sdfh328j!')
+        self.response = self.client.get(reverse('emergency_contact'))
+
+
+    def test_view_url_exists_at_desired_location(self):
+        self.assertEqual(self.response.status_code,200)
+
+    def test_view_uses_correct_template(self):
+        self.assertTemplateUsed(self.response,'lifeguard/emergency_contact_form.html')
+
+    def test_emergency_contact_create(self):
+        emergency_contact = {
+            "name":"Mary",
+            "relationship":"mom",
+            "phone":"712 434 2348"
+        }
+        response = self.client.post(reverse('emergency_contact'),emergency_contact)
+        self.assertEqual(response.status_code,304)
 
