@@ -73,3 +73,28 @@ class EmergencyContactCreateTest(TestCase):
 
         self.assertRedirects(response,reverse('address'))
 
+class AddressCreateTest(TestCase):
+    def setUp(self):
+        self.email = 'test@example.com'
+        self.password = 'sdfh328j!'
+        self.user = User.objects.create_user(email=self.email,password=self.password)
+        self.response = self.client.get(reverse('address'))
+
+    def test_address_create(self):
+        user_login = self.client.login(email=self.email,password=self.password)
+        self.assertTrue(user_login)
+        address = {
+            "street1":"123 Main St",
+            "stree2":"",
+            "city":"San Diego",
+            "state":"CA",
+            "zip":"94103"
+        }
+        response = self.client.post(reverse('address'),address)
+        self.assertEqual(response.status_code,302)
+        self.assertEqual(self.user.address_set.count(),1)
+
+
+
+
+

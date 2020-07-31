@@ -33,9 +33,15 @@ class EmergencyContactCreate(CreateView):
 class AddressCreate(CreateView):
     model = Address
     template_name = 'lifeguard/address_form.html'
-    fields = '__all__'
+    fields = ["street1","street2","city","state","zip"]
 
     def get_success_url(self):
-        return reverse_lazy('history')
+        return '/history/' #reverse_lazy('history')
+
+    def form_valid(self,form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
+
+
 
 
