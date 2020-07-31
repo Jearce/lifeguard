@@ -6,11 +6,6 @@
 
 {% block content %}
 <div id="navbar">
-    <ol>
-        <li><a href="{% url 'home' %}" id="id_home">Home</a></li>
-        <li><a href="#" id="id_aboutus">About us</a></li>
-        <li><a href="{% url 'signup' %}" id="id_signup">Sign Up</a></li>
-        <li><a href="{% url 'login' %}" id="id_login">Log In</a></li>
-    </ol>
+    {% include 'navbar.html' %}
 </div>
 {% endblock content %}
