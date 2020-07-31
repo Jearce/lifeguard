@@ -7,3 +7,10 @@ class EmergencyContact(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE)
     relationship = models.CharField('relationship',max_length=255)
     phone = models.CharField('phone',max_length=255)
+
+class Address(models.Model):
+    street1 = models.CharField(max_length=255)
+    street2 = models.CharField(max_length=255)
+    city = models.CharField(max_length=255)
+    state = models.CharField(max_length=255)
+    zip = models.CharField(max_length=255)
