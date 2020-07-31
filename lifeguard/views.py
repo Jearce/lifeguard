@@ -4,7 +4,7 @@ from django.views.generic.edit import UpdateView,CreateView
 from django.urls import reverse_lazy
 
 from users.models import User
-from .models import EmergencyContact
+from .models import EmergencyContact,Address
 
 # Create your views here.
 class HomeView(TemplateView):
@@ -21,8 +21,21 @@ class ContactInformationUpdate(UpdateView):
 class EmergencyContactCreate(CreateView):
     model = EmergencyContact
     template_name = 'lifeguard/emergency_contact_form.html'
-    success_url = 'lifeguard-registration/history/'
+    fields = ['name','relationship','phone']
+
+    def get_success_url(self):
+        return reverse_lazy('address')
+
+    def form_valid(self,form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
+
+class AddressCreate(CreateView):
+    model = Address
+    template_name = 'lifeguard/address_form.html'
     fields = '__all__'
 
+    def get_success_url(self):
+        return reverse_lazy('history')
 
 
