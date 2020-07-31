@@ -9,8 +9,9 @@ class EmergencyContact(models.Model):
     phone = models.CharField('phone',max_length=255)
 
 class Address(models.Model):
+    user = models.ForeignKey(User,on_delete=models.CASCADE,default='')
     street1 = models.CharField(max_length=255)
-    street2 = models.CharField(max_length=255)
+    street2 = models.CharField(max_length=255,blank=True,null=True)
     city = models.CharField(max_length=255)
     state = models.CharField(max_length=255)
     zip = models.CharField(max_length=255)
