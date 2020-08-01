@@ -80,6 +80,12 @@ class AddressCreateTest(TestCase):
         self.user = User.objects.create_user(email=self.email,password=self.password)
         self.response = self.client.get(reverse('address'))
 
+    def test_view_url_exists_at_desired_location(self):
+        self.assertEqual(self.response.status_code,200)
+
+    def test_view_uses_correct_template(self):
+        self.assertTemplateUsed(self.response,'lifeguard/address_form.html')
+
     def test_address_create(self):
         user_login = self.client.login(email=self.email,password=self.password)
         self.assertTrue(user_login)
@@ -93,6 +99,19 @@ class AddressCreateTest(TestCase):
         response = self.client.post(reverse('address'),address)
         self.assertEqual(response.status_code,302)
         self.assertEqual(self.user.address_set.count(),1)
+
+class LifeguardCreateTest(TestCase):
+    def setUp(self):
+        self.email = 'test@example.com'
+        self.password = 'sdfh328j!'
+        self.user = User.objects.create_user(email=self.email,password=self.password)
+        self.response = self.client.get(reverse('lifeguard_create'))
+
+    def test_view_url_exists_at_desired_location(self):
+        self.assertEqual(self.response.status_code,200)
+
+    def test_view_uses_correct_template(self):
+        self.assertTemplateUsed(self.response,'lifeguard/lifeguard_form.html')
 
 
 
