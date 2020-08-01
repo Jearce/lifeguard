@@ -36,7 +36,7 @@ class AddressCreate(CreateView):
     fields = ["street1","street2","city","state","zip"]
 
     def get_success_url(self):
-        return '/history/' #reverse_lazy('history')
+        return reverse_lazy('lifeguard_create')
 
     def form_valid(self,form):
         form.instance.user = self.request.user
