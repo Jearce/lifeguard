@@ -29,7 +29,6 @@ class SignUpViewTest(TestCase):
         response = self.client.post(reverse('signup'),data=self.credentials)
         self.assertRedirects(response,reverse('dashboard'))
 
-
 class LogInViewTest(TestCase):
 
     def setUp(self):
@@ -56,6 +55,11 @@ class LogInViewTest(TestCase):
         self.assertRedirects(response,reverse('dashboard'))
 
 class DashboardViewTest(TestCase):
+
+    def setUp(self):
+        self.credentials = {'email':'test@example.com', 'password':'2dhd7!42'}
+        user = User.objects.create_user(**self.credentials)
+        self.client.login(**self.credentials)
 
     def test_view_url_exists_at_desired_location(self):
         response = self.client.get('/users/login/')
