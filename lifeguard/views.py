@@ -4,7 +4,7 @@ from django.views.generic.edit import UpdateView,CreateView
 from django.urls import reverse_lazy
 
 from users.models import User
-from .models import EmergencyContact,Address
+from .models import EmergencyContact,Address,Lifeguard
 
 # Create your views here.
 class HomeView(TemplateView):
@@ -41,6 +41,18 @@ class AddressCreate(CreateView):
     def form_valid(self,form):
         form.instance.user = self.request.user
         return super().form_valid(form)
+
+class LifeguardCreate(CreateView):
+    model = Lifeguard
+    template_name = 'lifeguard/lifeguard_form.html'
+    fields = [
+        'already_certified',
+        'wants_to_work_for_company',
+        'payment_agreement',
+        'payment_agreement_signature',
+        'no_refunds_agreement',
+        'electronic_signature'
+    ]
 
 
 
