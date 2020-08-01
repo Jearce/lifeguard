@@ -113,6 +113,19 @@ class LifeguardCreateTest(TestCase):
     def test_view_uses_correct_template(self):
         self.assertTemplateUsed(self.response,'lifeguard/lifeguard_form.html')
 
+    def test_new_lifeguard_creation_and_wants_to_work(self):
+        user_login = self.client.login(email=self.email,password=self.password)
+        lifeguard_data = {
+            "already_certified":"N",
+            "wants_to_work_for_company":"Y",
+            "payment_agreement":True,
+            "payment_agreement_signature":"Larry Johnson",
+            "no_refunds_agreement":True,
+            "electronic_signature":"Larry Johnson",
+        }
+        response = self.client.post(reverse('lifeguard_create'),lifeguard_data)
+        self.assertEqual(response.status_code,302)
+
 
 
 
