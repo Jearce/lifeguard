@@ -23,9 +23,9 @@ class Lifeguard(models.Model):
         ("O","Other")
     ]
     user = models.ForeignKey(User,on_delete=models.CASCADE)
-    already_certified = models.BooleanField("Are you a certified lifeguard?",choices=[("Y","Yes"),("N","No")])
+    already_certified = models.CharField("Are you a certified lifeguard?",choices=[("Y","Yes"),("N","No")],max_length=1)
     wants_to_work_for_company = models.CharField("Do you plan to work for Gulf Coast Aquatics?",choices=WORK_CHOICES,max_length=1)
-    payment_agreement = models.BooleanField("I agree")
+    payment_agreement = models.BooleanField("I understand and agree")
     payment_agreement_signature = models.CharField("Your name",max_length=255)
     no_refunds_agreement = models.BooleanField("I agree")
     electronic_signature = models.CharField("Electronic signature",max_length=255)
