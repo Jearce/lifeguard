@@ -125,6 +125,7 @@ class LifeguardCreateTest(TestCase):
         }
         response = self.client.post(reverse('lifeguard_create'),lifeguard_data)
         self.assertEqual(response.status_code,302)
+        self.assertRedirects(response,reverse('classes'))
 
 
 

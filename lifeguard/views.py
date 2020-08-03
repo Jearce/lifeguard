@@ -1,5 +1,6 @@
 from django.shortcuts import render
-from django.views.generic import TemplateView
+from django.views import View
+from django.views.generic import TemplateView,ListView
 from django.views.generic.edit import UpdateView,CreateView
 from django.urls import reverse_lazy
 
@@ -59,7 +60,13 @@ class LifeguardCreate(CreateView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse_lazy('class_registration')
+        return reverse_lazy('classes')
+
+class LifeguardClasses(View):
+
+    def get(self,request,*args,**kwargs):
+        return render(request,'lifeguard/classes.html')
+
 
 
 
