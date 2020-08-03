@@ -7,7 +7,7 @@
 
 {% block content %}
 <h3>Lifeguard Form</h3>
-<form method="post" id="lifeguard-form">
+<form method="post" id="lifeguard_form">
     {% csrf_token %}
     {{ form.already_certified|as_crispy_field }}
     {{ form.wants_to_work_for_company|as_crispy_field }}
