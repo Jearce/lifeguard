@@ -45,9 +45,3 @@ class Enroll(models.Model):
     lifeguard = models.ForeignKey(Lifeguard,on_delete=models.CASCADE)
     lifeguard_class = models.ForeignKey(LifeguardClass,on_delete=models.CASCADE)
     grade = models.PositiveIntegerField(blank=True,null=True)
-
-
-
-
-
-
