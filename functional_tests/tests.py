@@ -18,19 +18,22 @@ class BaseTestFixture(LiveServerTestCase):
     def tearDown(self):
         self.browser.quit()
 
-class SignUpTest(BaseTestFixture):
+class SignUpToLifeguardRegistrationTest(BaseTestFixture):
 
     def test_at_signup_page(self):
         self.browser.get('%s%s' % (self.live_server_url,'/users/signup'))
         self.assertIn('Sign-Up',self.browser.title)
 
 
-    def test_sign_up(self):
+    def test_sign_up_and_registers_as_new_lifeguard(self):
         #user lands on homepage
         self.browser.get('%s%s' % (self.live_server_url,'/home'))
         self.assertIn('Home',self.browser.title)
 
-        #wants to sign up
+        #Clicks on account dropdown
+        self.browser.find_element_by_id('navbarDropdown').click()
+
+        #Clicks on sign up option
         self.browser.find_element_by_id('id_signup').click()
         self.assertIn('signup',self.browser.current_url)
 
@@ -38,14 +41,83 @@ class SignUpTest(BaseTestFixture):
         email_input = self.browser.find_element_by_id('id_email')
         password1_input = self.browser.find_element_by_id('id_password1')
         password2_input = self.browser.find_element_by_id('id_password2')
-        email_input.send_keys('test@example.com')
+
+        test_email = 'test@example.com'
         test_password = 'u7efd!hd'
+        email_input.send_keys(test_email)
         password1_input.send_keys(test_password)
         password2_input.send_keys(test_password)
+
+        #submit form
         self.browser.find_element_by_id('signup-form').submit()
 
         #redirected to dashboard on successful sign up
         self.assertIn('dashboard',self.browser.current_url)
+
+        #clicks on LG registration form
+        self.browser.find_element_by_id('id_lifeguard_registration').click()
+        base = 'lifeguard-registration/'
+        self.assertIn(base+'contact-information/',self.browser.current_url)
+
+        #fills out contact information form
+        first_name = "John"
+        last_name = "Doe"
+        phone = "713 434 4564"
+        dob = "2000-06-09"
+        self.browser.find_element_by_id('id_first_name').send_keys(first_name)
+        self.browser.find_element_by_id('id_last_name').send_keys(last_name)
+        self.browser.find_element_by_id('id_phone').send_keys(phone)
+        self.browser.find_element_by_id('id_dob').send_keys(dob)
+        self.browser.find_element_by_id('contact_information_form').submit()
+
+        #fills out emergency contact form
+        self.assertIn(base+'emergency-contact/',self.browser.current_url)
+        emergency_contact = "Mary Jane"
+        relationship = "Mom"
+        phone = "834 283 2838"
+        self.browser.find_element_by_id('id_name').send_keys(emergency_contact)
+        self.browser.find_element_by_id('id_relationship').send_keys(relationship)
+        self.browser.find_element_by_id('id_phone').send_keys(relationship)
+        self.browser.find_element_by_id('emergency_contact_form').submit()
+
+        #fills out address form
+        self.assertIn(base+'address/',self.browser.current_url)
+        street1 = "123 Main St"
+        city = "San Diego"
+        state = "CA"
+        zip_code = "94103"
+        self.browser.find_element_by_id('id_street1').send_keys(street1)
+        self.browser.find_element_by_id('id_city').send_keys(city)
+        self.browser.find_element_by_id('id_state').send_keys(state)
+        self.browser.find_element_by_id('id_zip').send_keys(zip_code)
+        self.browser.find_element_by_id('address_form').submit()
+
+
+        #fills out LG form
+        self.assertIn(base+'lifeguard-information/',self.browser.current_url)
+        #user is a new lifeguard
+        already_certified = "N"
+        #and wants to work as a lifeguard
+        wants_to_work_for_company = "Y"
+        payment_agreement = True
+        payment_agreement_signature = "Larry Jones"
+        no_refunds_agreement = True
+        electronic_signature = "Larry Jones"
+        self.browser.find_element_by_id('id_already_certified').send_keys(already_certified)
+        self.browser.find_element_by_id('id_wants_to_work_for_company').send_keys(wants_to_work_for_company)
+        self.browser.find_element_by_id('id_payment_agreement').send_keys(payment_agreement)
+        self.browser.find_element_by_id('id_payment_agreement_signature').send_keys(payment_agreement_signature)
+        self.browser.find_element_by_id('id_no_refunds_agreement').send_keys(no_refunds_agreement)
+        self.browser.find_element_by_id('id_electronic_signature').send_keys(electronic_signature)
+        self.browser.find_element_by_id('lifeguard_form').submit()
+
+
+        #picks a class to attend
+        self.assertIn('lifeguard/classes',self.browser.current_url)
+
+        #makes payment
+
+        #redirect to dashboard
 
 class LifeguardRegistrationTest(BaseTestFixture):
 
@@ -78,11 +150,6 @@ class LifeguardRegistrationTest(BaseTestFixture):
         #makes payment
 
         #redirect to dashboard
-
-
-
-
-
 class LogInTest(BaseTestFixture):
 
     def setUp(self):
