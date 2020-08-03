@@ -8,6 +8,9 @@ class EmergencyContact(models.Model):
     relationship = models.CharField('relationship',max_length=255)
     phone = models.CharField('phone',max_length=255)
 
+    def __str__(self):
+        return self.name
+
 class Address(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE,default='')
     street1 = models.CharField(max_length=255)
@@ -33,6 +36,9 @@ class Lifeguard(models.Model):
     certification = models.ImageField(blank=True,null=True)
     online_portion_complete = models.BooleanField(default=True)
 
+    def __str__(self):
+        return self.user.first_name + " " + self.user.last_name
+
 class LifeguardClass(models.Model):
     course = models.CharField(max_length=255)
     start_date = models.DateTimeField()
@@ -41,7 +47,13 @@ class LifeguardClass(models.Model):
     employee_cost = models.DecimalField(max_digits=6, decimal_places=2)
     students = models.ManyToManyField(Lifeguard,through="Enroll")
 
+    def __str__(self):
+        return self.course
+
 class Enroll(models.Model):
     lifeguard = models.ForeignKey(Lifeguard,on_delete=models.CASCADE)
     lifeguard_class = models.ForeignKey(LifeguardClass,on_delete=models.CASCADE)
     grade = models.PositiveIntegerField(blank=True,null=True)
+
+    def __str__(self):
+        return "Enrollment for {} in {}".format(lifeguard.user.first_name,lifeguard_class.course.name)
