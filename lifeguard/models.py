@@ -33,6 +33,21 @@ class Lifeguard(models.Model):
     certification = models.ImageField(blank=True,null=True)
     online_portion_complete = models.BooleanField(default=True)
 
+class LifeguardClass(models.Model):
+    course = models.CharField(max_length=255)
+    start_date = models.DateTimeField()
+    end_date = models.DateTimeField()
+    cost = models.DecimalField(max_digits=6, decimal_places=2)
+    employee_cost = models.DecimalField(max_digits=6, decimal_places=2)
+    students = models.ManyToManyField(Lifeguard,through="Enroll")
+
+class Enroll(models.Model):
+    lifeguard = models.ForeignKey(Lifeguard,on_delete=models.CASCADE)
+    lifeguard_class = models.ForeignKey(LifeguardClass,on_delete=models.CASCADE)
+    grade = models.PositiveIntegerField(blank=True,null=True)
+
+
+
 
 
 
