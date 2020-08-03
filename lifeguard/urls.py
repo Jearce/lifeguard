@@ -9,5 +9,6 @@ urlpatterns = [
     path('lifeguard-registration/emergency-contact/',views.EmergencyContactCreate.as_view(),name='emergency_contact'),
     path('lifeguard-registration/address/',views.AddressCreate.as_view(),name='address'),
     path('lifeguard-registration/lifeguard-information/',views.LifeguardCreate.as_view(),name='lifeguard_create'),
-    path('lifeguard/classes/',views.LifeguardClasses.as_view(),name='classes')
+    path('lifeguard/classes/',views.LifeguardClasses.as_view(),name='classes'),
+    path('lifeguard/classes/<int:pk>/',views.LifeguardClasses.as_view(),name='classes')
 ]
