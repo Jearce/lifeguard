@@ -6,7 +6,7 @@ from django.contrib.auth import get_user_model
 
 from .. import views
 from users.models import User
-from ..models import EmergencyContact
+from ..models import EmergencyContact,LifeguardClass,Enroll,Lifeguard
 
 class HomeViewTest(TestCase):
     def test_view_url_exists_at_desired_location(self):
@@ -43,11 +43,15 @@ class ContactUpdateViewTest(TestCase):
         self.assertEqual(self.user.first_name,'John')
         self.assertRedirects(response,reverse('emergency_contact'))
 
-class EmergencyContactCreateTest(TestCase):
+class BaseUserSetUp(TestCase):
     def setUp(self):
         self.email = 'test@example.com'
         self.password = 'sdfh328j!'
         self.user = User.objects.create_user(email=self.email,password=self.password)
+
+class EmergencyContactCreateTest(BaseUserSetUp):
+    def setUp(self):
+        super().setUp()
         self.response = self.client.get(reverse('emergency_contact'))
 
     def test_view_url_exists_at_desired_location(self):
@@ -73,11 +77,9 @@ class EmergencyContactCreateTest(TestCase):
 
         self.assertRedirects(response,reverse('address'))
 
-class AddressCreateTest(TestCase):
+class AddressCreateTest(BaseUserSetUp):
     def setUp(self):
-        self.email = 'test@example.com'
-        self.password = 'sdfh328j!'
-        self.user = User.objects.create_user(email=self.email,password=self.password)
+        super().setUp()
         self.response = self.client.get(reverse('address'))
 
     def test_view_url_exists_at_desired_location(self):
@@ -100,11 +102,9 @@ class AddressCreateTest(TestCase):
         self.assertEqual(response.status_code,302)
         self.assertEqual(self.user.address_set.count(),1)
 
-class LifeguardCreateTest(TestCase):
+class LifeguardCreateTest(BaseUserSetUp):
     def setUp(self):
-        self.email = 'test@example.com'
-        self.password = 'sdfh328j!'
-        self.user = User.objects.create_user(email=self.email,password=self.password)
+        super().setUp()
         self.response = self.client.get(reverse('lifeguard_create'))
 
     def test_view_url_exists_at_desired_location(self):
@@ -127,7 +127,48 @@ class LifeguardCreateTest(TestCase):
         self.assertEqual(response.status_code,302)
         self.assertRedirects(response,reverse('classes'))
 
+class LifeguardClassesTest(BaseUserSetUp):
+    def setUp(self):
+        super().setUp()
+        self.response = self.client.get(reverse('classes'))
+        self.lifeguard_data = {
+            "already_certified":"N",
+            "wants_to_work_for_company":"Y",
+            "payment_agreement":True,
+            "payment_agreement_signature":"Larry Johnson",
+            "no_refunds_agreement":True,
+            "electronic_signature":"Larry Johnson",
+        }
 
+    def test_view_url_exists_at_desired_location(self):
+        self.assertEqual(self.response.status_code,200)
 
+    def test_view_uses_correct_template(self):
+        self.assertTemplateUsed(self.response,'lifeguard/classes.html')
 
-
+    def test_can_enroll_in_class(self):
+        user_login = self.client.login(email=self.email, password=self.password)
+        Lifeguard.objects.create(user=self.user,**self.lifeguard_data)
+        class1 = {
+            "course":"Review",
+            "start_date":"2020-8-28 14:30:59",
+            "end_date":"2020-9-8 14:30:59",
+            "cost":120.23,
+            "employee_cost":50.50
+        }
+        class2 = {
+            "course":"Lifeguard",
+            "start_date":"2020-8-28 14:30:59",
+            "end_date":"2020-9-8 14:30:59",
+            "cost":120.23,
+            "employee_cost":50.50
+        }
+        LifeguardClass.objects.bulk_create(
+            [LifeguardClass(**class1),
+             LifeguardClass(**class2)]
+        )
+        classes = LifeguardClass.objects.all()
+        response = self.client.post(reverse('classes',kwargs={'pk':classes[0].id}))
+        self.assertEqual(response.status_code,302)
+        self.assertEqual(Enroll.objects.all().count(),1)
+        self.assertRedirects(response,reverse('payment'))
