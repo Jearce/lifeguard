@@ -1,11 +1,11 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from django.views import View
 from django.views.generic import TemplateView,ListView
 from django.views.generic.edit import UpdateView,CreateView
 from django.urls import reverse_lazy
 
 from users.models import User
-from .models import EmergencyContact,Address,Lifeguard
+from .models import EmergencyContact,Address,Lifeguard,Enroll,LifeguardClass
 
 # Create your views here.
 class HomeView(TemplateView):
@@ -63,9 +63,15 @@ class LifeguardCreate(CreateView):
         return reverse_lazy('classes')
 
 class LifeguardClasses(View):
-
     def get(self,request,*args,**kwargs):
-        return render(request,'lifeguard/classes.html')
+        classes = LifeguardClass.objects.all()
+        return render(request,'lifeguard/classes.html',context={'classes':classes})
+
+    def post(self,request,*args,**kwargs):
+        lifeguard = Lifeguard.objects.get(user=request.user)
+        lifeguard_class = LifeguardClass.objects.get(pk=self.kwargs['pk'])
+        Enroll.objects.create(lifeguard=lifeguard,lifeguard_class=lifeguard_class)
+        return redirect('classes')
 
 
 
