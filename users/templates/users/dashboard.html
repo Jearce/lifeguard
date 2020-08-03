@@ -8,8 +8,12 @@
             <h5 class="card-title">Applications</h5>
             <p class="card-text">Below are available applications for you to fill out.</p>
             <ul class="list-group list-group-flush">
-                <li class="list-group-item"><a href="{% url 'contact_information' user.id %}">Lifeguard Registration</a></li>
-                <li class="list-group-item"><a href="#">Employee Registration</a></li>
+                <li class="list-group-item">
+                    <a href="{% url 'contact_information' user.id %}" id="id_lifeguard_registration">Lifeguard Registration</a>
+                </li>
+                <li class="list-group-item">
+                    <a href="#">Employee Registration</a>
+                </li>
             </ul>
         </div>
     </div>
