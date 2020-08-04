@@ -9,7 +9,17 @@
 <h3>Emergency Contact</h3>
 <form method="post" id="emergency_contact_form">
     {% csrf_token %}
-    {{ form|crispy }}
+    {{ formset.management_form }}
+    {% for form in formset %}
+    <div class="card bg-light mb-3">
+        <div class="card-header">
+            Emergency Contact {{ forloop.counter }}
+        </div>
+        <div class="card-body">
+            {{ form|crispy }}
+        </div>
+    </div>
+    {% endfor %}
     <input class="btn btn-primary" type="submit" value="submit">
 </form>
 {% endblock content %}
