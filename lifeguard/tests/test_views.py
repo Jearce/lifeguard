@@ -41,7 +41,7 @@ class ContactUpdateViewTest(TestCase):
         self.assertEqual(response.status_code,302)
         self.user.refresh_from_db()
         self.assertEqual(self.user.first_name,'John')
-        self.assertRedirects(response,reverse('emergency_contact'))
+        self.assertRedirects(response,reverse('emergency_contact_create'))
 
 class BaseUserSetUp(TestCase):
     def setUp(self):
@@ -52,7 +52,7 @@ class BaseUserSetUp(TestCase):
 class EmergencyContactCreateTest(BaseUserSetUp):
     def setUp(self):
         super().setUp()
-        self.response = self.client.get(reverse('emergency_contact'))
+        self.response = self.client.get(reverse('emergency_contact_create'))
 
     def test_view_url_exists_at_desired_location(self):
         self.assertEqual(self.response.status_code,200)
@@ -64,18 +64,51 @@ class EmergencyContactCreateTest(BaseUserSetUp):
         user_login = self.client.login(email=self.email,password=self.password)
         self.assertTrue(user_login)
         emergency_contact = {
-            "name":"Mary",
-            "relationship":"mom",
-            "phone":"712 434 2348"
+            "form-TOTAL_FORMS":2,
+            "form-INITIAL_FORMS":'0',
+            'form-MAX_NUM_FORMS':'',
+            "form-0-name":"Mary",
+            "form-0-relationship":"mom",
+            "form-0-phone":"712 434 2348",
+            "form-1-name":"Jerry",
+            "form-1-relationship":"dad",
+            "form-1-phone":"712 434 2348"
+
         }
-        response = self.client.post(reverse('emergency_contact'),emergency_contact)
+        response = self.client.post(reverse('emergency_contact_create'),emergency_contact)
         self.assertEqual(response.status_code,302)
 
         em_contacts = EmergencyContact.objects.filter(user=self.user)
-        for em_contact in em_contacts:
-            self.assertEqual(em_contact.user.email,self.user.email)
+        self.assertEqual(em_contacts.count(),2)
 
         self.assertRedirects(response,reverse('address'))
+
+class EmergencyContactUpdateTest(BaseUserSetUp):
+    def setUp(self):
+        super().setUp()
+        self.response = self.client.get(reverse('emergency_contact_update'))
+        emergency_contacts = [
+            {
+                "name":"Mary",
+                "relationship":"mom",
+                "phone":"712 434 2348"
+            },
+            {
+                "name":"Jerry",
+                "relationship":"dad",
+                "phone":"712 434 2348"
+            }
+        ]
+
+    def test_view_url_exists_at_desired_location(self):
+        self.assertEqual(self.response.status_code,200)
+
+    def test_view_uses_correct_template(self):
+        self.assertTemplateUsed(self.response,'lifeguard/emergency_contact_form.html')
+
+    def test_emergency_contact_create(self):
+        user_login = self.client.login(email=self.email,password=self.password)
+        self.assertTrue(user_login)
 
 class AddressCreateTest(BaseUserSetUp):
     def setUp(self):
