@@ -17,7 +17,7 @@
             <p>Cost: {{ class.cost }}</p>
             <p>Employee cost: {{ class.employee_cost }}</p>
         </div>
-        <form method="post" action="{% url 'classes' class.id %}">
+        <form method="post" action="{% url 'lifeguard:classes' class.id %}">
             {% csrf_token %}
             <input name="enroll-btn" class="btn btn-primary" type="submit" value="enroll">
         </form>

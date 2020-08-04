@@ -44,7 +44,7 @@ class SignUpToLifeguardRegistrationTest(BaseTestFixture):
 
     def test_sign_up_and_registers_as_new_lifeguard(self):
         #user lands on homepage
-        self.browser.get('%s%s' % (self.live_server_url,'/home'))
+        self.browser.get(self.live_server_url)
         self.assertIn('Home',self.browser.title)
 
         #Clicks on account dropdown
@@ -64,23 +64,22 @@ class SignUpToLifeguardRegistrationTest(BaseTestFixture):
         self.browser.find_element_by_id('id_lifeguard_registration').click()
 
         #is taken to the contact information form
-        base = 'lifeguard-registration/'
-        self.assertIn(base+'contact-information/',self.browser.current_url)
+        self.assertIn('contact-information/',self.browser.current_url)
 
         #fills out contact information form
         self.fill_out_contact_information()
         #proceeds to emergency contact form
-        self.assertIn(base+'emergency-contact-create/',self.browser.current_url)
+        self.assertIn('emergency-contact-create/',self.browser.current_url)
 
         #fills out emergency contact form
         self.fill_out_emergency_contact()
         #proceeds to address form
-        self.assertIn(base+'address/',self.browser.current_url)
+        self.assertIn('address/',self.browser.current_url)
 
         #fills out address form
         self.fill_out_address_form()
         #proceeds to LG form
-        self.assertIn(base+'lifeguard-information/',self.browser.current_url)
+        self.assertIn('lifeguard/create/',self.browser.current_url)
 
         #fills out LG form
         self.fill_out_lifeguard_form()

@@ -10,7 +10,7 @@
 <form method="post" id='login-form'>
     {% csrf_token %}
     {{ form|crispy }}
-    <p><a href="{% url 'password_reset' %}" id="id_password_reset">Forgot password?</a></p>
+    <p><a href="{% url 'users:password_reset' %}" id="id_password_reset">Forgot password?</a></p>
     <input class="btn btn-primary" type="submit" value="log in">
 </form>
 {% endblock content %}
