@@ -70,7 +70,7 @@ class SignUpToLifeguardRegistrationTest(BaseTestFixture):
         #fills out contact information form
         self.fill_out_contact_information()
         #proceeds to emergency contact form
-        self.assertIn(base+'emergency-contact/',self.browser.current_url)
+        self.assertIn(base+'emergency-contact-create/',self.browser.current_url)
 
         #fills out emergency contact form
         self.fill_out_emergency_contact()
@@ -126,9 +126,9 @@ class SignUpToLifeguardRegistrationTest(BaseTestFixture):
         emergency_contact = "Mary Jane"
         relationship = "Mom"
         phone = "834 283 2838"
-        self.browser.find_element_by_id('id_name').send_keys(emergency_contact)
-        self.browser.find_element_by_id('id_relationship').send_keys(relationship)
-        self.browser.find_element_by_id('id_phone').send_keys(relationship)
+        self.browser.find_element_by_id('id_form-1-name').send_keys(emergency_contact)
+        self.browser.find_element_by_id('id_form-1-relationship').send_keys(relationship)
+        self.browser.find_element_by_id('id_form-1-phone').send_keys(phone)
         self.browser.find_element_by_id('emergency_contact_form').submit()
 
     def fill_out_address_form(self):
