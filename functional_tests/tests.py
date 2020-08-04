@@ -10,6 +10,7 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 
 from users.models import User
+from lifeguard.models import LifeguardClass,Enroll
 
 class BaseTestFixture(LiveServerTestCase):
     def setUp(self):
@@ -20,10 +21,26 @@ class BaseTestFixture(LiveServerTestCase):
 
 class SignUpToLifeguardRegistrationTest(BaseTestFixture):
 
-    def test_at_signup_page(self):
-        self.browser.get('%s%s' % (self.live_server_url,'/users/signup'))
-        self.assertIn('Sign-Up',self.browser.title)
-
+    def setUp(self):
+        super().setUp()
+        class1 = {
+            "course":"Review",
+            "start_date":"2020-8-28 14:30:59",
+            "end_date":"2020-9-8 14:30:59",
+            "cost":120.23,
+            "employee_cost":50.50
+        }
+        class2 = {
+            "course":"Lifeguard",
+            "start_date":"2020-8-28 14:30:59",
+            "end_date":"2020-9-8 14:30:59",
+            "cost":120.23,
+            "employee_cost":50.50
+        }
+        LifeguardClass.objects.bulk_create(
+            [LifeguardClass(**class1),
+             LifeguardClass(**class2)]
+        )
 
     def test_sign_up_and_registers_as_new_lifeguard(self):
         #user lands on homepage
@@ -38,6 +55,49 @@ class SignUpToLifeguardRegistrationTest(BaseTestFixture):
         self.assertIn('signup',self.browser.current_url)
 
         #signs up
+        self.sign_up()
+
+        #redirected to dashboard on successful sign up
+        self.assertIn('dashboard',self.browser.current_url)
+
+        #clicks on LG registration link
+        self.browser.find_element_by_id('id_lifeguard_registration').click()
+
+        #is taken to the contact information form
+        base = 'lifeguard-registration/'
+        self.assertIn(base+'contact-information/',self.browser.current_url)
+
+        #fills out contact information form
+        self.fill_out_contact_information()
+        #proceeds to emergency contact form
+        self.assertIn(base+'emergency-contact/',self.browser.current_url)
+
+        #fills out emergency contact form
+        self.fill_out_emergency_contact()
+        #proceeds to address form
+        self.assertIn(base+'address/',self.browser.current_url)
+
+        #fills out address form
+        self.fill_out_address_form()
+        #proceeds to LG form
+        self.assertIn(base+'lifeguard-information/',self.browser.current_url)
+
+        #fills out LG form
+        self.fill_out_lifeguard_form()
+        #is taken to a Lifguard Classes page which lists the available classes
+        self.assertIn('lifeguard/classes',self.browser.current_url)
+
+        #picks a class to attend
+        enrollment_btns = self.browser.find_elements_by_name('enroll-btn')
+        enrollment_btns[0].submit()
+        self.assertEqual(Enroll.objects.count(),1)
+
+        #makes payment
+
+        #redirect to dashboard
+
+    def sign_up(self):
+        #signs up
         email_input = self.browser.find_element_by_id('id_email')
         password1_input = self.browser.find_element_by_id('id_password1')
         password2_input = self.browser.find_element_by_id('id_password2')
@@ -51,15 +111,7 @@ class SignUpToLifeguardRegistrationTest(BaseTestFixture):
         #submit form
         self.browser.find_element_by_id('signup-form').submit()
 
-        #redirected to dashboard on successful sign up
-        self.assertIn('dashboard',self.browser.current_url)
-
-        #clicks on LG registration form
-        self.browser.find_element_by_id('id_lifeguard_registration').click()
-        base = 'lifeguard-registration/'
-        self.assertIn(base+'contact-information/',self.browser.current_url)
-
-        #fills out contact information form
+    def fill_out_contact_information(self):
         first_name = "John"
         last_name = "Doe"
         phone = "713 434 4564"
@@ -70,8 +122,7 @@ class SignUpToLifeguardRegistrationTest(BaseTestFixture):
         self.browser.find_element_by_id('id_dob').send_keys(dob)
         self.browser.find_element_by_id('contact_information_form').submit()
 
-        #fills out emergency contact form
-        self.assertIn(base+'emergency-contact/',self.browser.current_url)
+    def fill_out_emergency_contact(self):
         emergency_contact = "Mary Jane"
         relationship = "Mom"
         phone = "834 283 2838"
@@ -80,8 +131,7 @@ class SignUpToLifeguardRegistrationTest(BaseTestFixture):
         self.browser.find_element_by_id('id_phone').send_keys(relationship)
         self.browser.find_element_by_id('emergency_contact_form').submit()
 
-        #fills out address form
-        self.assertIn(base+'address/',self.browser.current_url)
+    def fill_out_address_form(self):
         street1 = "123 Main St"
         city = "San Diego"
         state = "CA"
@@ -92,9 +142,7 @@ class SignUpToLifeguardRegistrationTest(BaseTestFixture):
         self.browser.find_element_by_id('id_zip').send_keys(zip_code)
         self.browser.find_element_by_id('address_form').submit()
 
-
-        #fills out LG form
-        self.assertIn(base+'lifeguard-information/',self.browser.current_url)
+    def fill_out_lifeguard_form(self):
         #user is a new lifeguard
         already_certified = "N"
         #and wants to work as a lifeguard
@@ -111,45 +159,6 @@ class SignUpToLifeguardRegistrationTest(BaseTestFixture):
         self.browser.find_element_by_id('id_electronic_signature').send_keys(electronic_signature)
         self.browser.find_element_by_id('lifeguard_form').submit()
 
-
-        #picks a class to attend
-        self.assertIn('lifeguard/classes',self.browser.current_url)
-
-        #makes payment
-
-        #redirect to dashboard
-
-class LifeguardRegistrationTest(BaseTestFixture):
-
-    def setUp(self):
-        super().setUp()
-        #user already has an account
-        self.user = User.objects.create(email="test@example.com", password="u7hfdj4")
-
-    def test_new_lifeguard_registration(self):
-
-        #start at dashboard
-        self.browser.get('%s%s' % (self.live_server_url,'/users/dashboard'))
-
-        #clicks on LG registration form
-        self.browser.find_element_by_id('id_lifeguard_registration').click()
-        self.assertIn('lifeguard-registration',self.browser.current_url)
-
-        #fills out contact information form
-
-        #fills out emergency contact form
-
-        #is asked if they are already certified
-
-        #user is a new lifeguard
-
-        #fills out LG form
-
-        #picks a class to attend
-
-        #makes payment
-
-        #redirect to dashboard
 class LogInTest(BaseTestFixture):
 
     def setUp(self):
