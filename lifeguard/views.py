@@ -6,6 +6,7 @@ from django.urls import reverse_lazy
 
 from users.models import User
 from .models import EmergencyContact,Address,Lifeguard,Enroll,LifeguardClass
+from .forms import EmergencyContactForm,EmergencyContactFormSet
 
 # Create your views here.
 class HomeView(TemplateView):
@@ -17,9 +18,62 @@ class ContactInformationUpdate(UpdateView):
     template_name = 'lifeguard/contact_information_form.html'
 
     def get_success_url(self):
-        return reverse_lazy('emergency_contact')
+        return reverse_lazy('emergency_contact_create')
 
 class EmergencyContactCreate(CreateView):
+    model = EmergencyContact
+    template_name = 'lifeguard/emergency_contact_form.html'
+    form_class = EmergencyContactForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['formset'] = EmergencyContactFormSet(queryset=EmergencyContact.objects.none())
+        return context
+
+    def post(self,request,*args,**kwargs):
+        formset = EmergencyContactFormSet(request.POST)
+        if formset.is_valid():
+            return self.form_valid(formset)
+        return render(request,self.template_name,context={'formset':formset})
+
+    def form_valid(self,formset):
+        instances = formset.save(commit=False)
+        for instance in instances:
+            instance.user = self.request.user
+            instance.save()
+        return super().form_valid(formset)
+
+    def get_success_url(self):
+        return reverse_lazy('address')
+
+class EmergencyContactUpdate(UpdateView):
+    model = EmergencyContact
+    template_name = 'lifeguard/emergency_contact_form.html'
+    form_class = EmergencyContactForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['formset'] = EmergencyContactFormSet(queryset=EmergencyContact.objects.none())
+        return context
+
+    def post(self,request,*args,**kwargs):
+        formset = EmergencyContactFormSet(request.POST)
+        if formset.is_valid():
+            return self.form_valid(formset)
+
+    def form_valid(self,formset):
+        instances = formset.save(commit=False)
+        for instance in instances:
+            instance.user = self.request.user
+            instance.save()
+        return super().form_valid(formset)
+
+    def get_success_url(self):
+        return reverse_lazy('address')
+
+
+
+class EmergencyContactUpdate(CreateView):
     model = EmergencyContact
     template_name = 'lifeguard/emergency_contact_form.html'
     fields = ['name','relationship','phone']
@@ -30,6 +84,8 @@ class EmergencyContactCreate(CreateView):
     def form_valid(self,form):
         form.instance.user = self.request.user
         return super().form_valid(form)
+
+
 
 class AddressCreate(CreateView):
     model = Address
