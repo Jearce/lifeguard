@@ -16,7 +16,6 @@ urlpatterns = [
     path('dashboard/',views.DashboardView.as_view(),name='dashboard'),
 
     path('contact-information/<int:pk>/',views.ContactInformationUpdate.as_view(),name='contact_information'),
-    path('emergency-contact-create/',views.EmergencyContactCreate.as_view(),name='emergency_contact_create'),
-    path('emergency-contact-update/',views.EmergencyContactUpdate.as_view(),name='emergency_contact_update'),
+    path('emergency-contact/',views.EmergencyContactCreateOrUpdate.as_view(),name='emergency_contact'),
     path('address/',views.AddressCreateOrUpdate.as_view(),name='address'),
 ]
