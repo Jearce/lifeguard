@@ -39,4 +39,4 @@ class Enroll(models.Model):
     grade = models.PositiveIntegerField(blank=True,null=True)
 
     def __str__(self):
-        return "Enrollment for {} in {}".format(lifeguard.user.first_name,lifeguard_class.course.name)
+        return "Enrollment for {} in {}".format(self.lifeguard.user.first_name,self.lifeguard_class.course)
