@@ -6,6 +6,22 @@ from django.contrib.auth import get_user_model
 
 from .. import views
 from ..models import User,EmergencyContact,Address
+from ..forms import EmergencyContactInlineFormSet
+
+def instantiate_formset(formset_class, data,initial_forms=0,total_forms=0):
+    prefix = formset_class().prefix
+    formset_data = {}
+    for i, form_data in enumerate(data):
+        for name, value in form_data.items():
+            if isinstance(value, list):
+                for j, inner in enumerate(value):
+                    formset_data['{}-{}-{}_{}'.format(prefix, i, name, j)] = inner
+            else:
+                formset_data['{}-{}-{}'.format(prefix, i, name)] = value
+    formset_data['{}-TOTAL_FORMS'.format(prefix)] = total_forms
+    formset_data['{}-INITIAL_FORMS'.format(prefix)] = initial_forms
+    formset_data['{}-MAX_NUM_FORMS'.format(prefix)] = 2
+    return formset_data
 
 class SignUpViewTest(TestCase):
 
@@ -51,7 +67,7 @@ class LogInViewTest(TestCase):
         response = self.client.post(
             reverse('users:login'),
             data={'username':self.credentials['email'],
-                'password':self.credentials['password']})
+                  'password':self.credentials['password']})
         self.assertRedirects(response,reverse('users:dashboard'))
 
 class DashboardViewTest(TestCase):
@@ -118,14 +134,13 @@ class EmergencyContactCreateTest(BaseUserSetUp):
         emergency_contact = {
             "form-TOTAL_FORMS":2,
             "form-INITIAL_FORMS":'0',
-            'form-MAX_NUM_FORMS':'',
+            'form-MAX_NUM_FORMS':'2',
             "form-0-name":"Mary",
             "form-0-relationship":"mom",
             "form-0-phone":"712 434 2348",
             "form-1-name":"Jerry",
             "form-1-relationship":"dad",
             "form-1-phone":"712 434 2348"
-
         }
         response = self.client.post(reverse('users:emergency_contact_create'),emergency_contact)
         self.assertEqual(response.status_code,302)
@@ -135,33 +150,55 @@ class EmergencyContactCreateTest(BaseUserSetUp):
 
         self.assertRedirects(response,reverse('users:address'))
 
-#class EmergencyContactUpdateTest(BaseUserSetUp):
-#    def setUp(self):
-#        super().setUp()
-#        self.response = self.client.get(reverse('emergency_contact_update'))
-#        emergency_contacts = [
-#            {
-#                "name":"Mary",
-#                "relationship":"mom",
-#                "phone":"712 434 2348"
-#            },
-#            {
-#                "name":"Jerry",
-#                "relationship":"dad",
-#                "phone":"712 434 2348"
-#            }
-#        ]
-#
-#    def test_view_url_exists_at_desired_location(self):
-#        self.assertEqual(self.response.status_code,200)
-#
-#    def test_view_uses_correct_template(self):
-#        self.assertTemplateUsed(self.response,'users/emergency_contact_form.html')
-#
-#    def test_emergency_contact_create(self):
-#        user_login = self.client.login(email=self.email,password=self.password)
-#        self.assertTrue(user_login)
-#
+class EmergencyContactUpdateTest(BaseUserSetUp):
+    def setUp(self):
+        super().setUp()
+        user_login = self.client.login(email=self.email,password=self.password)
+        self.response = self.client.get(reverse('users:emergency_contact_update'))
+        self.emergency_contacts = [
+            {
+                "name":"Mary",
+                "relationship":"mom",
+                "phone":"712 434 2348"
+            },
+            {
+                "name":"Jerry",
+                "relationship":"dad",
+                "phone":"712 434 2348"
+            }
+        ]
+
+    def test_view_url_exists_at_desired_location(self):
+        self.assertEqual(self.response.status_code,200)
+
+    def test_view_uses_correct_template(self):
+        self.assertTemplateUsed(self.response,'users/emergency_contact_form.html')
+
+    def test_emergency_contact_update(self):
+        EmergencyContact.objects.create(user=self.user,**self.emergency_contacts[0])
+        new_em_contacts = {
+            'emergencycontact_set-TOTAL_FORMS': '2',
+            'emergencycontact_set-INITIAL_FORMS': '1',
+            'emergencycontact_set-MIN_NUM_FORMS': '0',
+            'emergencycontact_set-MAX_NUM_FORMS': '2',
+            'emergencycontact_set-0-name': 'Mary Jane',
+            'emergencycontact_set-0-relationship': 'Mom',
+            'emergencycontact_set-0-phone': '712 526 2555',
+            'emergencycontact_set-0-user': self.user.id,
+            'emergencycontact_set-0-id': '1',
+            'emergencycontact_set-1-name': 'Larry Deems',
+            'emergencycontact_set-1-relationship': 'Brother',
+            'emergencycontact_set-1-phone': '715 8452 1235',
+            'emergencycontact_set-1-id': '',
+            'emergencycontact_set-1-user':self.user.id,
+        }
+        self.assertEqual(EmergencyContact.objects.filter(user=self.user).count(),1)
+        response = self.client.post(reverse('users:emergency_contact_update'),new_em_contacts)
+        self.assertEqual(response.status_code,302)
+        self.assertEqual(EmergencyContact.objects.filter(user=self.user).count(),2)
+
+
+
 class AddressCreateTest(BaseUserSetUp):
     def setUp(self):
         super().setUp()
@@ -174,7 +211,6 @@ class AddressCreateTest(BaseUserSetUp):
         self.assertTemplateUsed(self.response,'users/address_form.html')
 
     def test_address_create(self):
-        user_login = self.client.login(email=self.email,password=self.password)
         self.assertTrue(user_login)
         address = {
             "street1":"123 Main St",
