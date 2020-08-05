@@ -8,21 +8,6 @@ from .. import views
 from ..models import User,EmergencyContact,Address
 from ..forms import EmergencyContactInlineFormSet
 
-def instantiate_formset(formset_class, data,initial_forms=0,total_forms=0):
-    prefix = formset_class().prefix
-    formset_data = {}
-    for i, form_data in enumerate(data):
-        for name, value in form_data.items():
-            if isinstance(value, list):
-                for j, inner in enumerate(value):
-                    formset_data['{}-{}-{}_{}'.format(prefix, i, name, j)] = inner
-            else:
-                formset_data['{}-{}-{}'.format(prefix, i, name)] = value
-    formset_data['{}-TOTAL_FORMS'.format(prefix)] = total_forms
-    formset_data['{}-INITIAL_FORMS'.format(prefix)] = initial_forms
-    formset_data['{}-MAX_NUM_FORMS'.format(prefix)] = 2
-    return formset_data
-
 class SignUpViewTest(TestCase):
 
     def setUp(self):
@@ -198,29 +183,42 @@ class EmergencyContactUpdateTest(BaseUserSetUp):
         self.assertEqual(EmergencyContact.objects.filter(user=self.user).count(),2)
 
 
-
-class AddressCreateTest(BaseUserSetUp):
+class AddressCreateOrUpdateTest(BaseUserSetUp):
     def setUp(self):
         super().setUp()
-        self.response = self.client.get(reverse('users:address'))
-
-    def test_view_url_exists_at_desired_location(self):
-        self.assertEqual(self.response.status_code,200)
-
-    def test_view_uses_correct_template(self):
-        self.assertTemplateUsed(self.response,'users/address_form.html')
-
-    def test_address_create(self):
-        self.assertTrue(user_login)
-        address = {
+        self.current_address = {
             "street1":"123 Main St",
-            "stree2":"",
+            "street2":"",
             "city":"San Diego",
             "state":"CA",
             "zip":"94103"
         }
-        response = self.client.post(reverse('users:address'),address)
+        self.new_address = {
+            "street1":"123 Main St",
+            "street2":"Apt 1",
+            "city":"San Diego",
+            "state":"CA",
+            "zip":"94103"
+        }
+        self.user_login = self.client.login(email=self.email,password=self.password)
+        self.assertTrue(self.user_login)
+
+    def test_view_url_exists_at_desired_location(self):
+        response = self.client.get(reverse('users:address'))
+        self.assertEqual(response.status_code,200)
+
+    def test_view_uses_correct_template(self):
+        response = self.client.get(reverse('users:address'))
+        self.assertTemplateUsed(response,'users/address_form.html')
+
+    def test_address_create(self):
+        response = self.client.post(reverse('users:address'),self.current_address)
         self.assertEqual(response.status_code,302)
         self.assertEqual(self.user.address_set.count(),1)
 
-
+    def test_address_update(self):
+        Address.objects.create(user=self.user,**self.current_address)
+        self.assertEqual(self.user.address_set.count(),1)
+        response = self.client.post(reverse('users:address'),self.new_address)
+        self.assertEqual(response.status_code,302)
+        self.assertEqual(self.user.address_set.count(),1)
