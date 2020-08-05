@@ -5,10 +5,11 @@ from django.contrib.auth.views import LoginView
 from django.contrib.auth import logout,login,authenticate
 from django.views.generic.edit import UpdateView,CreateView
 from django.contrib.auth import views as auth_views
+from django.views.generic.list import MultipleObjectMixin
 
 from .forms import CustomUserCreationForm
 from .models import EmergencyContact,Address,User
-from .forms import EmergencyContactForm,EmergencyContactFormSet
+from .forms import EmergencyContactForm,EmergencyContactFormSet,EmergencyContactInlineFormSet
 
 
 # Create your views here.
@@ -67,6 +68,9 @@ class ContactInformationUpdate(UpdateView):
     template_name = 'users/contact_information_form.html'
 
     def get_success_url(self):
+        if self.request.user.emergencycontact_set.exists():
+            return reverse('users:emergency_contact_update')
+
         return reverse_lazy('users:emergency_contact_create')
 
 class EmergencyContactCreate(CreateView):
@@ -100,22 +104,32 @@ class EmergencyContactUpdate(UpdateView):
     template_name = 'users/emergency_contact_form.html'
     form_class = EmergencyContactForm
 
+    def get_object(self):
+        return self.request.user
+
+    def get_queryset(self):
+        qs = EmergencyContact.objects.filter(user=self.get_object())
+        return qs
+
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['formset'] = EmergencyContactFormSet(queryset=EmergencyContact.objects.none())
+        context = {} #super().get_context_data(**kwargs)
+        formset = EmergencyContactInlineFormSet(instance=self.get_object())
+        context['formset'] = formset
         return context
 
     def post(self,request,*args,**kwargs):
-        formset = EmergencyContactFormSet(request.POST)
+        formset = EmergencyContactInlineFormSet(request.POST,instance=self.get_object())
         if formset.is_valid():
+            formset.save()
             return self.form_valid(formset)
+        return render(request,self.template_name,context={'formset':formset})
 
-    def form_valid(self,formset):
-        instances = formset.save(commit=False)
-        for instance in instances:
-            instance.user = self.request.user
-            instance.save()
-        return super().form_valid(formset)
+    #def form_valid(self,formset):
+    #    instances = formset.save(commit=False)
+    #    for instance in instances:
+    #        instance.user = self.request.user
+    #        instance.save()
+    #    return super().form_valid(formset)
 
     def get_success_url(self):
         return reverse_lazy('users:address')
