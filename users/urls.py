@@ -18,5 +18,5 @@ urlpatterns = [
     path('contact-information/<int:pk>/',views.ContactInformationUpdate.as_view(),name='contact_information'),
     path('emergency-contact-create/',views.EmergencyContactCreate.as_view(),name='emergency_contact_create'),
     path('emergency-contact-update/',views.EmergencyContactUpdate.as_view(),name='emergency_contact_update'),
-    path('address/',views.AddressCreate.as_view(),name='address'),
+    path('address/',views.AddressCreateOrUpdate.as_view(),name='address'),
 ]

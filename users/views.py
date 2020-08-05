@@ -8,8 +8,8 @@ from django.contrib.auth import views as auth_views
 from django.views.generic.list import MultipleObjectMixin
 
 from .forms import CustomUserCreationForm
-from .models import EmergencyContact,Address,User
 from .forms import EmergencyContactForm,EmergencyContactFormSet,EmergencyContactInlineFormSet
+from .models import EmergencyContact,Address,User
 
 
 # Create your views here.
@@ -134,14 +134,14 @@ class EmergencyContactUpdate(UpdateView):
     def get_success_url(self):
         return reverse_lazy('users:address')
 
-class AddressCreate(CreateView):
+class AddressCreateOrUpdate(UpdateView):
     model = Address
     template_name = 'users/address_form.html'
     fields = ["street1","street2","city","state","zip"]
 
+    def get_object(self):
+        obj,created = Address.objects.get_or_create(user=self.request.user)
+        return obj
+
     def get_success_url(self):
         return reverse_lazy('lifeguard:create')
-
-    def form_valid(self,form):
-        form.instance.user = self.request.user
-        return super().form_valid(form)
