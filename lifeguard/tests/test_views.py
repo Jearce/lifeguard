@@ -26,17 +26,8 @@ class HomeViewTest(TestCase):
 class LifeguardCreateTest(BaseUserSetUp):
     def setUp(self):
         super().setUp()
-        self.response = self.client.get(reverse('lifeguard:create'))
-
-    def test_view_url_exists_at_desired_location(self):
-        self.assertEqual(self.response.status_code,200)
-
-    def test_view_uses_correct_template(self):
-        self.assertTemplateUsed(self.response,'lifeguard/lifeguard_form.html')
-
-    def test_new_lifeguard_creation_and_wants_to_work(self):
-        user_login = self.client.login(email=self.email,password=self.password)
-        lifeguard_data = {
+        self.user_login = self.client.login(email=self.email,password=self.password)
+        self.lifeguard_data = {
             "already_certified":"N",
             "wants_to_work_for_company":"Y",
             "payment_agreement":True,
@@ -44,9 +35,34 @@ class LifeguardCreateTest(BaseUserSetUp):
             "no_refunds_agreement":True,
             "electronic_signature":"Larry Johnson",
         }
-        response = self.client.post(reverse('lifeguard:create'),lifeguard_data)
+
+    def test_view_url_exists_at_desired_location(self):
+        response = self.client.get(reverse('lifeguard:create'))
+        self.assertEqual(response.status_code,200)
+
+    def test_view_uses_correct_template(self):
+        response = self.client.get(reverse('lifeguard:create'))
+        self.assertTemplateUsed(response,'lifeguard/lifeguard_form.html')
+
+    def test_lifeguard_create(self):
+        response = self.client.post(reverse('lifeguard:create'),self.lifeguard_data)
         self.assertEqual(response.status_code,302)
         self.assertRedirects(response,reverse('lifeguard:classes'))
+
+    def test_lifeguard_update(self):
+        #user is already a lifeguard
+        Lifeguard.objects.create(user=self.user,**self.lifeguard_data)
+
+        updated_lifeguard = self.lifeguard_data.copy()
+        updated_lifeguard["already_certified"]  = "Y"
+
+        response = self.client.post(reverse('lifeguard:create'),updated_lifeguard)
+        self.assertEqual(Lifeguard.objects.count(),1)
+        self.assertEqual(response.status_code,302)
+        self.assertRedirects(response,reverse('lifeguard:classes'))
+
+
+
 
 class LifeguardClassesTest(BaseUserSetUp):
     def setUp(self):
