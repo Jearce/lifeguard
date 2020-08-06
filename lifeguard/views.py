@@ -11,7 +11,7 @@ from .models import Lifeguard,Enroll,LifeguardClass
 class HomeView(TemplateView):
     template_name = 'home.html'
 
-class LifeguardCreate(CreateView):
+class LifeguardCreateOrUpdate(UpdateView):
     model = Lifeguard
     template_name = 'lifeguard/lifeguard_form.html'
     fields = [
@@ -23,9 +23,17 @@ class LifeguardCreate(CreateView):
         'electronic_signature'
     ]
 
-    def form_valid(self,form):
-        form.instance.user = self.request.user
-        return super().form_valid(form)
+    def get_object(self):
+        print(self.request.user)
+        try:
+            obj = Lifeguard.objects.get(user=self.request.user)
+        except Lifeguard.DoesNotExist:
+            obj = Lifeguard(user=self.request.user)
+        return obj
+
+    #def form_valid(self,form):
+    #    form.instance.user = self.request.user
+    #    return super().form_valid(form)
 
     def get_success_url(self):
         return reverse_lazy('lifeguard:classes')
