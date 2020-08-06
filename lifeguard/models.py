@@ -8,7 +8,7 @@ class Lifeguard(models.Model):
         ('N',"I will be working elsewhere (NOT eligible for discount)"),
         ("O","Other")
     ]
-    user = models.ForeignKey(User,on_delete=models.CASCADE)
+    user = models.OneToOneField(User,on_delete=models.CASCADE)
     already_certified = models.CharField("Are you a certified lifeguard?",choices=[("Y","Yes"),("N","No")],max_length=1)
     wants_to_work_for_company = models.CharField("Do you plan to work for Gulf Coast Aquatics?",choices=WORK_CHOICES,max_length=1)
     payment_agreement = models.BooleanField("I understand and agree")
