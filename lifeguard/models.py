@@ -15,9 +15,9 @@ class Lifeguard(models.Model):
     payment_agreement_signature = models.CharField("Your name",max_length=255)
     no_refunds_agreement = models.BooleanField("I agree")
     electronic_signature = models.CharField("Electronic signature",max_length=255)
-    last_certified = models.DateField(blank=True,null=True)
-    certification = models.ImageField(blank=True,null=True)
-    online_portion_complete = models.BooleanField(default=True)
+    last_certified = models.DateField(blank=False,null=True)
+    certification = models.FileField(blank=False,null=True)
+    online_portion_complete = models.BooleanField(default=False)
 
     def __str__(self):
         return self.user.first_name + " " + self.user.last_name
