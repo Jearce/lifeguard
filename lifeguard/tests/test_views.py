@@ -61,8 +61,34 @@ class LifeguardCreateTest(BaseUserSetUp):
         self.assertEqual(response.status_code,302)
         self.assertRedirects(response,reverse('lifeguard:classes'))
 
+    def test_correct_redirect_for_already_certified_lifeguard(self):
+        updated_lifeguard = self.lifeguard_data.copy()
+        updated_lifeguard["already_certified"]  = "Y"
+        response = self.client.post(reverse('lifeguard:create'),self.lifeguard_data)
+        self.assertEqual(response.status_code,302)
+        self.assertRedirects(response,reverse('lifeguard:already_certified'))
 
+class LifeguardAlreadyCertifiedTest(BaseUserSetUp):
+    def setUp(self):
+        super().setUp()
+        self.user_login = self.client.login(email=self.email,password=self.password)
+        self.lifeguard_data = {
+            "already_certified":"Y",
+            "wants_to_work_for_company":"Y",
+            "payment_agreement":True,
+            "payment_agreement_signature":"Larry Johnson",
+            "no_refunds_agreement":True,
+            "electronic_signature":"Larry Johnson",
+        }
+        Lifeguard.objects.create(user=self.user,**self.lifeguard_data)
 
+    def test_view_url_exists_at_desired_location(self):
+        response = self.client.get(reverse('lifeguard:already_certified'))
+        self.assertEqual(response.status_code,200)
+
+    def test_view_uses_correct_template(self):
+        response = self.client.get(reverse('lifeguard:already_certified'))
+        self.assertTemplateUsed(response,'lifeguard/already_certified_form.html')
 
 class LifeguardClassesTest(BaseUserSetUp):
     def setUp(self):
