@@ -6,6 +6,7 @@ from . import views
 app_name = 'lifeguard'
 urlpatterns = [
     path('create/',views.LifeguardCreateOrUpdate.as_view(),name='create'),
+    path('already-certified/',views.LifeguardCertified.as_view(),name='already_certified'),
     path('classes/',views.LifeguardClasses.as_view(),name='classes'),
     path('classes/<int:pk>/',views.LifeguardClasses.as_view(),name='classes')
 ]

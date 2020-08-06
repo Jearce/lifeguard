@@ -6,6 +6,7 @@ from django.urls import reverse_lazy
 
 from users.models import User
 from .models import Lifeguard,Enroll,LifeguardClass
+from .forms import LifeguardCertifiedForm
 
 # Create your views here.
 class HomeView(TemplateView):
@@ -24,7 +25,6 @@ class LifeguardCreateOrUpdate(UpdateView):
     ]
 
     def get_object(self):
-        print(self.request.user)
         try:
             obj = Lifeguard.objects.get(user=self.request.user)
         except Lifeguard.DoesNotExist:
@@ -34,6 +34,20 @@ class LifeguardCreateOrUpdate(UpdateView):
     #def form_valid(self,form):
     #    form.instance.user = self.request.user
     #    return super().form_valid(form)
+
+    def get_success_url(self):
+        lifeguard = self.request.user.lifeguard
+        if lifeguard.already_certified == "Y":
+            return reverse_lazy('lifeguard:already_certified')
+
+        return reverse_lazy('lifeguard:classes')
+
+class LifeguardCertified(UpdateView):
+    template_name = "lifeguard/already_certified_form.html"
+    form_class = LifeguardCertifiedForm
+
+    def get_object(self):
+        return self.request.user.lifeguard
 
     def get_success_url(self):
         return reverse_lazy('lifeguard:classes')
