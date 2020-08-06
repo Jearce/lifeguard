@@ -124,6 +124,8 @@ USE_TZ = True
 CRISPY_TEMPLATE_PACK = "bootstrap4"
 
 STATIC_URL = '/static/'
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR,'media')
 
 AUTH_USER_MODEL = 'users.User'
 
