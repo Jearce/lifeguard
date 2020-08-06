@@ -27,7 +27,7 @@ class EmergencyContact(models.Model):
         return self.name
 
 class Address(models.Model):
-    user = models.ForeignKey(User,on_delete=models.CASCADE,default='')
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
     street1 = models.CharField(max_length=255)
     street2 = models.CharField(max_length=255,blank=True,null=True)
     city = models.CharField(max_length=255)
