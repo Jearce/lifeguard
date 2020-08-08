@@ -42,7 +42,7 @@ class LifeguardCreateOrUpdate(UpdateView):
             return reverse_lazy('lifeguard:already_certified')
 
         elif lifeguard.wants_to_work_for_company:
-            return reverse_lazy('employee:registration')
+            return reverse_lazy('employee:create')
 
         return reverse_lazy('lifeguard:classes')
 
