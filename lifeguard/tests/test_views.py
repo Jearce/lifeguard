@@ -48,7 +48,7 @@ class LifeguardCreateTest(BaseUserSetUp):
     def test_lifeguard_create(self):
         response = self.client.post(reverse('lifeguard:create'),self.lifeguard_data)
         self.assertEqual(response.status_code,302)
-        self.assertRedirects(response,reverse('employee:registration'))
+        self.assertRedirects(response,reverse('employee:create'))
 
     def test_lifeguard_update(self):
         #user is already a lifeguard
@@ -91,7 +91,7 @@ class LifeguardAlreadyCertifiedTest(BaseUserSetUp):
         self.assertTemplateUsed(response,'lifeguard/already_certified_form.html')
 
     def test_already_certified(self):
-        self.fails('Test for already certified lifeguard data.')
+        self.fail('Test for already certified lifeguard data.')
 
 class LifeguardClassesTest(BaseUserSetUp):
     def setUp(self):
