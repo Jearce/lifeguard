@@ -37,8 +37,12 @@ class LifeguardCreateOrUpdate(UpdateView):
 
     def get_success_url(self):
         lifeguard = self.request.user.lifeguard
+
         if lifeguard.already_certified == "Y":
             return reverse_lazy('lifeguard:already_certified')
+
+        elif lifeguard.wants_to_work_for_company:
+            return reverse_lazy('employee:registration')
 
         return reverse_lazy('lifeguard:classes')
 
@@ -50,6 +54,9 @@ class LifeguardCertified(UpdateView):
         return self.request.user.lifeguard
 
     def get_success_url(self):
+        lifeguard = self.request.user.lifeguard
+        if lifeguard.wants_to_work_for_company:
+            return reverse_lazy('employee:registration')
         return reverse_lazy('lifeguard:classes')
 
 class LifeguardClasses(View):
