@@ -14,7 +14,7 @@ class Employee(models.Model):
     who_referred_you = models.TextField("Who referred you to us?")
     transpotation = models.ForeignKey(Transportation,on_delete=models.CASCADE)
     CHOICES = [('L','Lifeguard'),('S','Supervisor'),('M','Manager')]
-    applied_position = models.CharField(CHOICES,max_length=1)
+    applied_position = models.CharField(choices=CHOICES,max_length=1)
     work_hours_desired = models.PositiveIntegerField()
     desired_pay_rate = models.DecimalField(max_digits=6, decimal_places=2)
     work_authorization = models.CharField(max_length=255)
