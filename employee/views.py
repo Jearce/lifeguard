@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.urls import reverse_lazy
 from django.views.generic.edit import UpdateView
 from django.views.generic import TemplateView
 
@@ -14,7 +15,10 @@ class EmployeeCreateOrUpdate(UpdateView):
     def get_object(self):
         user = self.request.user
         try:
-            obj = Employee.objects.get(pk=user)
+            obj = Employee.objects.get(user=user)
         except Employee.DoesNotExist:
-            obj = Employee(user)
+            obj = Employee(user=user)
         return obj
+
+    def get_success_url(self):
+        return reverse_lazy('employee:education')
