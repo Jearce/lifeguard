@@ -1,3 +1,5 @@
+import os
+
 from django.urls import resolve
 from django.urls import reverse
 from django.test import TestCase
@@ -28,9 +30,25 @@ class LifeguardCreateTest(BaseUserSetUp):
     def setUp(self):
         super().setUp()
         self.user_login = self.client.login(email=self.email,password=self.password)
-        self.lifeguard_data = {
+        self.new_working_lifeguard = {
             "already_certified":"N",#new lifeguard
             "wants_to_work_for_company":"Y",#should be redirected to employee register page
+            "payment_agreement":True,
+            "payment_agreement_signature":"Larry Johnson",
+            "no_refunds_agreement":True,
+            "electronic_signature":"Larry Johnson",
+        }
+        self.certified_working_lifeguard =  {
+            "already_certified":"Y",
+            "wants_to_work_for_company":"Y",
+            "payment_agreement":True,
+            "payment_agreement_signature":"Larry Johnson",
+            "no_refunds_agreement":True,
+            "electronic_signature":"Larry Johnson",
+        }
+        self.new_lifeguard = {
+            "already_certified":"N",
+            "wants_to_work_for_company":"N",
             "payment_agreement":True,
             "payment_agreement_signature":"Larry Johnson",
             "no_refunds_agreement":True,
@@ -46,33 +64,42 @@ class LifeguardCreateTest(BaseUserSetUp):
         self.assertTemplateUsed(response,'lifeguard/lifeguard_form.html')
 
     def test_lifeguard_create(self):
-        response = self.client.post(reverse('lifeguard:create'),self.lifeguard_data)
+        response = self.client.post(reverse('lifeguard:create'),self.new_working_lifeguard)
         self.assertEqual(response.status_code,302)
-        self.assertRedirects(response,reverse('employee:create'))
 
     def test_lifeguard_update(self):
         #user is already a lifeguard
-        Lifeguard.objects.create(user=self.user,**self.lifeguard_data)
+        Lifeguard.objects.create(user=self.user,**self.new_working_lifeguard)
 
-        updated_lifeguard = self.lifeguard_data.copy()
-        updated_lifeguard["already_certified"]  = "Y"
-
-        response = self.client.post(reverse('lifeguard:create'),updated_lifeguard)
+        response = self.client.post(reverse('lifeguard:create'),self.certified_working_lifeguard)
         self.assertEqual(Lifeguard.objects.count(),1)
         self.assertEqual(response.status_code,302)
 
-    def test_correct_redirect_for_already_certified_lifeguard(self):
-        updated_lifeguard = self.lifeguard_data.copy()
-        updated_lifeguard["already_certified"]  = "Y"
-        response = self.client.post(reverse('lifeguard:create'),updated_lifeguard)
-        self.assertEqual(response.status_code,302)
+    def test_redirect_for_already_certified_lifeguard(self):
+        response = self.client.post(reverse('lifeguard:create'),self.certified_working_lifeguard)
         self.assertRedirects(response,reverse('lifeguard:already_certified'))
+
+    def test_redirect_for_new_lifeguard_that_wants_to_work(self):
+        response = self.client.post(reverse('lifeguard:create'),self.new_working_lifeguard)
+        self.assertRedirects(response,reverse('employee:create'))
+
+    def test_redirect_for_new_lifeguard(self):
+        response = self.client.post(reverse('lifeguard:create'),self.new_lifeguard)
+        self.assertRedirects(response,reverse('lifeguard:classes'))
 
 class LifeguardAlreadyCertifiedTest(BaseUserSetUp):
     def setUp(self):
         super().setUp()
         self.user_login = self.client.login(email=self.email,password=self.password)
-        self.lifeguard_data = {
+        self.certified_lifeguard = {
+            "already_certified":"Y",
+            "wants_to_work_for_company":"N",
+            "payment_agreement":True,
+            "payment_agreement_signature":"Larry Johnson",
+            "no_refunds_agreement":True,
+            "electronic_signature":"Larry Johnson",
+        }
+        self.working_certified_lifeguard = {
             "already_certified":"Y",
             "wants_to_work_for_company":"Y",
             "payment_agreement":True,
@@ -80,18 +107,40 @@ class LifeguardAlreadyCertifiedTest(BaseUserSetUp):
             "no_refunds_agreement":True,
             "electronic_signature":"Larry Johnson",
         }
-        Lifeguard.objects.create(user=self.user,**self.lifeguard_data)
-
     def test_view_url_exists_at_desired_location(self):
+        self.create_lifeguard(self.certified_lifeguard)
         response = self.client.get(reverse('lifeguard:already_certified'))
         self.assertEqual(response.status_code,200)
 
     def test_view_uses_correct_template(self):
+        self.create_lifeguard(self.certified_lifeguard)
         response = self.client.get(reverse('lifeguard:already_certified'))
         self.assertTemplateUsed(response,'lifeguard/already_certified_form.html')
 
     def test_already_certified(self):
-        self.fail('Test for already certified lifeguard data.')
+        response = self.submit_certificate('lifeguard/tests/certificate.pdf',self.certified_lifeguard)
+        self.assertEqual(response.status_code,302)
+
+    def test_redirect_for_certified_lifeguard(self):
+        response = self.submit_certificate('lifeguard/tests/certificate.pdf',self.certified_lifeguard)
+        self.assertRedirects(response,reverse('lifeguard:classes'))
+
+    def test_redirect_for_working_certified_lifeguard(self):
+        response = self.submit_certificate('lifeguard/tests/certificate.pdf',self.working_certified_lifeguard)
+        self.assertRedirects(response,reverse('employee:create'))
+
+
+    def create_lifeguard(self,data):
+        Lifeguard.objects.create(user=self.user,**data)
+
+    def submit_certificate(self,path_to_certificate,lifeguard_data):
+        self.create_lifeguard(lifeguard_data)
+        with open(path_to_certificate,'rb') as pdf:
+            response = self.client.post(reverse('lifeguard:already_certified'),{'last_certified':'2000-06-09','certification':pdf})
+        return response
+
+
+
 
 class LifeguardClassesTest(BaseUserSetUp):
     def setUp(self):
