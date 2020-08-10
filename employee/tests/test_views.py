@@ -12,6 +12,8 @@ class EmployeeCreateOrUpdateTest(TestCase):
         self.email = 'test@example.com'
         self.password = 'asdhf33!'
         self.user = User.objects.create_user(email=self.email, password=self.password)
+        self.client.login(email=self.email,password=self.password)
+
         self.new_lifeguard = {
             "already_certified":"N",#new lifeguard
             "wants_to_work_for_company":"Y",#should be redirected to employee register page
@@ -23,6 +25,7 @@ class EmployeeCreateOrUpdateTest(TestCase):
 
     def test_view_url_exists_at_desired_location(self):
         response = self.client.get(reverse('employee:create'))
+        self.assertEqual(response.status_code,200)
 
     def test_view_uses_correct_template(self):
         response = self.client.get(reverse('employee:create'))
