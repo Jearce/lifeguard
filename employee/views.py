@@ -22,3 +22,6 @@ class EmployeeCreateOrUpdate(UpdateView):
 
     def get_success_url(self):
         return reverse_lazy('employee:education')
+
+class EmployeeEducation(TemplateView):
+    template_name = 'employee/education_form.html'
