@@ -11,6 +11,7 @@ from selenium.webdriver.common.keys import Keys
 
 from users.models import User
 from lifeguard.models import LifeguardClass,Enroll
+from employee.models import Transportation
 
 class BaseTestFixture(LiveServerTestCase):
     def setUp(self):
@@ -52,6 +53,7 @@ class BaseTestFixture(LiveServerTestCase):
             [LifeguardClass(**class1),
              LifeguardClass(**class2)]
         )
+        Transportation.objects.create(name="Car",description="I will drive my self.")
 
 
     def tearDown(self):
@@ -116,6 +118,28 @@ class BaseTestFixture(LiveServerTestCase):
         self.assertIn('lifeguard/create/',self.browser.current_url)
 
     def fill_employee_form(self):
+        employee_data = {
+            "home_phone":"712 634 3328",
+            "who_referred_you":"A friend.",
+            "transportation":"Car",
+            "applied_position_1":"click",
+            "start_date":"8/8/2020",
+            "end_date":"12/8/2021",
+            "work_hours_desired":"40",
+            "desired_pay_rate":"17.50",
+            "pool_preference":"Village Pool",
+            "subdivision":"My subdivision 122",
+            "work_authorization_1":"click",
+            "charged_or_arrested_2":"click",
+            "has_felony_2":"click",
+            "contract_employment_agreement":"click",
+            "electronic_signature":"Larry Johnson",
+        }
+        for key,value in employee_data.items():
+            if value == 'click':
+                self.browser.find_element_by_id(f'id_{key}').click()
+            else:
+                self.browser.find_element_by_id(f'id_{key}').send_keys(value)
         self.browser.find_element_by_id('employee_form').submit()
         self.assertIn('employee/education/',self.browser.current_url)
 
@@ -136,35 +160,36 @@ class BaseTestFixture(LiveServerTestCase):
         self.browser.find_element_by_id('id_no_refunds_agreement').send_keys(no_refunds_agreement)
         self.browser.find_element_by_id('id_electronic_signature').send_keys(electronic_signature)
         self.browser.find_element_by_id('lifeguard_form').submit()
+        self.assertIn('employee/create/',self.browser.current_url)
 
-class SignUpTest(BaseTestFixture):
-
-    def test_sign_up_and_registers_as_new_lifeguard(self):
+    def start_at_home_page(self):
         #user lands on homepage
         self.browser.get(self.live_server_url)
         self.assertIn('Home',self.browser.title)
 
-        #signs up and is taken to dashboard
-        self.sign_up()
+    def from_dashboard_click(self,element_id):
+        self.browser.find_element_by_id(element_id).click()
 
-        #clicks on LG registration link
-        self.browser.find_element_by_id('id_lifeguard_registration').click()
-        #is taken to the contact information form
+    def start_lifeguard_registration(self,element_id):
+        self.browser.find_element_by_id(element_id).click()
         self.assertIn('contact-information/',self.browser.current_url)
-        #and fills out form
+
+
+
+
+
+
+class SignUpTest(BaseTestFixture):
+
+    def test_sign_up_register_as_new_lifeguard_and_employee(self):
+        #user lands on homepage
+        self.start_at_home_page()
+        self.sign_up()
+        self.start_lifeguard_registration('id_lifeguard_registration')
         self.fill_out_contact_information()
-
-        #proceeds to emergency contact form
-        #and fills out form
         self.fill_out_emergency_contact()
-
-        #next fill out address form
         self.fill_out_address_form()
-
-        #proceeds to LG form and fills form
         self.register_new_lifeguard_who_wants_to_work()
-        #is taken to employee registration page
-        self.assertIn('employee/create/',self.browser.current_url)
         self.fill_employee_form()
 
         #picks a class to attend
