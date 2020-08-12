@@ -17,5 +17,18 @@ class EmergencyContactForm(ModelForm):
         model = EmergencyContact
         fields = ['name','relationship','phone']
 
-EmergencyContactFormSet = modelformset_factory(EmergencyContact,fields=('name','relationship','phone'),extra=2,max_num=2)
-EmergencyContactInlineFormSet = inlineformset_factory(User,EmergencyContact,fields=('name','relationship','phone'),extra=2,max_num=2,can_order=False)
+EmergencyContactFormSet = modelformset_factory(
+    EmergencyContact,
+    fields=('name','relationship','phone'),
+    extra=2,
+    max_num=2
+)
+
+EmergencyContactInlineFormSet = inlineformset_factory(
+    User,
+    EmergencyContact,
+    fields=('name','relationship','phone'),
+    extra=2,
+    max_num=2,
+    can_order=False
+)
