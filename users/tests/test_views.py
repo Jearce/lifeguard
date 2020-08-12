@@ -8,6 +8,10 @@ from .. import views
 from ..models import User,EmergencyContact,Address
 from ..forms import EmergencyContactInlineFormSet
 
+from utils.test.helpers import InlineFormsetManagmentFactory
+
+
+
 class SignUpViewTest(TestCase):
 
     def setUp(self):
@@ -119,6 +123,39 @@ class EmergencyContactCreateOrUpdateTest(BaseUserSetUp):
                 "phone":"712 434 2348"
             }
         ]
+        self.emergency_contacts_to_create = [
+            {
+                "name":"Mary Jane",
+                "relationship":"Mom",
+                "phone":"713 526 2555",
+                "user":self.user.id,
+                "id":''
+            },
+            {
+                "name":"Larry Deems",
+                "relationship":"Brother",
+                "phone":"713 343 2555",
+                "user":self.user.id,
+                "id":''
+            }
+        ]
+        self.emergency_contacts_to_update = [
+            {
+                "name":"Mary Jane",
+                "relationship":"Mom",
+                "phone":"713 888 2555",
+                "user":self.user.id,
+                "id":'1'
+            },
+            {
+                "name":"Larry Deems",
+                "relationship":"Brother",
+                "phone":"713 343 2555",
+                "user":self.user.id,
+                "id":''
+            }
+        ]
+
 
     def test_view_url_exists_at_desired_location(self):
         response = self.client.get(reverse('users:emergency_contact'))
@@ -129,24 +166,17 @@ class EmergencyContactCreateOrUpdateTest(BaseUserSetUp):
         self.assertTemplateUsed(response,'users/emergency_contact_form.html')
 
     def test_emergency_contact_update(self):
-        new_em_contacts = {
-            'emergencycontact_set-TOTAL_FORMS': '2',
-            'emergencycontact_set-INITIAL_FORMS': '1',
-            'emergencycontact_set-MIN_NUM_FORMS': '0',
-            'emergencycontact_set-MAX_NUM_FORMS': '2',
-            'emergencycontact_set-0-name': 'Mary Jane',
-            'emergencycontact_set-0-relationship': 'Mom',
-            'emergencycontact_set-0-phone': '712 526 2555',
-            'emergencycontact_set-0-user': self.user.id,
-            'emergencycontact_set-0-id': '1',
-            'emergencycontact_set-1-name': 'Larry Deems',
-            'emergencycontact_set-1-relationship': 'Brother',
-            'emergencycontact_set-1-phone': '715 8452 1235',
-            'emergencycontact_set-1-id': '',
-            'emergencycontact_set-1-user':self.user.id,
-        }
+        management_factory = InlineFormsetManagmentFactory(
+            EmergencyContactInlineFormSet,
+            extra=2,
+            initial=1,
+            min_num=0,
+            max_num=2,
+            records=self.emergency_contacts_to_update
+        )
+        new_em_contacts = management_factory.create_management_form()
 
-        #user already created emergency contact (em)
+        #user already created emergency contact
         EmergencyContact.objects.create(user=self.user,**self.emergency_contacts[0])
         self.assertEqual(EmergencyContact.objects.filter(user=self.user).count(),1)
 
@@ -156,22 +186,17 @@ class EmergencyContactCreateOrUpdateTest(BaseUserSetUp):
         self.assertEqual(EmergencyContact.objects.filter(user=self.user).count(),2)
 
     def test_emergency_contact_create(self):
-        em_contacts = {
-            'emergencycontact_set-TOTAL_FORMS': '2',
-            'emergencycontact_set-INITIAL_FORMS': '0',
-            'emergencycontact_set-MIN_NUM_FORMS': '0',
-            'emergencycontact_set-MAX_NUM_FORMS': '2',
-            'emergencycontact_set-0-name': 'Mary Jane',
-            'emergencycontact_set-0-relationship': 'Mom',
-            'emergencycontact_set-0-phone': '712 526 2555',
-            'emergencycontact_set-0-user': self.user.id,
-            'emergencycontact_set-0-id': '',
-            'emergencycontact_set-1-name': 'Larry Deems',
-            'emergencycontact_set-1-relationship': 'Brother',
-            'emergencycontact_set-1-phone': '715 8452 1235',
-            'emergencycontact_set-1-id': '',
-            'emergencycontact_set-1-user':self.user.id,
-        }
+        #Emergency Contact
+        management_factory = InlineFormsetManagmentFactory(
+            EmergencyContactInlineFormSet,
+            extra=2,
+            initial=0,
+            min_num=0,
+            max_num=2,
+            records=self.emergency_contacts_to_create
+        )
+
+        em_contacts = management_factory.create_management_form()
         response = self.client.post(reverse('users:emergency_contact'),em_contacts)
         self.assertEqual(response.status_code,302)
         self.assertEqual(EmergencyContact.objects.filter(user=self.user).count(),2)
