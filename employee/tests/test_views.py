@@ -159,3 +159,17 @@ class EmployeeEducationTest(CommonSetUp):
         self.assertEqual(response.status_code,302)
         self.assertRedirects(response,reverse('employee:job_history'))
 
+class JobHistoryTest(CommonSetUp):
+    def test_view_url_exists_at_desired_location(self):
+        response = self.client.get(reverse('employee:job_history'))
+        self.assertEqual(response.status_code,200)
+
+    def test_view_uses_correct_template(self):
+        response = self.client.get(reverse('employee:job_history'))
+        self.assertTemplateUsed(response,'employee/job_history_form.html')
+
+    def test_create_job_history(self):
+        data = {}
+        response = self.client.post(reverse('employee:job_history'),data)
+        self.assertEqual(response.status_code,302)
+
