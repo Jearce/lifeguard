@@ -153,6 +153,7 @@ class BaseTestFixture(LiveServerTestCase):
             else:
                 self.browser.find_element_by_id(f"{prefix}-0-{key}").send_keys(value)
         self.browser.find_element_by_id('education_form').submit()
+        self.assertIn('employee/job-history/',self.browser.current_url)
 
     def start_at_home_page(self):
         #user lands on homepage
