@@ -136,6 +136,7 @@ class EmployeeEducationTest(CommonSetUp):
 
         self.assertEqual(EmployeeEducation.objects.count(),1)
         self.assertEqual(response.status_code,302)
+        self.assertRedirects(response,reverse('employee:job_history'))
 
     def test_update_employee_education(self):
 
@@ -156,3 +157,5 @@ class EmployeeEducationTest(CommonSetUp):
 
         self.assertEqual(EmployeeEducation.objects.count(),2)
         self.assertEqual(response.status_code,302)
+        self.assertRedirects(response,reverse('employee:job_history'))
+
