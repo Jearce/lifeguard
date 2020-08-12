@@ -74,3 +74,14 @@ class EmployeeEducation(models.Model):
     date_leaving_to_college = models.DateField(
         "If leaving to college in the Fall when will you leave?"
     )
+
+class JobHistory(models.Model):
+    employee = models.ForeignKey(Employee,on_delete=models.CASCADE)
+    previous_employer = models.CharField(max_length=255)
+    job_title = models.CharField(max_length=255)
+    salary = models.DecimalField(max_digits=6, decimal_places=2)
+    start_date = models.DateField("Starting date of employement")
+    end_date = models.DateField("Ending date of employement?")
+    reason_for_leaving = models.TextField()
+
+
