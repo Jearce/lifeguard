@@ -28,8 +28,9 @@ class EducationForm(ModelForm):
         exclude = ('employee',)
 
 class JobHistoryForm(ModelForm):
-    model = JobHistory
-    exclude = ('employee',)
+    class Meta:
+        model = JobHistory
+        exclude = ('employee',)
 
 EducationInlineFormset = inlineformset_factory(
     Employee,
