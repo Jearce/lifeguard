@@ -4,7 +4,7 @@ from django.forms import (ModelForm,
                           CheckboxSelectMultiple,
                           inlineformset_factory)
 
-from .models import Employee,EmployeeEducation
+from .models import Employee,EmployeeEducation,JobHistory
 
 
 BOOLEAN_CHOICES = [(True,"Yes"),(False,"No")]
@@ -27,10 +27,24 @@ class EducationForm(ModelForm):
         model = EmployeeEducation
         exclude = ('employee',)
 
+class JobHistoryForm(ModelForm):
+    model = JobHistory
+    exclude = ('employee',)
+
 EducationInlineFormset = inlineformset_factory(
     Employee,
     EmployeeEducation,
     form=EducationForm,
+    extra=2,
+    max_num=2,
+    can_delete=False,
+    can_order=False
+)
+
+JobHistoryInlineFormset = inlineformset_factory(
+    Employee,
+    JobHistory,
+    form=JobHistoryForm,
     extra=2,
     max_num=2,
     can_delete=False,
