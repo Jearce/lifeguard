@@ -57,3 +57,20 @@ class Employee(models.Model):
 
     def __str__(self):
         return self.user.email
+
+class EmployeeEducation(models.Model):
+    employee = models.ForeignKey(Employee,on_delete=models.CASCADE)
+    school_name = models.CharField(
+        "Name of school",
+        max_length=255
+    )
+    grade_year = models.CharField(
+        "What grade/year are you",
+        max_length=255
+    )
+    attending_college =  models.BooleanField(
+        "Are you attending college? Or will you attend college this fall?"
+    )
+    date_leaving_to_college = models.DateField(
+        "If leaving to college in the Fall when will you leave?"
+    )
