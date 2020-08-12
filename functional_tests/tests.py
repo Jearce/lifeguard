@@ -55,7 +55,6 @@ class BaseTestFixture(LiveServerTestCase):
         )
         Transportation.objects.create(name="Car",description="I will drive my self.")
 
-
     def tearDown(self):
         self.browser.quit()
 
@@ -93,7 +92,6 @@ class BaseTestFixture(LiveServerTestCase):
         self.browser.find_element_by_id('id_dob').send_keys(dob)
         self.browser.find_element_by_id('contact_information_form').submit()
         self.assertIn('emergency-contact/',self.browser.current_url)
-
 
     def fill_out_emergency_contact(self):
         name = self.emergency_contact["name"]
@@ -143,6 +141,8 @@ class BaseTestFixture(LiveServerTestCase):
         self.browser.find_element_by_id('employee_form').submit()
         self.assertIn('employee/education/',self.browser.current_url)
 
+    def fill_employee_education_form(self):
+        self.browser.find_element_by_id('education_form').submit()
 
     def register_new_lifeguard_who_wants_to_work(self):
         #user is a new lifeguard
@@ -174,11 +174,6 @@ class BaseTestFixture(LiveServerTestCase):
         self.browser.find_element_by_id(element_id).click()
         self.assertIn('contact-information/',self.browser.current_url)
 
-
-
-
-
-
 class SignUpTest(BaseTestFixture):
 
     def test_sign_up_register_as_new_lifeguard_and_employee(self):
@@ -191,6 +186,7 @@ class SignUpTest(BaseTestFixture):
         self.fill_out_address_form()
         self.register_new_lifeguard_who_wants_to_work()
         self.fill_employee_form()
+        self.fill_employee_education_form()
 
         #picks a class to attend
         #enrollment_btns = self.browser.find_elements_by_name('enroll-btn')
