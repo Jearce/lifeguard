@@ -51,6 +51,7 @@ class EmployeeEducation(UpdateView):
         return render(request,self.template_name,context={'formset':formset})
 
     def get_success_url(self):
-        return reverse_lazy('employee:education')
+        return reverse_lazy('employee:job_history')
 
-
+class JobHistory(TemplateView):
+    template_name = 'employee/job_history_form.html'
