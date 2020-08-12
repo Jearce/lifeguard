@@ -23,6 +23,7 @@ class EmployeeCreateOrUpdate(UpdateView):
     def get_success_url(self):
         return reverse_lazy('employee:education')
 
+
 class EmployeeEducation(UpdateView):
     model = EmployeeEducation
     template_name = 'employee/education_form.html'
@@ -53,5 +54,6 @@ class EmployeeEducation(UpdateView):
     def get_success_url(self):
         return reverse_lazy('employee:job_history')
 
-class JobHistory(TemplateView):
+
+class JobHistory(UpdateView):
     template_name = 'employee/job_history_form.html'
