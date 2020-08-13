@@ -3,9 +3,30 @@ from django.urls import reverse_lazy
 from django.views.generic.edit import UpdateView
 from django.views.generic import TemplateView
 
-from .models import Employee,EmployeeEducation
+from .models import Employee,EmployeeEducation,JobHistory
 
-from .forms import EmployeeForm,EducationInlineFormset,EducationForm
+from .forms import EmployeeForm,EducationInlineFormset,EducationForm,JobHistoryForm,JobHistoryInlineFormset
+
+class InlineFormSetUpdateOrCreateViewMixin:
+    def get_object(self):
+        obj = self.parent_model.objects.get(user=self.request.user)
+        return obj
+
+    def get_context_data(self, **kwargs):
+        context = {}
+        formset = self.formset(instance=self.get_object())
+        context['formset'] = formset
+        return context
+
+    def post(self, request,*args,**kwargs):
+        formset = self.formset(
+            request.POST,
+            instance=self.get_object()
+        )
+        if formset.is_valid():
+            formset.save()
+            return self.form_valid(formset)
+        return render(request,self.template_name,context={'formset':formset})
 
 # Create your views here.
 class EmployeeCreateOrUpdate(UpdateView):
@@ -24,36 +45,20 @@ class EmployeeCreateOrUpdate(UpdateView):
         return reverse_lazy('employee:education')
 
 
-class EmployeeEducation(UpdateView):
+class EmployeeEducation(InlineFormSetUpdateOrCreateViewMixin,UpdateView):
     model = EmployeeEducation
     template_name = 'employee/education_form.html'
     form_class = EducationForm
-
-    def get_object(self):
-        employee  = Employee.objects.get(user=self.request.user)
-        return employee
-
-    def get_context_data(self,**kwargs):
-        context = {}
-        formset = EducationInlineFormset(
-            instance=self.get_object()
-        )
-        context['formset'] = formset
-        return context
-
-    def post(self, request,*args,**kwargs):
-        formset = EducationInlineFormset(
-            request.POST,
-            instance=self.get_object()
-        )
-        if formset.is_valid():
-            formset.save()
-            return self.form_valid(formset)
-        return render(request,self.template_name,context={'formset':formset})
+    parent_model = Employee
+    formset = EducationInlineFormset
 
     def get_success_url(self):
         return reverse_lazy('employee:job_history')
 
 
-class JobHistory(UpdateView):
+class JobHistory(InlineFormSetUpdateOrCreateViewMixin,UpdateView):
+    model = JobHistory
+    parent_model = Employee
+    form_class = JobHistoryForm
+    formset = JobHistoryInlineFormset
     template_name = 'employee/job_history_form.html'
