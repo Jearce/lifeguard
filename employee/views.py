@@ -7,7 +7,10 @@ from .models import Employee,EmployeeEducation,JobHistory
 
 from .forms import EmployeeForm,EducationInlineFormset,EducationForm,JobHistoryForm,JobHistoryInlineFormset
 
-class InlineFormSetUpdateOrCreateViewMixin:
+class InlineFormSetViewMixin:
+    parent_model = None
+    formset = None
+
     def get_object(self):
         obj = self.parent_model.objects.get(user=self.request.user)
         return obj
@@ -45,20 +48,22 @@ class EmployeeCreateOrUpdate(UpdateView):
         return reverse_lazy('employee:education')
 
 
-class EmployeeEducation(InlineFormSetUpdateOrCreateViewMixin,UpdateView):
-    model = EmployeeEducation
-    template_name = 'employee/education_form.html'
-    form_class = EducationForm
+class EmployeeEducation(InlineFormSetViewMixin,UpdateView):
     parent_model = Employee
+    model = EmployeeEducation
+    form_class = EducationForm
     formset = EducationInlineFormset
+    template_name = 'employee/education_form.html'
 
     def get_success_url(self):
         return reverse_lazy('employee:job_history')
 
-
-class JobHistory(InlineFormSetUpdateOrCreateViewMixin,UpdateView):
+class JobHistory(InlineFormSetViewMixin,UpdateView):
     model = JobHistory
     parent_model = Employee
     form_class = JobHistoryForm
     formset = JobHistoryInlineFormset
     template_name = 'employee/job_history_form.html'
+
+    def get_success_url(self):
+        return reverse_lazy('lifeguard:classes')
