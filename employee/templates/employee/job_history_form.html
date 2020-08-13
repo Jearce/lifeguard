@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+<title>Experience</title>
+{% endblock title %}
+
+{% block content %}
+<h3>Experience</h3>
+<form method="post" id="job_history_form">
+    {% csrf_token %}
+    {{ formset.management_form }}
+    {% for form in formset %}
+    <div class="card bg-light mb-3">
+        <div class="card-header">
+            Job {{ forloop.counter }}
+        </div>
+        <div class="card-body">
+            {{ form|crispy }}
+        </div>
+    </div>
+    {% endfor %}
+    <input class="btn btn-primary" type="submit" value="submit">
+</form>
+{% endblock content %}
