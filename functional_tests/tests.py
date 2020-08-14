@@ -63,6 +63,14 @@ class BaseTestFixture(LiveServerTestCase):
             "attending_college":"click",
             "date_leaving_to_college":"9/10/2020"
         }
+        cls.employee_job_history = {
+            "previous_employer":"Some Company",
+            "job_title":"Tester",
+            "salary":"18.65",
+            "start_date":"2010-06-09",
+            "end_date":"2020-06-09",
+            "reason_for_leaving":"I've done all I can there.",
+        }
         class1 = {
             "course":"Review",
             "start_date":"2020-8-28 14:30:59",
@@ -87,6 +95,14 @@ class BaseTestFixture(LiveServerTestCase):
     def tearDownClass(cls):
         super().tearDownClass()
         cls.browser.quit()
+
+    def enroll_in_class(self):
+        enrollment_btns = self.browser.find_elements_by_name('enroll-btn')
+
+        #choose an avaliable class
+        enrollment_btns[0].submit()
+        self.assertEqual(Enroll.objects.count(),1)
+        self.assertIn('users/dashboard/',self.browser.current_url)
 
     def sign_up(self):
         #select account opitions to get to sign up link
@@ -138,25 +154,32 @@ class BaseTestFixture(LiveServerTestCase):
 
     def fill_out_emergency_contact(self):
         prefix = 'id_emergencycontact_set'
-        for key,value in self.emergency_contact.items():
-            self.browser.find_element_by_id(f"{prefix}-0-{key}").send_keys(value)
-        self.browser.find_element_by_id('emergency_contact_form').submit()
+        self.general_managment_form_input(
+            records=[self.emergency_contact],
+            form_id="emergency_contact_form",
+            prefix=prefix
+        )
         self.assertIn('address/',self.browser.current_url)
-
-
 
     def fill_employee_education_form(self):
         prefix = 'id_employeeeducation_set'
-        for key,value in self.employee_education.items():
-            if value == "click":
-                self.browser.find_element_by_id(f"{prefix}-0-{key}").click()
-            else:
-                self.browser.find_element_by_id(f"{prefix}-0-{key}").send_keys(value)
-        self.browser.find_element_by_id('education_form').submit()
+        self.general_managment_form_input(
+            records=[self.employee_education],
+            form_id="education_form",
+            prefix=prefix
+        )
         self.assertIn('employee/job-history/',self.browser.current_url)
 
+    def fill_employee_job_history(self):
+        prefix = 'id_jobhistory_set'
+        self.general_managment_form_input(
+            records=[self.employee_job_history],
+            form_id="job_history_form",
+            prefix=prefix
+        )
+        self.assertIn('lifeguard/classes/',self.browser.current_url)
+
     def start_at_home_page(self):
-        #user lands on homepage
         self.browser.get(self.live_server_url)
         self.assertIn('Home',self.browser.title)
 
@@ -169,31 +192,60 @@ class BaseTestFixture(LiveServerTestCase):
 
     def general_form_input(self,data,form_id):
         for key,value in data.items():
+            element = self.browser.find_element_by_id(f"id_{key}")
             if value == 'click':
-                self.browser.find_element_by_id(f"id_{key}").click()
+                element.click()
             else:
-                self.browser.find_element_by_id(f"id_{key}").send_keys(value)
+                element.send_keys(value)
         self.browser.find_element_by_id(form_id).submit()
+
+    def general_managment_form_input(self,records,form_id,prefix):
+        for i,record in enumerate(records):
+            for key,value in record.items():
+                element = self.browser.find_element_by_id(f"{prefix}-{i}-{key}")
+                if value == 'click':
+                    element.click()
+                else:
+                    element.send_keys(value)
+        self.browser.find_element_by_id(form_id).submit()
+
+    def enroll_in_class(self):
+        enrollment_btns = self.browser.find_elements_by_name('enroll-btn')
+
+        #choose an avaliable class
+        enrollment_btns[0].submit()
+        self.assertEqual(Enroll.objects.count(),1)
+        self.assertIn('users/dashboard/',self.browser.current_url)
+
+    def make_payment(self):
+        pass
+
 
 class SignUpTest(BaseTestFixture):
 
-    def test_sign_up_register_as_new_lifeguard_and_employee(self):
+    def test_sign_up_and_register_as_new_lifeguard_and_employee(self):
         #user lands on homepage
         self.start_at_home_page()
+        #creates account and is taken to the dashboard
         self.sign_up()
+        #clicks on lifeguard registration link
         self.start_lifeguard_registration('id_lifeguard_registration')
+
+        #fills out contact information,emergency contact,and address forms
         self.fill_out_contact_information()
         self.fill_out_emergency_contact()
         self.fill_out_address_form()
+
+        #fills out lifeguard form and selects they want to work for company
         self.register_new_lifeguard_who_wants_to_work()
+
+        #now fills out employee,education, and job history forms
         self.fill_employee_form()
         self.fill_employee_education_form()
+        self.fill_employee_job_history()
 
         #picks a class to attend
-        #enrollment_btns = self.browser.find_elements_by_name('enroll-btn')
-        #enrollment_btns[0].submit()
-        #self.assertEqual(Enroll.objects.count(),1)
-
+        self.enroll_in_class()
         #makes payment
         self.fail("Finish payment")
 
