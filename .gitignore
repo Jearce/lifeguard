@@ -5,6 +5,5 @@ migrations/
 __pycache__/
 *.pyc
 *~
-*.swp
-*.swo
+*.sw*
 *.log
