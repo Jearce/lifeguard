@@ -31,10 +31,6 @@ class LifeguardCreateOrUpdate(UpdateView):
             obj = Lifeguard(user=self.request.user)
         return obj
 
-    #def form_valid(self,form):
-    #    form.instance.user = self.request.user
-    #    return super().form_valid(form)
-
     def get_success_url(self):
         lifeguard = self.request.user.lifeguard
 
@@ -68,4 +64,6 @@ class LifeguardClasses(View):
         lifeguard = Lifeguard.objects.get(user=request.user)
         lifeguard_class = LifeguardClass.objects.get(pk=self.kwargs['pk'])
         Enroll.objects.create(lifeguard=lifeguard,lifeguard_class=lifeguard_class)
-        return redirect('lifeguard:classes')
+
+        #TODO: redirect to payment view after successful enrollment
+        return redirect('users:dashboard')
