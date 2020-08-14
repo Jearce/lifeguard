@@ -9,6 +9,13 @@ class Transportation(models.Model):
     def __str__(self):
         return self.name
 
+class Position(models.Model):
+    title = models.CharField(max_length=255)
+    age_requirement = models.CharField(max_length=255)
+
+    def __str__(self):
+        return f"{self.title} ({self.age_requirement})"
+
 class Employee(models.Model):
     user = models.OneToOneField(User,on_delete=models.CASCADE,primary_key=True)
     home_phone = models.CharField(max_length=12,blank=True,null=True)
@@ -18,15 +25,7 @@ class Employee(models.Model):
         on_delete=models.CASCADE
     )
 
-
-    POSITION_CHOICES = [('L','Lifeguard'),('S','Supervisor'),('M','Manager')]
-    applied_position = models.CharField(
-        "Position applying for",
-        choices=POSITION_CHOICES,
-        max_length=1,
-        blank=False,
-        default=None,
-    )
+    applied_positions = models.ManyToManyField(Position)
 
     start_date = models.DateField("Date available to start")
     end_date = models.DateField(
