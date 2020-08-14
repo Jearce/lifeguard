@@ -5,7 +5,8 @@ from django.test import TestCase
 from employee.models import (Transportation,
                              Employee,
                              EmployeeEducation,
-                             JobHistory)
+                             JobHistory,
+                             Position)
 
 from employee.forms import (EducationInlineFormset,
                             JobHistoryInlineFormset)
@@ -35,7 +36,7 @@ class CommonSetUp(TestCase):
             "home_phone":"712 634 3328",
             "who_referred_you":"A friend.",
             "transportation":"1",
-            "applied_position":'L',
+            "applied_positions":("1","2"),
             "start_date":"2020-08-09",
             "end_date":"2020-12-10",
             "work_hours_desired":"40",
@@ -48,6 +49,8 @@ class CommonSetUp(TestCase):
             "contract_employment_agreement":True,
             "electronic_signature":"Larry Johnson",
         }
+        cls.position1 = Position.objects.create(title="Lifeguard",age_requirement="Must be 15 years or older")
+        cls.position2 = Position.objects.create(title="Supervisor",age_requirement="Must be 18 years or older")
         cls.transportation = Transportation.objects.create(name="Car",description="I will drive by car")
 
     def setUp(self):
@@ -76,42 +79,42 @@ class EmployeeCreateOrUpdateTest(CommonSetUp):
         self.assertEqual(Employee.objects.count(),1)
 
 class EmployeeEducationTest(CommonSetUp):
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        cls.employee = Employee.objects.create(
-            user=cls.user,
-            transportation=cls.transportation,
+    def setUp(self):
+        self.client.login(email=self.email,password=self.password)
+        self.employee = Employee(
+            user=self.user,
+            transportation=self.transportation,
             **{
                 key:value
-                for key, value in cls.employee_data.items()
-                if key != 'transportation'}
+                for key, value in self.employee_data.items()
+                if key != 'transportation' and key != 'applied_positions'}
         )
-
-        cls.education_to_create = [{
+        self.employee.save()
+        self.employee.applied_positions.set([self.position1,self.position2])
+        self.education_to_create = [{
             'school_name':'Django High School',
             'grade_year':"12th grade",
             'attending_college':True,
             'date_leaving_to_college':'9/10/2020',
-            'employee':cls.employee.pk,
+            'employee':self.employee.pk,
             'id':'',
         }]
 
         #for update test
-        cls.previous_education = {
+        self.previous_education = {
             'school_name':'Django High School',
             'grade_year':"12th grade",
             'attending_college':True,
             'date_leaving_to_college':'2020-09-12',
         }
 
-        cls.new_educations = [
+        self.new_educations = [
             {
                 'school_name':'Django Collegge',
                 'grade_year':"Freshmen",
                 'attending_college':True,
                 'date_leaving_to_college':'9/10/2020',
-                'employee':cls.employee.pk,
+                'employee':self.employee.pk,
                 'id':'1',
             },
             {
@@ -119,7 +122,7 @@ class EmployeeEducationTest(CommonSetUp):
                 'grade_year':"Freshmen",
                 'attending_college':True,
                 'date_leaving_to_college':'9/10/2020',
-                'employee':cls.employee.pk,
+                'employee':self.employee.pk,
                 'id':'',
             }
         ]
@@ -171,19 +174,19 @@ class EmployeeEducationTest(CommonSetUp):
         self.assertRedirects(response,reverse('employee:job_history'))
 
 class JobHistoryTest(CommonSetUp):
-
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        cls.employee = Employee.objects.create(
-            user=cls.user,
-            transportation=cls.transportation,
+    def setUp(self):
+        self.client.login(email=self.email,password=self.password)
+        self.employee = Employee(
+            user=self.user,
+            transportation=self.transportation,
             **{
                 key:value
-                for key, value in cls.employee_data.items()
-                if key != 'transportation'}
+                for key, value in self.employee_data.items()
+                if key != 'transportation' and key != 'applied_positions'}
         )
-        cls.create_job_history_data = [{
+        self.employee.save()
+        self.employee.applied_positions.set([self.position1,self.position2])
+        self.create_job_history_data = [{
             "previous_employer":"Some Company",
             "job_title":"Test Job",
             "salary":"25.50",
@@ -192,7 +195,7 @@ class JobHistoryTest(CommonSetUp):
             "reason_for_leaving":"The time felt right",
         }]
 
-        cls.update_job_history_data = [
+        self.update_job_history_data = [
             {
                 "previous_employer":"Some Company",
                 "job_title":"Test Job",
@@ -200,7 +203,7 @@ class JobHistoryTest(CommonSetUp):
                 "start_date":"2000-06-09",
                 "end_date":"2010-06-09",
                 "reason_for_leaving":"The time felt right",
-                "employee":cls.employee.pk,
+                "employee":self.employee.pk,
                 "id":'1',
             },
             {
@@ -210,7 +213,7 @@ class JobHistoryTest(CommonSetUp):
                 "start_date":"2010-06-09",
                 "end_date":"2011-06-09",
                 "reason_for_leaving":"School ended",
-                "employee":cls.employee.pk,
+                "employee":self.employee.pk,
                 "id":''
             }
         ]
