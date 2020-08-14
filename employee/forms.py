@@ -17,6 +17,7 @@ class EmployeeForm(ModelForm):
             'applied_position':RadioSelect,
             'start_date':DateInput(attrs={'type':'date'}),
             'end_date':DateInput(attrs={'type':'date'}),
+            "applied_positions":CheckboxSelectMultiple,
             "work_authorization":RadioSelect,
             "charged_or_arrested":RadioSelect,
             "has_felony":RadioSelect,
