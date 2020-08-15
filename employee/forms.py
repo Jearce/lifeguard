@@ -26,12 +26,31 @@ class EmployeeForm(ModelForm):
 class EducationForm(ModelForm):
     class Meta:
         model = EmployeeEducation
-        exclude = ('employee',)
+        fields = [
+            "school_name",
+            "grade_year",
+            "attending_college",
+            "date_leaving_to_college",
+        ]
+        widgets = {
+            "date_leaving_to_college":DateInput(attrs={'type':'date'}),
+        }
 
 class JobHistoryForm(ModelForm):
     class Meta:
         model = JobHistory
-        exclude = ('employee',)
+        fields = [
+            "previous_employer",
+            "job_title",
+            "salary",
+            "start_date",
+            "end_date",
+            "reason_for_leaving"
+        ]
+        widgets = {
+            "start_date":DateInput(attrs={'type':'date'}),
+            "end_date":DateInput(attrs={'type':'date'})
+        }
 
 EducationInlineFormset = inlineformset_factory(
     Employee,
