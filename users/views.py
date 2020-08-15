@@ -5,11 +5,14 @@ from django.contrib.auth.views import LoginView
 from django.contrib.auth import logout,login,authenticate
 from django.views.generic.edit import UpdateView,CreateView
 from django.contrib.auth import views as auth_views
-from django.views.generic.list import MultipleObjectMixin
 
-from .forms import CustomUserCreationForm
-from .forms import EmergencyContactForm,EmergencyContactFormSet,EmergencyContactInlineFormSet
 from .models import EmergencyContact,Address,User
+from .forms import (CustomUserCreationForm,
+                    EmergencyContactForm,
+                    EmergencyContactFormSet,
+                    EmergencyContactInlineFormSet,
+                    ContactInformationForm)
+
 
 
 # Create your views here.
@@ -64,7 +67,7 @@ class PasswordResetCompleteView(auth_views.PasswordResetCompleteView):
 
 class ContactInformationUpdate(UpdateView):
     model = User
-    fields = ['email', 'first_name', 'last_name','phone','dob']
+    form_class = ContactInformationForm
     template_name = 'users/contact_information_form.html'
 
     def get_success_url(self):
