@@ -11,7 +11,7 @@ from selenium.webdriver.common.keys import Keys
 
 from users.models import User
 from lifeguard.models import LifeguardClass,Enroll
-from employee.models import Transportation
+from employee.models import Transportation,Position
 
 class BaseTestFixture(LiveServerTestCase):
     @classmethod
@@ -44,7 +44,8 @@ class BaseTestFixture(LiveServerTestCase):
             "home_phone":"712 634 3328",
             "who_referred_you":"A friend.",
             "transportation":"Car",
-            "applied_position_1":"click",
+            "applied_positions_1":"click",
+            "applied_positions_2":"click",
             "start_date":"8/8/2020",
             "end_date":"12/8/2021",
             "work_hours_desired":"40",
@@ -90,6 +91,9 @@ class BaseTestFixture(LiveServerTestCase):
              LifeguardClass(**class2)]
         )
         Transportation.objects.create(name="Car",description="I will drive my self.")
+        cls.position1 = Position.objects.create(title="Lifeguard",age_requirement="Must be 15 years or older")
+        cls.position2 = Position.objects.create(title="Supervisor",age_requirement="Must be 18 years or older")
+
 
     @classmethod
     def tearDownClass(cls):
@@ -107,9 +111,8 @@ class BaseTestFixture(LiveServerTestCase):
     def sign_up(self):
         #select account opitions to get to sign up link
         self.browser.find_element_by_class_name('navbar-toggler').click()
-        self.browser.implicitly_wait(5)
+        self.browser.implicitly_wait(10)
         self.browser.find_element_by_id('navbarDropdown').click()
-
         self.browser.find_element_by_id('id_signup').click()
         self.assertIn('signup',self.browser.current_url)
 
