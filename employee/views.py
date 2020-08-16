@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from django.urls import reverse_lazy
 from django.views.generic.edit import UpdateView
 from django.views.generic import TemplateView
@@ -67,3 +67,9 @@ class JobHistory(InlineFormSetViewMixin,UpdateView):
 
     def get_success_url(self):
         return reverse_lazy('lifeguard:classes')
+
+def employee_registration(request):
+    #user started employee registration path
+    if request.method == 'GET':
+        request.session["registration_path"] = "employee:create"
+        return redirect("users:contact_information",pk=request.user.pk)
