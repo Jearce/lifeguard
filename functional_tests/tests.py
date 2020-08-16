@@ -44,8 +44,6 @@ class BaseTestFixture(LiveServerTestCase):
             "home_phone":"712 634 3328",
             "who_referred_you":"A friend.",
             "transportation":"Car",
-            "applied_positions_1":"click",
-            "applied_positions_2":"click",
             "start_date":"8/8/2020",
             "end_date":"12/8/2021",
             "work_hours_desired":"40",
@@ -58,6 +56,16 @@ class BaseTestFixture(LiveServerTestCase):
             "contract_employment_agreement":"click",
             "electronic_signature":"Larry Johnson",
         }
+
+        cls.lifeguard_and_supervisor = {
+            "applied_positions_1":"click",
+            "applied_positions_2":"click",
+        }
+
+        cls.only_supervisor = {
+            "applied_positions_2":"click",
+        }
+
         cls.employee_education = {
             "school_name":"Django College",
             "grade_year":"Freshmen",
@@ -116,8 +124,8 @@ class BaseTestFixture(LiveServerTestCase):
         self.general_form_input(self.address,form_id="address_form")
         self.assertIn(redirect_url,self.browser.current_url)
 
-    def fill_employee_form(self):
-        self.general_form_input(self.employee_data,form_id="employee_form")
+    def fill_employee_form(self,data):
+        self.general_form_input(data,form_id="employee_form")
         self.assertIn('employee/education/',self.browser.current_url)
 
     def register_new_lifeguard_who_wants_to_work(self):
@@ -151,14 +159,14 @@ class BaseTestFixture(LiveServerTestCase):
         )
         self.assertIn('employee/job-history/',self.browser.current_url)
 
-    def fill_employee_job_history(self):
+    def fill_employee_job_history(self,redirect_url):
         prefix = 'id_jobhistory_set'
         self.general_managment_form_input(
             records=[self.employee_job_history],
             form_id="job_history_form",
             prefix=prefix
         )
-        self.assertIn('lifeguard/classes/',self.browser.current_url)
+        self.assertIn(redirect_url,self.browser.current_url)
 
     def start_at_home_page(self):
         self.browser.get(self.live_server_url)
@@ -228,7 +236,7 @@ class SignUpTest(BaseTestFixture):
              LifeguardClass(**class2)]
         )
 
-    def test_sign_up_and_register_as_new_lifeguard_and_employee(self):
+    def test_register_as_new_lifeguard_and_employee(self):
         #user lands on homepage
         self.start_at_home_page()
         #creates account and is taken to the dashboard
@@ -245,9 +253,9 @@ class SignUpTest(BaseTestFixture):
         self.register_new_lifeguard_who_wants_to_work()
 
         #now fills out employee,education, and job history forms
-        self.fill_employee_form()
+        self.fill_employee_form({**self.employee_data,**self.lifeguard_and_supervisor})
         self.fill_employee_education_form()
-        self.fill_employee_job_history()
+        self.fill_employee_job_history(redirect_url="lifeguard/classes/")
 
         #picks a class to attend
         self.enroll_in_class()
@@ -257,7 +265,7 @@ class SignUpTest(BaseTestFixture):
 
         #redirect to dashboard
 
-    def test_sign_up_and_register_as_employee(self):
+    def test_register_as_nonlifeguard_employee(self):
         #user lands on homepage
         self.start_at_home_page()
 
@@ -271,6 +279,19 @@ class SignUpTest(BaseTestFixture):
         self.fill_out_contact_information()
         self.fill_out_emergency_contact()
         self.fill_out_address_form(redirect_url="employee/create/")
+
+        #now fills out employee,education, and job history forms
+        self.fill_employee_form({**self.employee_data,**self.only_supervisor})
+        self.fill_employee_education_form()
+        self.fill_employee_job_history(redirect_url="/users/dashboard/")
+
+        #picks a class to attend
+        self.enroll_in_class()
+
+        #makes payment
+        self.fail("Finish payment")
+
+
 
 class LogInTest(BaseTestFixture):
 
