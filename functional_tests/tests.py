@@ -72,28 +72,6 @@ class BaseTestFixture(LiveServerTestCase):
             "end_date":"2020-06-09",
             "reason_for_leaving":"I've done all I can there.",
         }
-        class1 = {
-            "course":"Review",
-            "start_date":"2020-8-28 14:30:59",
-            "end_date":"2020-9-8 14:30:59",
-            "cost":120.23,
-            "employee_cost":50.50
-        }
-        class2 = {
-            "course":"Lifeguard",
-            "start_date":"2020-8-28 14:30:59",
-            "end_date":"2020-9-8 14:30:59",
-            "cost":120.23,
-            "employee_cost":50.50
-        }
-        LifeguardClass.objects.bulk_create(
-            [LifeguardClass(**class1),
-             LifeguardClass(**class2)]
-        )
-        Transportation.objects.create(name="Car",description="I will drive my self.")
-        cls.position1 = Position.objects.create(title="Lifeguard",age_requirement="Must be 15 years or older")
-        cls.position2 = Position.objects.create(title="Supervisor",age_requirement="Must be 18 years or older")
-
 
     @classmethod
     def tearDownClass(cls):
@@ -147,9 +125,9 @@ class BaseTestFixture(LiveServerTestCase):
         register_data = {
            "already_certified" : "N", #user is a new lifeguard
            "wants_to_work_for_company":"Y", #and wants to work as a lifeguard
-           "payment_agreement":True,
+           "payment_agreement":"click",
            "payment_agreement_signature":"Larry Jones",
-           "no_refunds_agreement" : True,
+           "no_refunds_agreement" : "click",
            "electronic_signature" : "Larry Jones"
         }
         self.general_form_input(register_data,form_id="lifeguard_form")
@@ -186,7 +164,7 @@ class BaseTestFixture(LiveServerTestCase):
         self.browser.get(self.live_server_url)
         self.assertIn('Home',self.browser.title)
 
-    def start_lifeguard_registration(self,element_id):
+    def start_registration(self,element_id):
         self.browser.find_element_by_id(element_id).click()
         self.assertIn('contact-information/',self.browser.current_url)
 
@@ -226,13 +204,37 @@ class BaseTestFixture(LiveServerTestCase):
 
 class SignUpTest(BaseTestFixture):
 
+    def setUp(self):
+        Position.objects.create(title="Lifeguard",age_requirement="Must be 15 years or older")
+        Position.objects.create(title="Supervisor",age_requirement="Must be 18 years or older")
+        Transportation.objects.create(name="Car",description="I will drive my self.")
+
+        class1 = {
+            "course":"Review",
+            "start_date":"2020-8-28 14:30:59",
+            "end_date":"2020-9-8 14:30:59",
+            "cost":120.23,
+            "employee_cost":50.50
+        }
+        class2 = {
+            "course":"Lifeguard",
+            "start_date":"2020-8-28 14:30:59",
+            "end_date":"2020-9-8 14:30:59",
+            "cost":120.23,
+            "employee_cost":50.50
+        }
+        LifeguardClass.objects.bulk_create(
+            [LifeguardClass(**class1),
+             LifeguardClass(**class2)]
+        )
+
     def test_sign_up_and_register_as_new_lifeguard_and_employee(self):
         #user lands on homepage
         self.start_at_home_page()
         #creates account and is taken to the dashboard
         self.sign_up()
         #clicks on lifeguard registration link
-        self.start_lifeguard_registration('id_lifeguard_registration')
+        self.start_registration(element_id='id_lifeguard_registration')
 
         #fills out contact information,emergency contact,and address forms
         self.fill_out_contact_information()
@@ -249,10 +251,21 @@ class SignUpTest(BaseTestFixture):
 
         #picks a class to attend
         self.enroll_in_class()
+
         #makes payment
         self.fail("Finish payment")
 
         #redirect to dashboard
+
+    def test_sign_up_and_register_as_employee(self):
+        #user lands on homepage
+        self.start_at_home_page()
+
+        #creates account and is taken to the dashboard
+        self.sign_up()
+
+        #clicks on employee registration link
+        self.start_registration(element_id='id_employee_registration')
 
 class LogInTest(BaseTestFixture):
 
