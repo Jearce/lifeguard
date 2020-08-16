@@ -8,6 +8,7 @@ from django.contrib.auth import get_user_model
 
 from .. import views
 from users.models import User
+from employee.models import Employee,Transportation,Position
 from ..models import LifeguardClass,Enroll,Lifeguard
 
 class BaseUserSetUp(TestCase):
@@ -54,6 +55,26 @@ class LifeguardCreateTest(BaseUserSetUp):
             "no_refunds_agreement":True,
             "electronic_signature":"Larry Johnson",
         }
+        self.employee_data = {
+            "home_phone":"712 634 3328",
+            "who_referred_you":"A friend.",
+            "transportation":"1",
+            "start_date":"2020-08-09",
+            "end_date":"2020-12-10",
+            "work_hours_desired":"40",
+            "desired_pay_rate":"17.50",
+            "pool_preference":"Village Pool",
+            "subdivision":"My subdivision 122",
+            "work_authorization":True,
+            "charged_or_arrested":False,
+            "has_felony":False,
+            "contract_employment_agreement":True,
+            "electronic_signature":"Larry Johnson",
+        }
+        self.transportation = Transportation.objects.create(name="Car",description="I will drive by car")
+        self.position1 = Position.objects.create(title="Lifeguard",age_requirement="Must be 15 years or older")
+        self.position2 = Position.objects.create(title="Supervisor",age_requirement="Must be 18 years or older")
+
 
     def test_view_url_exists_at_desired_location(self):
         response = self.client.get(reverse('lifeguard:create'))
@@ -86,6 +107,21 @@ class LifeguardCreateTest(BaseUserSetUp):
     def test_redirect_for_new_lifeguard(self):
         response = self.client.post(reverse('lifeguard:create'),self.new_lifeguard)
         self.assertRedirects(response,reverse('lifeguard:classes'))
+
+    def test_redirect_for_lifeguard_who_applied_as_employee(self):
+        employee = Employee(
+            user=self.user,
+            transportation=self.transportation,
+            **{
+                key:value
+                for key, value in self.employee_data.items()
+                if key != 'transportation' and key != 'applied_positions'
+            }
+        )
+        employee.save()
+        employee.applied_positions.set([self.position1,self.position2])
+        response = self.client.post(reverse('lifeguard:create'),self.new_lifeguard)
+        self.assertRedirects(response,reverse('users:dashboard'))
 
 class LifeguardAlreadyCertifiedTest(BaseUserSetUp):
     def setUp(self):
