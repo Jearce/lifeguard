@@ -254,3 +254,12 @@ class JobHistoryTest(CommonSetUp):
         response = self.client.post(reverse('employee:job_history'),form_data)
         self.assertEqual(response.status_code,302)
         self.assertEqual(JobHistory.objects.count(),2)
+
+class EmployeeRegistrationTest(CommonSetUp):
+    def test_user_started_with_employee_registration(self):
+        response = self.client.get(reverse("employee:registration"))
+        self.assertEqual(response.status_code,302)
+        registration_path = response.wsgi_request.session.get("registration_path")
+        self.assertEqual(registration_path,"employee:create")
+
+
