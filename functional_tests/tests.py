@@ -112,9 +112,9 @@ class BaseTestFixture(LiveServerTestCase):
         self.general_form_input(self.contact_information,form_id="contact_information_form")
         self.assertIn('emergency-contact/',self.browser.current_url)
 
-    def fill_out_address_form(self):
+    def fill_out_address_form(self,redirect_url):
         self.general_form_input(self.address,form_id="address_form")
-        self.assertIn('lifeguard/create/',self.browser.current_url)
+        self.assertIn(redirect_url,self.browser.current_url)
 
     def fill_employee_form(self):
         self.general_form_input(self.employee_data,form_id="employee_form")
@@ -239,7 +239,7 @@ class SignUpTest(BaseTestFixture):
         #fills out contact information,emergency contact,and address forms
         self.fill_out_contact_information()
         self.fill_out_emergency_contact()
-        self.fill_out_address_form()
+        self.fill_out_address_form(redirect_url='/lifeguard/create/')
 
         #fills out lifeguard form and selects they want to work for company
         self.register_new_lifeguard_who_wants_to_work()
@@ -266,6 +266,11 @@ class SignUpTest(BaseTestFixture):
 
         #clicks on employee registration link
         self.start_registration(element_id='id_employee_registration')
+
+        #fills out contact information,emergency contact,and address forms
+        self.fill_out_contact_information()
+        self.fill_out_emergency_contact()
+        self.fill_out_address_form(redirect_url="employee/create/")
 
 class LogInTest(BaseTestFixture):
 
