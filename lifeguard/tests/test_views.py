@@ -16,6 +16,7 @@ class BaseUserSetUp(TestCase):
         self.password = 'sdfh328j!'
         self.user = User.objects.create_user(email=self.email,password=self.password)
 
+
 class HomeViewTest(TestCase):
     def test_view_url_exists_at_desired_location(self):
         response = self.client.get(reverse('home'))
@@ -24,7 +25,6 @@ class HomeViewTest(TestCase):
     def test_view_uses_correct_template(self):
         response = self.client.get(reverse('home'))
         self.assertTemplateUsed(response,'home.html')
-
 
 class LifeguardCreateTest(BaseUserSetUp):
     def setUp(self):
@@ -139,9 +139,6 @@ class LifeguardAlreadyCertifiedTest(BaseUserSetUp):
             response = self.client.post(reverse('lifeguard:already_certified'),{'last_certified':'2000-06-09','certification':pdf})
         return response
 
-
-
-
 class LifeguardClassesTest(BaseUserSetUp):
     def setUp(self):
         super().setUp()
@@ -187,3 +184,17 @@ class LifeguardClassesTest(BaseUserSetUp):
         self.assertEqual(response.status_code,302)
         self.assertEqual(Enroll.objects.all().count(),1)
         self.assertRedirects(response,reverse('lifeguard:payment'))
+
+class LifeguardRegistrationTest(BaseUserSetUp):
+    def setUp(self):
+        super().setUp()
+        self.client.login(email=self.email,password=self.password)
+
+    def test_user_started_with_lifeguard_registration(self):
+        response = self.client.get(reverse("lifeguard:registration"))
+        self.assertEqual(response.status_code,302)
+        registration_path = response.wsgi_request.session.get("registration_path")
+        self.assertEqual(registration_path,"lifeguard:create")
+
+
+
