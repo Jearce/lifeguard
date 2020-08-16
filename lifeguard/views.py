@@ -67,3 +67,9 @@ class LifeguardClasses(View):
 
         #TODO: redirect to payment view after successful enrollment
         return redirect('users:dashboard')
+
+def lifeguard_registration(request):
+    if request.method == 'GET':
+        request.session["registration_path"] = "lifeguard:create"
+        return redirect("users:contact_information",pk=request.user.pk)
+
