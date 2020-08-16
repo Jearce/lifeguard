@@ -133,4 +133,13 @@ class AddressCreateOrUpdate(UpdateView):
         return obj
 
     def get_success_url(self):
-        return reverse_lazy('lifeguard:create')
+        registration_path = self.request.session.get("registration_path")
+
+
+        if registration_path:
+            #user is either registering as a lifeguard or employee
+            return reverse_lazy(registration_path)
+        else:
+            #user is updating their address
+            return reverse_lazy('users:dashboard')
+
