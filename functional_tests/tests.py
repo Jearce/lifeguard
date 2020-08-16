@@ -128,7 +128,7 @@ class BaseTestFixture(LiveServerTestCase):
         self.general_form_input(data,form_id="employee_form")
         self.assertIn('employee/education/',self.browser.current_url)
 
-    def register_new_lifeguard_who_wants_to_work(self):
+    def register_new_lifeguard_who_wants_to_work(self,redirect_url):
         #user is a new lifeguard
         register_data = {
            "already_certified" : "N", #user is a new lifeguard
@@ -139,7 +139,7 @@ class BaseTestFixture(LiveServerTestCase):
            "electronic_signature" : "Larry Jones"
         }
         self.general_form_input(register_data,form_id="lifeguard_form")
-        self.assertIn('employee/create/',self.browser.current_url)
+        self.assertIn(redirect_url,self.browser.current_url)
 
     def fill_out_emergency_contact(self):
         prefix = 'id_emergencycontact_set'
@@ -250,7 +250,7 @@ class SignUpTest(BaseTestFixture):
         self.fill_out_address_form(redirect_url='/lifeguard/create/')
 
         #fills out lifeguard form and selects they want to work for company
-        self.register_new_lifeguard_who_wants_to_work()
+        self.register_new_lifeguard_who_wants_to_work(redirect_url="/employee/create/")
 
         #now fills out employee,education, and job history forms
         self.fill_employee_form({**self.employee_data,**self.lifeguard_and_supervisor})
@@ -265,7 +265,7 @@ class SignUpTest(BaseTestFixture):
 
         #redirect to dashboard
 
-    def test_register_as_nonlifeguard_employee(self):
+    def test_register_as_employee_and_apply_as_nonlifeguard(self):
         #user lands on homepage
         self.start_at_home_page()
 
@@ -285,11 +285,36 @@ class SignUpTest(BaseTestFixture):
         self.fill_employee_education_form()
         self.fill_employee_job_history(redirect_url="/users/dashboard/")
 
-        #picks a class to attend
-        self.enroll_in_class()
+        #makes payment
+        self.fail("Wait for application status")
+
+    def test_register_as_employee_and_apply_as_lifeguard(self):
+        #user lands on homepage
+        self.start_at_home_page()
+
+        #creates account and is taken to the dashboard
+        self.sign_up()
+
+        #clicks on employee registration link
+        self.start_registration(element_id='id_employee_registration')
+
+        #fills out contact information,emergency contact,and address forms
+        self.fill_out_contact_information()
+        self.fill_out_emergency_contact()
+        self.fill_out_address_form(redirect_url="employee/create/")
+
+        #now fills out employee,education, and job history forms
+        self.fill_employee_form({**self.employee_data,**self.lifeguard_and_supervisor})
+        self.fill_employee_education_form()
+        self.fill_employee_job_history(redirect_url="/lifeguard/create/")
+
+        self.register_new_lifeguard_who_wants_to_work(redirect_url="/users/dashboard/")
+
 
         #makes payment
-        self.fail("Finish payment")
+        self.fail("Wait for application status")
+
+
 
 
 
