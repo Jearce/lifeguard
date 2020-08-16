@@ -66,7 +66,14 @@ class JobHistory(InlineFormSetViewMixin,UpdateView):
     template_name = 'employee/job_history_form.html'
 
     def get_success_url(self):
-        return reverse_lazy('lifeguard:classes')
+        #check if user applied to a position that requires a lifeguard certification
+        user = self.request.user
+        if hasattr(user, 'lifeguard'):
+            return reverse_lazy('lifeguard:classes')
+        elif any('Lifeguard' in ap.title for ap in user.employee.applied_positions.all()):
+            return reverse_lazy('lifeguard:create')
+        else:
+            return reverse_lazy('users:dashboard')
 
 def employee_registration(request):
     #user started employee registration path
