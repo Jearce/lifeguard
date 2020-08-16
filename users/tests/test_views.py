@@ -240,3 +240,12 @@ class AddressCreateOrUpdateTest(BaseUserSetUp):
         response = self.client.post(reverse('users:address'),self.new_address)
         self.assertEqual(response.status_code,302)
         self.assertEqual(self.user.address_set.count(),1)
+
+    def test_correct_redirect_to_employee_form(self):
+
+        #set the registration path
+        self.client.get(reverse('lifeguard:registration'))
+
+        response = self.client.post(reverse('users:address'),self.current_address)
+        self.assertRedirects(response,reverse('lifeguard:create'))
+
