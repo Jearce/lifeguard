@@ -36,7 +36,6 @@ class CommonSetUp(TestCase):
             "home_phone":"712 634 3328",
             "who_referred_you":"A friend.",
             "transportation":"1",
-            "applied_positions":("1","2"),
             "start_date":"2020-08-09",
             "end_date":"2020-12-10",
             "work_hours_desired":"40",
@@ -67,14 +66,23 @@ class EmployeeCreateOrUpdateTest(CommonSetUp):
         self.assertTemplateUsed(response,'employee/employee_form.html')
 
     def test_create_employee(self):
-        lifeguard = Lifeguard.objects.create(user=self.user,**self.new_lifeguard)
-        response =self.client.post(reverse('employee:create'),self.employee_data)
+        response =self.client.post(reverse('employee:create'),{**self.employee_data,"applied_positions":(1,2)})
         self.assertEqual(response.status_code,302)
         self.assertEqual(Employee.objects.count(),1)
 
     def test_update_employee(self):
-        lifeguard = Lifeguard.objects.create(user=self.user,**self.new_lifeguard)
-        response =self.client.post(reverse('employee:create'),self.employee_data)
+        employee = Employee(
+            user=self.user,
+            transportation=self.transportation,
+            **{
+                key:value
+                for key, value in self.employee_data.items()
+                if key != 'transportation' and key != 'applied_positions'
+            }
+        )
+        employee.save()
+        employee.applied_positions.set([self.position1,self.position2])
+        response =self.client.post(reverse('employee:create'),{**self.employee_data,"applied_positions":1})
         self.assertEqual(response.status_code,302)
         self.assertEqual(Employee.objects.count(),1)
 
@@ -176,16 +184,6 @@ class EmployeeEducationTest(CommonSetUp):
 class JobHistoryTest(CommonSetUp):
     def setUp(self):
         self.client.login(email=self.email,password=self.password)
-        self.employee = Employee(
-            user=self.user,
-            transportation=self.transportation,
-            **{
-                key:value
-                for key, value in self.employee_data.items()
-                if key != 'transportation' and key != 'applied_positions'}
-        )
-        self.employee.save()
-        self.employee.applied_positions.set([self.position1,self.position2])
         self.create_job_history_data = [{
             "previous_employer":"Some Company",
             "job_title":"Test Job",
@@ -203,7 +201,7 @@ class JobHistoryTest(CommonSetUp):
                 "start_date":"2000-06-09",
                 "end_date":"2010-06-09",
                 "reason_for_leaving":"The time felt right",
-                "employee":self.employee.pk,
+                "employee":'1',
                 "id":'1',
             },
             {
@@ -213,20 +211,55 @@ class JobHistoryTest(CommonSetUp):
                 "start_date":"2010-06-09",
                 "end_date":"2011-06-09",
                 "reason_for_leaving":"School ended",
-                "employee":self.employee.pk,
+                "employee":'1',
                 "id":''
             }
         ]
 
     def test_view_url_exists_at_desired_location(self):
+        employee = Employee(
+            user=self.user,
+            transportation=self.transportation,
+            **{
+                key:value
+                for key, value in self.employee_data.items()
+                if key != 'transportation' and key != 'applied_positions'}
+        )
+        employee.save()
+        employee.applied_positions.set([self.position1,self.position2])
+
+
         response = self.client.get(reverse('employee:job_history'))
         self.assertEqual(response.status_code,200)
 
     def test_view_uses_correct_template(self):
+        employee = Employee(
+            user=self.user,
+            transportation=self.transportation,
+            **{
+                key:value
+                for key, value in self.employee_data.items()
+                if key != 'transportation' and key != 'applied_positions'}
+        )
+        employee.save()
+        employee.applied_positions.set([self.position1,self.position2])
+
+
         response = self.client.get(reverse('employee:job_history'))
         self.assertTemplateUsed(response,'employee/job_history_form.html')
 
     def test_create_job_history(self):
+        employee = Employee(
+            user=self.user,
+            transportation=self.transportation,
+            **{
+                key:value
+                for key, value in self.employee_data.items()
+                if key != 'transportation' and key != 'applied_positions'}
+        )
+        employee.save()
+        employee.applied_positions.set([self.position1,self.position2])
+
         management_factory = InlineFormsetManagmentFactory(
             formset=JobHistoryInlineFormset,
             extra=2,
@@ -241,7 +274,18 @@ class JobHistoryTest(CommonSetUp):
         self.assertEqual(JobHistory.objects.count(),1)
 
     def test_update_job_history(self):
-        JobHistory.objects.create(employee=self.employee,**self.create_job_history_data[0])
+        employee = Employee(
+            user=self.user,
+            transportation=self.transportation,
+            **{
+                key:value
+                for key, value in self.employee_data.items()
+                if key != 'transportation' and key != 'applied_positions'}
+        )
+        employee.save()
+        employee.applied_positions.set([self.position1,self.position2])
+
+        JobHistory.objects.create(employee=employee,**self.create_job_history_data[0])
         management_factory = InlineFormsetManagmentFactory(
             formset=JobHistoryInlineFormset,
             extra=2,
@@ -254,6 +298,89 @@ class JobHistoryTest(CommonSetUp):
         response = self.client.post(reverse('employee:job_history'),form_data)
         self.assertEqual(response.status_code,302)
         self.assertEqual(JobHistory.objects.count(),2)
+
+    def test_redirect_for_applied_non_lifeguard(self):
+        employee = Employee(
+            user=self.user,
+            transportation=self.transportation,
+            **{
+                key:value
+                for key, value in self.employee_data.items()
+                if key != 'transportation' and key != 'applied_positions'}
+        )
+        employee.save()
+        employee.applied_positions.set([self.position2])
+        management_factory = InlineFormsetManagmentFactory(
+            formset=JobHistoryInlineFormset,
+            extra=2,
+            initial=0,
+            min_num=0,
+            max_num=2,
+            records=self.create_job_history_data
+        )
+        form_data = management_factory.create_management_form()
+        response = self.client.post(reverse('employee:job_history'),form_data)
+        self.assertEqual(response.status_code,302)
+        self.assertRedirects(response,reverse('users:dashboard'))
+
+    def test_redirect_for_applied_lifeguard_position(self):
+        employee = Employee(
+            user=self.user,
+            transportation=self.transportation,
+            **{
+                key:value
+                for key, value in self.employee_data.items()
+                if key != 'transportation' and key != 'applied_positions'}
+        )
+        employee.save()
+        employee.applied_positions.set([self.position1,self.position2])
+        management_factory = InlineFormsetManagmentFactory(
+            formset=JobHistoryInlineFormset,
+            extra=2,
+            initial=0,
+            min_num=0,
+            max_num=2,
+            records=self.create_job_history_data
+        )
+        form_data = management_factory.create_management_form()
+        response = self.client.post(reverse('employee:job_history'),form_data)
+        self.assertEqual(response.status_code,302)
+        self.assertRedirects(response,reverse('lifeguard:create'))
+
+
+    def test_redirect_for_already_lifeguard(self):
+        lifeguard = Lifeguard.objects.create(user=self.user,**self.new_lifeguard)
+        employee = Employee(
+            user=self.user,
+            transportation=self.transportation,
+            **{
+                key:value
+                for key, value in self.employee_data.items()
+                if key != 'transportation' and key != 'applied_positions'}
+        )
+        employee.save()
+        employee.applied_positions.set([self.position1,self.position2])
+        management_factory = InlineFormsetManagmentFactory(
+            formset=JobHistoryInlineFormset,
+            extra=2,
+            initial=0,
+            min_num=0,
+            max_num=2,
+            records=self.create_job_history_data
+        )
+        form_data = management_factory.create_management_form()
+        response = self.client.post(reverse('employee:job_history'),form_data)
+        self.assertEqual(response.status_code,302)
+        self.assertRedirects(response,reverse('lifeguard:classes'))
+
+
+
+
+
+
+
+
+
 
 class EmployeeRegistrationTest(CommonSetUp):
     def test_user_started_with_employee_registration(self):
