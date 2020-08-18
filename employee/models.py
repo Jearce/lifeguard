@@ -11,10 +11,18 @@ class Transportation(models.Model):
 
 class Position(models.Model):
     title = models.CharField(max_length=255)
-    age_requirement = models.CharField(max_length=255)
+    minimum_age = models.PositiveIntegerField(
+        "Minimum age requirement",
+        default=15
+    )
+    lifeguard_required = models.BooleanField(
+        "Is lifeguard certification required for this position?",
+        choices=[(True,"Yes"),(False,"No")],
+        default=True
+    )
 
     def __str__(self):
-        return f"{self.title} ({self.age_requirement})"
+        return f"{self.title} (Must be at least {self.minimum_age} years old)"
 
 class Employee(models.Model):
     user = models.OneToOneField(User,on_delete=models.CASCADE,primary_key=True)
