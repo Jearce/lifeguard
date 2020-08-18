@@ -4,13 +4,12 @@ from users.models import User
 # Create your models here.
 class Lifeguard(models.Model):
     WORK_CHOICES = [
-        ('Y',"Yes (I want the discounted employee rate)"),
-        ('N',"I will be working elsewhere (NOT eligible for discount)"),
-        ("O","Other")
+        (True,"Yes (I want the discounted employee rate)"),
+        (False,"No, I will be working elsewhere (NOT eligible for discount)"),
     ]
     user = models.OneToOneField(User,on_delete=models.CASCADE)
-    already_certified = models.CharField("Are you a certified lifeguard?",choices=[("Y","Yes"),("N","No")],max_length=1)
-    wants_to_work_for_company = models.CharField("Do you plan to work for Gulf Coast Aquatics?",choices=WORK_CHOICES,max_length=1)
+    already_certified = models.BooleanField("Are you a certified lifeguard?",choices=[(True,"Yes"),(False,"No")])
+    wants_to_work_for_company = models.BooleanField("Do you plan to work for Gulf Coast Aquatics?",choices=WORK_CHOICES)
     payment_agreement = models.BooleanField("I understand and agree")
     payment_agreement_signature = models.CharField("Your name",max_length=255)
     no_refunds_agreement = models.BooleanField("I agree")
