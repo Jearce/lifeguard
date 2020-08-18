@@ -32,24 +32,24 @@ class LifeguardCreateTest(BaseUserSetUp):
         super().setUp()
         self.user_login = self.client.login(email=self.email,password=self.password)
         self.new_working_lifeguard = {
-            "already_certified":"N",#new lifeguard
-            "wants_to_work_for_company":"Y",#should be redirected to employee register page
+            "already_certified":False,#new lifeguard
+            "wants_to_work_for_company":True,#should be redirected to employee register page
             "payment_agreement":True,
             "payment_agreement_signature":"Larry Johnson",
             "no_refunds_agreement":True,
             "electronic_signature":"Larry Johnson",
         }
         self.certified_working_lifeguard =  {
-            "already_certified":"Y",
-            "wants_to_work_for_company":"Y",
+            "already_certified":True,
+            "wants_to_work_for_company":True,
             "payment_agreement":True,
             "payment_agreement_signature":"Larry Johnson",
             "no_refunds_agreement":True,
             "electronic_signature":"Larry Johnson",
         }
         self.new_lifeguard = {
-            "already_certified":"N",
-            "wants_to_work_for_company":"N",
+            "already_certified":False,
+            "wants_to_work_for_company":False,
             "payment_agreement":True,
             "payment_agreement_signature":"Larry Johnson",
             "no_refunds_agreement":True,
@@ -121,23 +121,23 @@ class LifeguardCreateTest(BaseUserSetUp):
         employee.save()
         employee.applied_positions.set([self.position1,self.position2])
         response = self.client.post(reverse('lifeguard:create'),self.new_lifeguard)
-        self.assertRedirects(response,reverse('users:dashboard'))
+        self.assertRedirects(response,reverse('lifeguard:classes'))
 
 class LifeguardAlreadyCertifiedTest(BaseUserSetUp):
     def setUp(self):
         super().setUp()
         self.user_login = self.client.login(email=self.email,password=self.password)
         self.certified_lifeguard = {
-            "already_certified":"Y",
-            "wants_to_work_for_company":"N",
+            "already_certified":True,
+            "wants_to_work_for_company":False,
             "payment_agreement":True,
             "payment_agreement_signature":"Larry Johnson",
             "no_refunds_agreement":True,
             "electronic_signature":"Larry Johnson",
         }
         self.working_certified_lifeguard = {
-            "already_certified":"Y",
-            "wants_to_work_for_company":"Y",
+            "already_certified":True,
+            "wants_to_work_for_company":True,
             "payment_agreement":True,
             "payment_agreement_signature":"Larry Johnson",
             "no_refunds_agreement":True,
@@ -180,8 +180,8 @@ class LifeguardClassesTest(BaseUserSetUp):
         super().setUp()
         self.response = self.client.get(reverse('lifeguard:classes'))
         self.lifeguard_data = {
-            "already_certified":"N",
-            "wants_to_work_for_company":"Y",
+            "already_certified":False,
+            "wants_to_work_for_company":True,
             "payment_agreement":True,
             "payment_agreement_signature":"Larry Johnson",
             "no_refunds_agreement":True,
