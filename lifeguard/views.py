@@ -6,7 +6,7 @@ from django.urls import reverse_lazy
 
 from users.models import User
 from .models import Lifeguard,Enroll,LifeguardClass
-from .forms import LifeguardCertifiedForm
+from .forms import LifeguardCertifiedForm,LifeguardForm
 
 # Create your views here.
 class HomeView(TemplateView):
@@ -15,14 +15,7 @@ class HomeView(TemplateView):
 class LifeguardCreateOrUpdate(UpdateView):
     model = Lifeguard
     template_name = 'lifeguard/lifeguard_form.html'
-    fields = [
-        'already_certified',
-        'wants_to_work_for_company',
-        'payment_agreement',
-        'payment_agreement_signature',
-        'no_refunds_agreement',
-        'electronic_signature'
-    ]
+    form_class = LifeguardForm
 
     def get_object(self):
         try:
