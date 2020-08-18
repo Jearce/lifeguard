@@ -308,8 +308,10 @@ class SignUpTest(BaseTestFixture):
         self.fill_employee_education_form()
         self.fill_employee_job_history(redirect_url="/lifeguard/create/")
 
-        self.register_new_lifeguard_who_wants_to_work(redirect_url="/users/dashboard/")
+        self.register_new_lifeguard_who_wants_to_work(redirect_url="/lifeguard/classes/")
 
+        #picks a class to attend
+        self.enroll_in_class()
 
         #makes payment
         self.fail("Wait for application status")
