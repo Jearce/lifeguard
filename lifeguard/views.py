@@ -24,6 +24,11 @@ class LifeguardCreateOrUpdate(UpdateView):
             obj = Lifeguard(user=self.request.user)
         return obj
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
     def get_success_url(self):
         user = self.request.user
         if user.lifeguard.already_certified:

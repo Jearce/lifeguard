@@ -20,3 +20,10 @@ class LifeguardForm(ModelForm):
             'no_refunds_agreement',
             'electronic_signature'
         ]
+
+    def __init__(self,user=None,*args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if user and hasattr(user,'employee'):
+            self.initial['wants_to_work_for_company'] = True
+
+
