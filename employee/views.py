@@ -70,7 +70,7 @@ class JobHistory(InlineFormSetViewMixin,UpdateView):
         user = self.request.user
         if hasattr(user, 'lifeguard'):
             return reverse_lazy('lifeguard:classes')
-        elif any('Lifeguard' in ap.title for ap in user.employee.applied_positions.all()):
+        elif any(ap.lifeguard_required for ap in user.employee.applied_positions.all()):
             return reverse_lazy('lifeguard:create')
         else:
             return reverse_lazy('users:dashboard')
