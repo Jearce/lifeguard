@@ -141,6 +141,17 @@ class BaseTestFixture(LiveServerTestCase):
         self.general_form_input(register_data,form_id="lifeguard_form")
         self.assertIn(redirect_url,self.browser.current_url)
 
+    def register_new_lifeguard_who_applied_as_employee(self,redirect_url):
+        register_data = {
+           "already_certified" : "N",
+           "payment_agreement":"click",
+           "payment_agreement_signature":"Larry Jones",
+           "no_refunds_agreement" : "click",
+           "electronic_signature" : "Larry Jones"
+        }
+        self.general_form_input(register_data,form_id="lifeguard_form")
+        self.assertIn(redirect_url,self.browser.current_url)
+
     def fill_out_emergency_contact(self):
         prefix = 'id_emergencycontact_set'
         self.general_managment_form_input(
@@ -209,7 +220,6 @@ class BaseTestFixture(LiveServerTestCase):
     def make_payment(self):
         pass
 
-
 class SignUpTest(BaseTestFixture):
 
     def setUp(self):
@@ -261,7 +271,7 @@ class SignUpTest(BaseTestFixture):
         self.enroll_in_class()
 
         #makes payment
-        self.fail("Finish payment")
+        self.fail("Finish Payment Test")
 
         #redirect to dashboard
 
@@ -285,7 +295,6 @@ class SignUpTest(BaseTestFixture):
         self.fill_employee_education_form()
         self.fill_employee_job_history(redirect_url="/users/dashboard/")
 
-        #makes payment
         self.fail("Wait for application status")
 
     def test_register_as_employee_and_apply_as_lifeguard(self):
@@ -308,17 +317,14 @@ class SignUpTest(BaseTestFixture):
         self.fill_employee_education_form()
         self.fill_employee_job_history(redirect_url="/lifeguard/create/")
 
-        self.register_new_lifeguard_who_wants_to_work(redirect_url="/lifeguard/classes/")
+        #register lifeguard who is already filled out the employee application
+        self.register_new_lifeguard_who_applied_as_employee(redirect_url="/lifeguard/classes/")
 
         #picks a class to attend
         self.enroll_in_class()
 
         #makes payment
-        self.fail("Wait for application status")
-
-
-
-
+        self.fail("Finish Payment Test")
 
 class LogInTest(BaseTestFixture):
 
