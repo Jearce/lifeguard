@@ -36,6 +36,19 @@ class EducationForm(ModelForm):
             "date_leaving_to_college":DateInput(attrs={'type':'date'}),
         }
 
+    def clean(self):
+        cleaned_data = super().clean()
+
+        attending = cleaned_data["attending_college"]
+        date_leaving = cleaned_data["date_leaving_to_college"]
+
+        if attending and not date_leaving:
+            self.add_error('date_leaving_to_college',"Please fill out the date you will be leaving.")
+
+        elif date_leaving and not attending:
+            self.add_error("attending_college","This field is required.")
+
+
 class JobHistoryForm(ModelForm):
     class Meta:
         model = JobHistory
