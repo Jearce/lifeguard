@@ -38,5 +38,6 @@ EmergencyContactInlineFormSet = inlineformset_factory(
     fields=('name','relationship','phone'),
     extra=2,
     max_num=2,
-    can_order=False
+    can_order=False,
+    can_delete=False,
 )
