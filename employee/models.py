@@ -27,7 +27,7 @@ class Position(models.Model):
 class Employee(models.Model):
     user = models.OneToOneField(User,on_delete=models.CASCADE,primary_key=True)
     home_phone = models.CharField(max_length=12,blank=True,null=True)
-    who_referred_you = models.TextField("Who referred you to us?")
+    who_referred_you = models.CharField("Who referred you to us?",max_length=255)
     transportation = models.ForeignKey(
         "Transportation",
         on_delete=models.CASCADE
