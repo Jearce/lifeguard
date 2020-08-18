@@ -72,8 +72,8 @@ class LifeguardCreateTest(BaseUserSetUp):
             "electronic_signature":"Larry Johnson",
         }
         self.transportation = Transportation.objects.create(name="Car",description="I will drive by car")
-        self.position1 = Position.objects.create(title="Lifeguard",age_requirement="Must be 15 years or older")
-        self.position2 = Position.objects.create(title="Supervisor",age_requirement="Must be 18 years or older")
+        self.position1 = Position.objects.create(title="Lifeguard",minimum_age=15,lifeguard_required=True)
+        self.position2 = Position.objects.create(title="Supervisor",minimum_age=18,lifeguard_required=False)
 
 
     def test_view_url_exists_at_desired_location(self):

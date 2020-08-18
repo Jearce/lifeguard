@@ -223,8 +223,8 @@ class BaseTestFixture(LiveServerTestCase):
 class SignUpTest(BaseTestFixture):
 
     def setUp(self):
-        Position.objects.create(title="Lifeguard",age_requirement="Must be 15 years or older")
-        Position.objects.create(title="Supervisor",age_requirement="Must be 18 years or older")
+        Position.objects.create(title="Lifeguard",minimum_age=15,lifeguard_required=True)
+        Position.objects.create(title="Supervisor",minimum_age=18,lifeguard_required=False)
         Transportation.objects.create(name="Car",description="I will drive my self.")
 
         class1 = {
