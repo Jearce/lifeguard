@@ -25,8 +25,8 @@ class CommonSetUp(TestCase):
         cls.password = 'asdhf33!'
         cls.user = User.objects.create_user(email=cls.email, password=cls.password)
         cls.new_lifeguard = {
-            "already_certified":"N",#new lifeguard
-            "wants_to_work_for_company":"Y",#should be redirected to employee register page
+            "already_certified":False,#new lifeguard
+            "wants_to_work_for_company":True,#should be redirected to employee register page
             "payment_agreement":True,
             "payment_agreement_signature":"Larry Johnson",
             "no_refunds_agreement":True,
@@ -48,8 +48,8 @@ class CommonSetUp(TestCase):
             "contract_employment_agreement":True,
             "electronic_signature":"Larry Johnson",
         }
-        cls.position1 = Position.objects.create(title="Lifeguard",age_requirement="Must be 15 years or older")
-        cls.position2 = Position.objects.create(title="Supervisor",age_requirement="Must be 18 years or older")
+        cls.position1 = Position.objects.create(title="Lifeguard",minimum_age=15,lifeguard_required=True)
+        cls.position2 = Position.objects.create(title="Supervisor",minimum_age=18,lifeguard_required=False)
         cls.transportation = Transportation.objects.create(name="Car",description="I will drive by car")
 
     def setUp(self):
