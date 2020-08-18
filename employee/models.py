@@ -66,6 +66,7 @@ class Employee(models.Model):
         return self.user.email
 
 class EmployeeEducation(models.Model):
+    CHOOICES = [(True,"Yes"),(False,"No")]
     employee = models.ForeignKey(Employee,on_delete=models.CASCADE)
     school_name = models.CharField(
         "Name of school",
@@ -76,10 +77,15 @@ class EmployeeEducation(models.Model):
         max_length=255
     )
     attending_college =  models.BooleanField(
-        "Are you attending college? Or will you attend college this fall?"
+        "Will you attend college this fall?",
+        choices=CHOOICES,
+        blank=True,
+        null=True,
     )
     date_leaving_to_college = models.DateField(
-        "If leaving to college in the Fall when will you leave?"
+        "If leaving to college in the Fall when will you leave?",
+        blank=True,
+        null=True,
     )
 
 class JobHistory(models.Model):
