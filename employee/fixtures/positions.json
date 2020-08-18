@@ -1,0 +1,1 @@
+[{"model": "employee.position", "pk": 1, "fields": {"title": "Lifeguard", "minimum_age": 15, "lifeguard_required": true}}, {"model": "employee.position", "pk": 2, "fields": {"title": "Supervisor", "minimum_age": 18, "lifeguard_required": false}}]
