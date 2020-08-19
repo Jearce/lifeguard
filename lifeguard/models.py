@@ -55,10 +55,6 @@ class LifeguardClass(models.Model):
     cost = models.DecimalField(max_digits=6, decimal_places=2)
     employee_cost = models.DecimalField(max_digits=6, decimal_places=2)
     students = models.ManyToManyField(Lifeguard,through="Enroll")
-    years_required = models.PositiveIntegerField(
-        "How many years are required to take this class?",
-        default=0,
-    )
     lifeguard_certified_required = models.BooleanField(
         "Do the students need to be lifeguard certified to take this class?",
         choices=[(True, "Yes"),(False,"No")],
