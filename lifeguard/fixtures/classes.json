@@ -7,18 +7,33 @@
       "start_date":"2020-8-28 14:30:59",
       "end_date":"2020-9-8 14:30:59",
       "cost":120.23,
-      "employee_cost":50.50
+      "employee_cost":50.50,
+      "lifeguard_certified_required":"True",
+      "is_review":"True"
     }
   },
   {
     "model":"lifeguard.lifeguardclass",
     "pk":2,
     "fields":{
-      "course":"Lifeguard",
+      "course":"Full Lifeguard Course",
       "start_date":"2020-8-28 14:30:59",
       "end_date":"2020-9-8 14:30:59",
       "cost":120.23,
       "employee_cost":50.50
+    }
+  },
+  {
+    "model":"lifeguard.lifeguardclass",
+    "pk":3,
+    "fields":{
+      "course":"Refresher",
+      "start_date":"2020-8-28 14:30:59",
+      "end_date":"2020-9-8 14:30:59",
+      "cost":120.23,
+      "employee_cost":50.50,
+      "lifeguard_certified_required":"True",
+      "is_review":"False"
     }
   }
 ]
