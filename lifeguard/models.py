@@ -1,5 +1,9 @@
+from datetime import datetime
+
 from django.db import models
 from users.models import User
+
+from dateutil.relativedelta import relativedelta
 
 # Create your models here.
 class Lifeguard(models.Model):
@@ -18,6 +22,29 @@ class Lifeguard(models.Model):
     certification = models.FileField(blank=False,null=True)
     online_portion_complete = models.BooleanField(default=False)
 
+    def certificate_expired(self):
+        date_from_being_certified = self.last_certified + self.get_experience()
+        return date_from_being_certified > self.get_experiation_date_of_certificate()
+
+    def needs_review(self):
+        experience = self.get_experience()
+        return experience.years == 2 and experience.days < 30
+
+    def get_experiation_date_of_certificate(self):
+        #certifcate is valid for 2 years and 30 days of being certified
+        duration_of_certificate = relativedelta(years=2,days=30)
+        return self.date_certified + duration_of_certificate
+
+    def get_experience(self):
+        now = datetime.now()
+        diff = relativedelta(now,self.date_certified)
+        return diff
+
+    @property
+    def date_certified(self):
+        date_certified = datetime(self.last_certified.year,self.last_certified.month,self.last_certified.day)
+        return date_certified
+
     def __str__(self):
         return self.user.first_name + " " + self.user.last_name
 
@@ -28,6 +55,20 @@ class LifeguardClass(models.Model):
     cost = models.DecimalField(max_digits=6, decimal_places=2)
     employee_cost = models.DecimalField(max_digits=6, decimal_places=2)
     students = models.ManyToManyField(Lifeguard,through="Enroll")
+    years_required = models.PositiveIntegerField(
+        "How many years are required to take this class?",
+        default=0,
+    )
+    lifeguard_certified_required = models.BooleanField(
+        "Do the students need to be lifeguard certified to take this class?",
+        choices=[(True, "Yes"),(False,"No")],
+        default=False,
+    )
+    is_review = models.BooleanField(
+        "Is this class a review for expiring lifeguard certificates?",
+        choices=[(True, "Yes"),(False,"No")],
+        default=False,
+    )
 
     def __str__(self):
         return self.course
