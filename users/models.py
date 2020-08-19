@@ -1,7 +1,11 @@
+from datetime import datetime
+
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 from .managers import CustomUserManager
+
+from dateutil.relativedelta import relativedelta
 
 # Create your models here.
 class User(AbstractUser):
@@ -16,6 +20,12 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.email
+
+    def age(self):
+        dob = datetime(self.dob.year,self.dob.month,self.dob.day)
+        now = datetime.now()
+        diff =  relativedelta(now,dob)
+        return diff.years
 
 class EmergencyContact(models.Model):
     name = models.CharField('name',max_length=255)
