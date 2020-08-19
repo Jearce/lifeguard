@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 
 from django.urls import resolve
 from django.urls import reverse
@@ -10,6 +11,9 @@ from .. import views
 from users.models import User
 from employee.models import Employee,Transportation,Position
 from ..models import LifeguardClass,Enroll,Lifeguard
+from lifeguard.tests.helpers import set_up_time,LifeguardFactory
+
+from dateutil.relativedelta import relativedelta
 
 class BaseUserSetUp(TestCase):
     def setUp(self):
@@ -175,10 +179,12 @@ class LifeguardAlreadyCertifiedTest(BaseUserSetUp):
             response = self.client.post(reverse('lifeguard:already_certified'),{'last_certified':'2000-06-09','certification':pdf})
         return response
 
+
 class LifeguardClassesTest(BaseUserSetUp):
+    fixtures = ['classes.json']
     def setUp(self):
         super().setUp()
-        self.response = self.client.get(reverse('lifeguard:classes'))
+        user_login = self.client.login(email=self.email, password=self.password)
         self.lifeguard_data = {
             "already_certified":False,
             "wants_to_work_for_company":True,
@@ -189,37 +195,44 @@ class LifeguardClassesTest(BaseUserSetUp):
         }
 
     def test_view_url_exists_at_desired_location(self):
-        self.assertEqual(self.response.status_code,200)
+        response = self.client.get(reverse('lifeguard:classes'))
+        self.assertEqual(response.status_code,200)
 
     def test_view_uses_correct_template(self):
-        self.assertTemplateUsed(self.response,'lifeguard/classes.html')
+        response = self.client.get(reverse('lifeguard:classes'))
+        self.assertTemplateUsed(response,'lifeguard/classes.html')
 
     def test_can_enroll_in_class(self):
-        user_login = self.client.login(email=self.email, password=self.password)
         Lifeguard.objects.create(user=self.user,**self.lifeguard_data)
-        class1 = {
-            "course":"Review",
-            "start_date":"2020-8-28 14:30:59",
-            "end_date":"2020-9-8 14:30:59",
-            "cost":120.23,
-            "employee_cost":50.50
-        }
-        class2 = {
-            "course":"Lifeguard",
-            "start_date":"2020-8-28 14:30:59",
-            "end_date":"2020-9-8 14:30:59",
-            "cost":120.23,
-            "employee_cost":50.50
-        }
-        LifeguardClass.objects.bulk_create(
-            [LifeguardClass(**class1),
-             LifeguardClass(**class2)]
-        )
         classes = LifeguardClass.objects.all()
         response = self.client.post(reverse('lifeguard:classes',kwargs={'pk':classes[0].id}))
         self.assertEqual(response.status_code,302)
         self.assertEqual(Enroll.objects.all().count(),1)
         self.assertRedirects(response,reverse('lifeguard:payment'))
+
+    def test_shows_only_review_classes(self):
+        needs_review_time = set_up_time(years=2,days=15)
+        lifeguard = LifeguardFactory(user=self.user,last_certified=needs_review_time).create()
+        self.assertEqual(Lifeguard.objects.count(),1)
+
+        response = self.client.get(reverse('lifeguard:classes'))
+        self.assertTrue(all(lgclass.is_review for lgclass in response.context['classes']))
+
+    def test_shows_only_certified_and_nonreview_classes(self):
+        needs_refresher_time = set_up_time(years=1,days=15)
+        lifeguard = LifeguardFactory(user=self.user,last_certified=needs_refresher_time).create()
+        self.assertEqual(Lifeguard.objects.count(),1)
+
+        response = self.client.get(reverse('lifeguard:classes'))
+        self.assertTrue(
+            all(
+                lgclass.lifeguard_certified_required and not lgclass.is_review
+                for lgclass in response.context['classes']
+            )
+        )
+
+
+
 
 class LifeguardRegistrationTest(BaseUserSetUp):
     def setUp(self):
