@@ -3,6 +3,7 @@ from django.views import View
 from django.views.generic import TemplateView,ListView
 from django.views.generic.edit import UpdateView,CreateView
 from django.urls import reverse_lazy
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from users.models import User
 from .models import Lifeguard,Enroll,LifeguardClass
@@ -54,9 +55,25 @@ class LifeguardCertified(UpdateView):
             return reverse_lazy('employee:create')
         return reverse_lazy('lifeguard:classes')
 
-class LifeguardClasses(View):
+class LifeguardClasses(LoginRequiredMixin,View):
+    login_url= '/users/login/'
+
     def get(self,request,*args,**kwargs):
-        classes = LifeguardClass.objects.all()
+        user = self.request.user
+        if hasattr(user,'lifeguard'):
+            lifeguard = user.lifeguard
+            if lifeguard.already_certified:
+                if lifeguard.certificate_expired():
+                    classes = LifeguardClass.objects.filter(lifeguard_certified_required=False)
+                elif lifeguard.needs_review():
+                    classes = LifeguardClass.objects.filter(lifeguard_certified_required=True,is_review=True)
+                else:
+                    classes = LifeguardClass.objects.filter(lifeguard_certified_required=True,is_review=False)
+            else:
+                classes = LifeguardClass.objects.filter(lifeguard_certified_required=False)
+        else:
+            classes = LifeguardClass.objects.all()
+
         return render(request,'lifeguard/classes.html',context={'classes':classes})
 
     def post(self,request,*args,**kwargs):
@@ -71,4 +88,3 @@ def lifeguard_registration(request):
     if request.method == 'GET':
         request.session["registration_path"] = "lifeguard:create"
         return redirect("users:contact_information",pk=request.user.pk)
-
