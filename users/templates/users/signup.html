@@ -5,9 +5,16 @@
 <title>Sign-Up</title>
 {% endblock title %}
 
+
+
 {% block content %}
-<h3>Sign Up</h3>
-<form method="post" id="signup-form">
+
+<div id="navbar">
+	{% include 'navbar.html' %}
+</div>
+
+<h3 class="pb-3 pt-3 text-center">Sign Up</h3>
+<form class="center-form" method="post" id="signup-form">
     {% csrf_token %}
     {{ form|crispy }}
     <p><a href="{% url 'users:login' %}" id="id_login">Already have an account?</a></p>
