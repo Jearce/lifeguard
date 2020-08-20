@@ -203,7 +203,6 @@ class BaseTestFixture(LiveServerTestCase):
                 element.click()
             else:
                 element.send_keys(value)
-        time.sleep(5)
         self.browser.find_element_by_id(form_id).submit()
 
     def general_managment_form_input(self,records,form_id,prefix):
