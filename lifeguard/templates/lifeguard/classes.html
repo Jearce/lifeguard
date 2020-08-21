@@ -1,27 +1,33 @@
-{% extends 'base.html' %}
+{% extends 'sidebar.html' %}
 {% load crispy_forms_tags %}
 
 {% block title %}
 <title>Lifeguard Classes</title>
 {% endblock title %}
 
-{% block content %}
-<h3>Lifeguard Classes</h3>
-{% for class in classes %}
-<div class="card bg-light mb-3">
-    <div class="card-header">{{ class.course }}</div>
-    <div class="card-body">
-        <div class="card-text">
-            <p>Start date: {{ class.start_date }}</p>
-            <p>End date: {{ class.end_date }}</p>
-            <p>Cost: {{ class.cost }}</p>
-            <p>Employee cost: {{ class.employee_cost }}</p>
-        </div>
-        <form method="post" action="{% url 'lifeguard:classes' class.id %}">
-            {% csrf_token %}
-            <input name="enroll-btn" class="btn btn-primary" type="submit" value="enroll">
-        </form>
-    </div>
+{% block pagecontent %}
+<div class="container">
+	<div class="row">
+		<div class="col mb-4">
+			<h1 class="mt-4 text-center">Available Lifeguarding Classes</h1>
+			{% for class in classes %}
+			<div class="card bg-light mb-3">
+				<div class="card-header">{{ class.course }}</div>
+				<div class="card-body">
+					<div class="card-text">
+						<p>Start date: {{ class.start_date }}</p>
+						<p>End date: {{ class.end_date }}</p>
+						<p>Cost: {{ class.cost }}</p>
+						<p>Employee cost: {{ class.employee_cost }}</p>
+					</div>
+					<form method="post" action="{% url 'lifeguard:classes' class.id %}">
+						{% csrf_token %}
+						<input name="enroll-btn" class="btn btn-primary" type="submit" value="enroll">
+					</form>
+				</div>
+			</div>
+			{% endfor %}
+		</div>
+	</div>
 </div>
-{% endfor %}
-{% endblock content %}
+{% endblock pagecontent %}

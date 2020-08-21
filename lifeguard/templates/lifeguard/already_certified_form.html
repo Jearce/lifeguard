@@ -1,17 +1,28 @@
-{% extends 'base.html' %}
+{% extends 'sidebar.html' %}
 {% load crispy_forms_tags %}
 
 {% block title %}
 <title>Return Lifeguard</title>
 {% endblock title %}
 
-{% block content %}
-<h3>Returning Lifeguard</h3>
-<form method="post" id="already_certified_form" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.last_certified|as_crispy_field }}
-    {{ form.certification|as_crispy_field }}
-    <input class="btn btn-primary" type="submit" value="submit">
-</form>
-{% endblock content %}
+{% block pagecontent %}
+<div class="container">
+	<div class="row">
+		<div class="col mb-4">
+			<h1 class="mt-4 text-center">Returning Lifeguard</h1>
+			<form method="post" id="already_certified_form" enctype="multipart/form-data">
+				{% csrf_token %}
+				{{ form|crispy }}
+				<input class="btn btn-primary" type="submit" value="submit">
+			</form>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">
+			<h3 class="mt-4">Don't know where to get your certificate?</h3>
+			<p>You can download your lifeguard certificate from <a href="https://www.redcross.org/take-a-class/digital-certificate">American Red Cross</a>. Once you click on the link you can search for your certificate by email, name & date, or certificate id. Once you find your certificate you can download your certificate as a pdf. Please submit this to the form above.</p>
+		</div>
+	</div>
+</div>
+{% endblock pagecontent %}
 
