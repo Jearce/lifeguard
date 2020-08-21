@@ -1,21 +1,29 @@
-{% extends 'base.html' %}
+{% extends 'sidebar.html' %}
 
-{% block content %}
-<h3>Dashboard</h3>
-<div id="applications">
-    <div class="card" style="width: 18rem;">
-        <div class="card-body">
-            <h5 class="card-title">Applications</h5>
-            <p class="card-text">Below are available applications for you to fill out.</p>
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item">
-                    <a href="{% url 'lifeguard:registration' %}" id="id_lifeguard_registration">Lifeguard Registration</a>
-                </li>
-                <li class="list-group-item">
-									<a href="{% url 'employee:registration' %}" id="id_employee_registration">Employee Registration</a>
-                </li>
-            </ul>
-        </div>
-    </div>
+{% block pagecontent %}
+<div class="container-fluid">
+	<h1 class="mt-4">Dashboard</h1>
+	<div id="applications">
+		<div class="row">
+			<div class="col-sm-6">
+				<div class="card mr-4">
+					<div class="card-body">
+						<h5 class="card-title">Applications</h5>
+						<p class="card-text">Below are available applications for you to fill out.</p>
+						<ul class="list-group list-group-flush">
+							<li class="list-group-item">
+								<a href="{% url 'lifeguard:registration' %}" id="id_lifeguard_registration">Lifeguard Registration</a>
+							</li>
+							<li class="list-group-item">
+								<a href="{% url 'employee:registration' %}" id="id_employee_registration">Employee Registration</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
-{% endblock content %}
+<!-- /#page-content-wrapper -->
+{% endblock pagecontent %}
+

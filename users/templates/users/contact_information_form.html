@@ -1,15 +1,17 @@
-{% extends 'base.html' %}
+{% extends 'sidebar.html' %}
 {% load crispy_forms_tags %}
 
 {% block title %}
 <title>Contact Information</title>
 {% endblock title %}
 
-{% block content %}
-<h3>Contact Information</h3>
-<form method="post" id="contact_information_form">
-    {% csrf_token %}
-    {{ form|crispy }}
-    <input class="btn btn-primary" type='submit' value="submit">
-</form>
-{% endblock content %}
+{% block pagecontent %}
+<div class="container">
+	<div class="row">
+		<div class="col mb-4">
+			<h1 class="mt-4 text-center">Contact Information</h1>
+			{% crispy form %}
+		</div>
+	</div>
+</div>
+{% endblock pagecontent %}
