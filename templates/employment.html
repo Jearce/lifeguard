@@ -15,62 +15,66 @@
 {% endblock title %}
 
 {% block content %}
-<div id="navbar">
-	{% include 'navbar.html' %}
+<div class="container-fluid">
+	<div id="navbar">
+		{% include 'navbar.html' %}
+	</div>
 </div>
 
-<div class="row">
-	<div class="col">
-		<div class="card border-0 pt-3 pb-3">
-			<h1 class="text-center pt-3">Accepting Applications Now!</h1>
-			<hr>
-			<div class="card-body center">
-				<h3>
-					Applications accepted online
-				</h3>
-				<p>
-					To begin the application process please create an account with us
-					first. After creating an account you will be taken to your dashboard.
-					At your dashboard click on the employee registration link under
-					<b>Applications</b>.
-				</p>
-				<div class"text-center">
-					<a class="btn btn-primary mb-3" role="button" href="{% url "users:signup" %}">click here to create an account</a>
+<div class="container">
+	<div class="row">
+		<div class="col">
+			<div class="card border-0 pt-3 pb-3">
+				<h1 class="text-center pt-3">Accepting Applications Now!</h1>
+				<hr>
+				<div class="card-body center">
+					<h3>
+						Applications accepted online
+					</h3>
+					<p>
+						To begin the application process please create an account with us
+						first. After creating an account you will be taken to your dashboard.
+						At your dashboard click on the employee registration link under
+						<b>Applications</b>.
+					</p>
+					<div class"text-center">
+						<a class="btn btn-primary mb-3" role="button" href="{% url "users:signup" %}">click here to create an account</a>
+					</div>
+					<h3>
+						Returning guards
+					</h3>
+					<p>
+						Coming back to work another great summer? Awesome, glad to have you
+						back. Remember, you will either need a Refresher course to refresh
+						your skills before you get back on the stand, or your certification
+						is about to expire and you will need a Review Class to renew your
+						certification for another 2 years.
+					</p>
+					<h3>
+						Refresher class
+					</h3>
+					<p>
+						The Refresher Class is a 1 hour class meant to refresh lifeguarding,
+						first aid, and CPR skills. <b>You must hold a current American Red
+							Cross Lifeguard Certification in order to take the class.</b>
+						The Refresher is meant for returning lifeguards.
+					</p>
+					<h3>Review class</h3>
+					<p>
+						The Review class is a 2 day class for participants who are
+						currently certified and about to expire. You have 30 days
+						from expiration to qualify for a Review Class. After that,
+						you must take the entire Lifeguard Certification Class.
+					</p>
+					<h3>Have questions?</h3>
+					<p>
+						Feel free to email us at
+						<a href="mailto:info@gulfcoastaquatics.com">
+							info@gulfcoastaquatics.com
+						</a>
+						if you have any questions about employment.
+					</p>
 				</div>
-				<h3>
-					Returning guards
-				</h3>
-				<p>
-					Coming back to work another great summer? Awesome, glad to have you
-					back. Remember, you will either need a Refresher course to refresh
-					your skills before you get back on the stand, or your certification
-					is about to expire and you will need a Review Class to renew your
-					certification for another 2 years.
-				</p>
-				<h3>
-					Refresher class
-				</h3>
-				<p>
-					The Refresher Class is a 1 hour class meant to refresh lifeguarding,
-					first aid, and CPR skills. <b>You must hold a current American Red
-						Cross Lifeguard Certification in order to take the class.</b>
-					The Refresher is meant for returning lifeguards.
-				</p>
-				<h3>Review class</h3>
-				<p>
-					The Review class is a 2 day class for participants who are
-					currently certified and about to expire. You have 30 days
-					from expiration to qualify for a Review Class. After that,
-					you must take the entire Lifeguard Certification Class.
-				</p>
-				<h3>Have questions?</h3>
-				<p>
-					Feel free to email us at
-					<a href="mailto:info@gulfcoastaquatics.com">
-						info@gulfcoastaquatics.com
-					</a>
-					if you have any questions about employment.
-				</p>
 			</div>
 		</div>
 	</div>

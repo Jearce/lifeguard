@@ -15,54 +15,59 @@
 {% endblock title %}
 
 {% block content %}
-<div id="navbar">
-	{% include 'navbar.html' %}
+
+<div class="container-fluid">
+	<div id="navbar">
+		{% include 'navbar.html' %}
+	</div>
 </div>
 
-<div class="row">
-	<div class="col">
-		<div class="card border-0 pt-3 pb-3">
-			<h1 class="text-center pt-3">American Red Cross Lifeguard Certification</h1>
-			<hr>
-			<div class="card-body center">
-				<h3>
-					The Gulf Coast Aquatics, Inc. team is ready
-					to train and have you aboard!
-				</h3>
-				<p>
-					Our instructors are trained by the American Red Cross instructors for Lifeguarding, First Aid, CPR, AED, and Disease prevention. By taking the Lifeguard Training Course, you will learn about the duties and responsibilities of a lifeguard and how to carry them out in a professional manner. You will also learn a number of lifeguarding techniques such as: surveillance, how to use rescue equipment for a distressed swimmer, active drowning victim, passive drowning victim and how to care for someone who may have a head, neck, or back injury in deep and shallow water. We have Sessions throughout Spring and Early Summer. (You will just attend 1 session).
-				</p>
-				<h3>
-					A little about the course
-				</h3>
-				<p>
-					The purpose of the American Red Cross Lifeguarding course is to provide entry-level lifeguard participants with the knowledge and skills to prevent recognize and respond to aquatic emergencies and to provide care for breathing and cardiac emergencies, injuries and sudden illnesses until emergency medical services personnel take over. <b>To enroll in the Lifeguarding course, you must be at least 15 years old before the last scheduled class session.</b>
-				</p>
-				<h3>
-					Prerequisites for the class
-				</h3>
-				<ol>
-					<li>Swim 300 yards continuously, using any stroke or front crawl. This is not a timed event. You must be able to swim 12 laps continously in any form besides swimming on your back.</li>
-					<li>Tread water for 2 minutes using only the legs. You should place your hands under your armpits.</li>
-					<li>
-						Complete a timed event within 1 minute, 40 seconds.
-						<ul>
-							<li>Starting in the water, swim 20 yards. Your face may be in or out of the water. Swim goggles are not allowed.</li>
-							<li>Surface dive, feet-first or head-first, to a depth of 7 to 10 feet to retrieve a 10-pound object.</li>
-							<li>Return to the surface and swim 20 yards on your back to return to the starting point with both hands holding the object while keeping your face at or near the surface so you are able to get a breath. You should not swim the distance under water. Exit the water without using a ladder or steps.</li>
-						</ul>
-					</li>
-				</ol>
-				<h3>What to expect</h3>
-				<p> The course is roughly 26 hrs over 3 or 4 days. The online portion takes roughly 7 hrs to complete, and the in-person portion is about 2 1/2 days. The prerequisite skills evaluation will occur on the first day of the course. Please bring a swimsuit and towel for the skills evaluation and for every class. To successfully complete the course, you must attend the entire course, participate in all skill sessions/drills, activities and scenarios, demonstrate competency in all required skills and scenarios, and pass the final written exams with a minimum grade of 80 percent.</p>
-				<h3>How hard is this?</h3>
-				<p>
-					The practice sessions will require some strenuous physical activity. You are encouraged to check with your health care professional before participating in the practice sessions. If a medical condition or disability exists that might prevent participation in the activities, or there are questions about fully participating in the Lifeguarding course, please contact me to discuss this before the course begins.
-				</p>
-				<h3>Don't forget to apply!</h3>
-				<p>To register you must first create a account with us. After creating an account you will be taken to your dashboard. At your dashboard click on the lifeguard registration link under <b>Applications</b>.</p>
-				<div class"text-center">
-					<a class="btn btn-primary" role="button" href="{% url "users:signup" %}">click here to create an account</a>
+<div class="container">
+	<div class="row">
+		<div class="col">
+			<div class="card border-0 pt-3 pb-3">
+				<h1 class="text-center pt-3">American Red Cross Lifeguard Certification</h1>
+				<hr>
+				<div class="card-body center">
+					<h3>
+						The Gulf Coast Aquatics, Inc. team is ready
+						to train and have you aboard!
+					</h3>
+					<p>
+						Our instructors are trained by the American Red Cross instructors for Lifeguarding, First Aid, CPR, AED, and Disease prevention. By taking the Lifeguard Training Course, you will learn about the duties and responsibilities of a lifeguard and how to carry them out in a professional manner. You will also learn a number of lifeguarding techniques such as: surveillance, how to use rescue equipment for a distressed swimmer, active drowning victim, passive drowning victim and how to care for someone who may have a head, neck, or back injury in deep and shallow water. We have Sessions throughout Spring and Early Summer. (You will just attend 1 session).
+					</p>
+					<h3>
+						A little about the course
+					</h3>
+					<p>
+						The purpose of the American Red Cross Lifeguarding course is to provide entry-level lifeguard participants with the knowledge and skills to prevent recognize and respond to aquatic emergencies and to provide care for breathing and cardiac emergencies, injuries and sudden illnesses until emergency medical services personnel take over. <b>To enroll in the Lifeguarding course, you must be at least 15 years old before the last scheduled class session.</b>
+					</p>
+					<h3>
+						Prerequisites for the class
+					</h3>
+					<ol>
+						<li>Swim 300 yards continuously, using any stroke or front crawl. This is not a timed event. You must be able to swim 12 laps continously in any form besides swimming on your back.</li>
+						<li>Tread water for 2 minutes using only the legs. You should place your hands under your armpits.</li>
+						<li>
+							Complete a timed event within 1 minute, 40 seconds.
+							<ul>
+								<li>Starting in the water, swim 20 yards. Your face may be in or out of the water. Swim goggles are not allowed.</li>
+								<li>Surface dive, feet-first or head-first, to a depth of 7 to 10 feet to retrieve a 10-pound object.</li>
+								<li>Return to the surface and swim 20 yards on your back to return to the starting point with both hands holding the object while keeping your face at or near the surface so you are able to get a breath. You should not swim the distance under water. Exit the water without using a ladder or steps.</li>
+							</ul>
+						</li>
+					</ol>
+					<h3>What to expect</h3>
+					<p> The course is roughly 26 hrs over 3 or 4 days. The online portion takes roughly 7 hrs to complete, and the in-person portion is about 2 1/2 days. The prerequisite skills evaluation will occur on the first day of the course. Please bring a swimsuit and towel for the skills evaluation and for every class. To successfully complete the course, you must attend the entire course, participate in all skill sessions/drills, activities and scenarios, demonstrate competency in all required skills and scenarios, and pass the final written exams with a minimum grade of 80 percent.</p>
+					<h3>How hard is this?</h3>
+					<p>
+						The practice sessions will require some strenuous physical activity. You are encouraged to check with your health care professional before participating in the practice sessions. If a medical condition or disability exists that might prevent participation in the activities, or there are questions about fully participating in the Lifeguarding course, please contact me to discuss this before the course begins.
+					</p>
+					<h3>Don't forget to apply!</h3>
+					<p>To register you must first create a account with us. After creating an account you will be taken to your dashboard. At your dashboard click on the lifeguard registration link under <b>Applications</b>.</p>
+					<div class"text-center">
+						<a class="btn btn-primary" role="button" href="{% url "users:signup" %}">click here to create an account</a>
+					</div>
 				</div>
 			</div>
 		</div>

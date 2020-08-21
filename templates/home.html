@@ -5,101 +5,104 @@
 {% endblock title %}
 
 {% block content %}
-<div id="navbar">
-	{% include 'navbar.html' %}
+<div class="container-fluid">
+	<div id="navbar">
+		{% include 'navbar.html' %}
+	</div>
+	<div class="jumbotron">
+		<h1 class="display-4">
+			Now Hiring Lifeguards!
+		</h1>
+	</div>
 </div>
 
-<div class="jumbotron">
-	<h1 class="display-4">
-		Now Hiring Lifeguards!
-	</h1>
-</div>
-
-<!--Call to actions-->
-<div class="row">
-	<div class="col-sm-12">
-		<div class="card-group pb-3">
-			<div class="card">
-				<div class="card-body text-center">
-					<h5 class="card-title">Lifeguard Certification</h5>
-					<p class="card-text">
-						Interested in becoming a lifeguard?
-					</p>
+<div class="container">
+	<!--Call to actions-->
+	<div class="row">
+		<div class="col-sm-12">
+			<div class="card-group pb-3">
+				<div class="card">
+					<div class="card-body text-center">
+						<h5 class="card-title">Lifeguard Certification</h5>
+						<p class="card-text">
+							Interested in becoming a lifeguard?
+						</p>
+					</div>
+					<div class="card-footer text-center bg-white border-0">
+						<a href="{% url "lifeguarding" %}" class="btn btn-primary" role="button">Learn More</a>
+					</div>
 				</div>
-				<div class="card-footer text-center bg-white border-0">
-					<a href="{% url "lifeguarding" %}" class="btn btn-primary" role="button">Learn More</a>
-				</div>
-			</div>
-			<div class="card">
-				<div class="card-body text-center">
-					<h5 class="card-title">Employment Opportunities</h5>
-					<p class="card-text">
-						Lifeguards Wanted! Looking for an Exciting Summer Job?
-					</p>
-				</div>
-				<div class="card-footer text-center bg-white border-0">
-					<a href="{% url "employment" %}" class="btn btn-primary" role="button">Learn More</a>
+				<div class="card">
+					<div class="card-body text-center">
+						<h5 class="card-title">Employment Opportunities</h5>
+						<p class="card-text">
+							Lifeguards Wanted! Looking for an Exciting Summer Job?
+						</p>
+					</div>
+					<div class="card-footer text-center bg-white border-0">
+						<a href="{% url "employment" %}" class="btn btn-primary" role="button">Learn More</a>
+					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-</div>
 
-<hr>
+	<hr>
 
-<div class="row">
-	<div class="col">
+	<div class="row">
+		<div class="col">
 
-		<h2 class="text-center pt-3 pb-3">Contact Us</h2>
-		<h3 class="text-center">Have a question? We're here to help!</h3>
+			<h2 class="text-center pt-3 pb-3">Contact Us</h2>
+			<h3 class="text-center">Have a question? We're here to help!</h3>
 
-		<form class="center-form pt-3 pb-3">
-			<div class="form-row">
-				<div class="form-group col-sm-6">
-					<label for="name">Name</label>
-					<input type="text" class="form-control" id="name">
+			<form class="center-form pt-3 pb-3">
+				<div class="form-row">
+					<div class="form-group col-sm-6">
+						<label for="name">Name</label>
+						<input type="text" class="form-control" id="name">
+					</div>
+					<div class="form-group col-sm-6">
+						<label for="email">Email</label>
+						<input type="email" class="form-control" id="email">
+					</div>
 				</div>
-				<div class="form-group col-sm-6">
-					<label for="email">Email</label>
-					<input type="email" class="form-control" id="email">
+				<div class="form-group">
+					<label for="regarding">Regarding</label>
+					<input type="text" class="form-control" id="regarding">
 				</div>
-			</div>
-			<div class="form-group">
-				<label for="regarding">Regarding</label>
-				<input type="text" class="form-control" id="regarding">
-			</div>
-			<div class="form-group">
-				<label for="message">Message</label>
-				<textarea type="text" class="form-control" id="message" rows=4></textarea>
-			</div>
-			<div class="text-center">
-				<button type="submit" class="btn btn-primary">send</button>
-			</div>
-		</form>
+				<div class="form-group">
+					<label for="message">Message</label>
+					<textarea type="text" class="form-control" id="message" rows=4></textarea>
+				</div>
+				<div class="text-center">
+					<button type="submit" class="btn btn-primary">send</button>
+				</div>
+			</form>
+		</div>
 	</div>
-</div>
 
-<div class="row">
-	<div class="col-sm-12">
-		<div class="card-group pb-3">
-			<div class="card border-0">
-				<div class="card-body text-center">
-					<h5 class="card-title">Office Location & Phone Number</h5>
-					<p class="card-text">
-						2315 Lawrence Road, Kemah, Texas 77565, United States
-					</p>
-					<p class="card-text">
-						<a href="tel:(281) 538-7946">(281) 538-7946</a>
-					</p>
+	<div class="row">
+		<div class="col-sm-12">
+			<div class="card-group pb-3">
+				<div class="card border-0">
+					<div class="card-body text-center">
+						<h5 class="card-title">Office Location & Phone Number</h5>
+						<p class="card-text">
+							2315 Lawrence Road, Kemah, Texas 77565, United States
+						</p>
+						<p class="card-text">
+							<a href="tel:(281) 538-7946">(281) 538-7946</a>
+						</p>
+					</div>
 				</div>
-			</div>
-			<div class="card border-0">
-				<div class="card-body text-center">
-					<h5 class="card-title">Hours</h5>
-					<p class="card-text">
-						During the season (May-Sep) our office is open 7 days
-						a week 9am-5pm. In off season our phone lines are open M-F 9am-5pm.
-					</p>
+				<div class="card border-0">
+					<div class="card-body text-center">
+						<h5 class="card-title">Hours</h5>
+						<p class="card-text">
+							During the season (May-Sep) our office is open 7 days
+							a week 9am-5pm. In off season our phone lines are open M-F 9am-5pm.
+						</p>
+					</div>
 				</div>
 			</div>
 		</div>
