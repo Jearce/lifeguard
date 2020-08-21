@@ -1,25 +1,31 @@
-{% extends 'base.html' %}
+{% extends 'sidebar.html' %}
 {% load crispy_forms_tags %}
 
 {% block title %}
 <title>Education</title>
 {% endblock title %}
 
-{% block content %}
-<h3>Education</h3>
-<form method="post" id="education_form">
-    {% csrf_token %}
-    {{ formset.management_form }}
-    {% for form in formset %}
-    <div class="card bg-light mb-3">
-        <div class="card-header">
-            Education {{ forloop.counter }}
-        </div>
-        <div class="card-body">
-            {{ form|crispy }}
-        </div>
-    </div>
-    {% endfor %}
-    <input class="btn btn-primary" type="submit" value="submit">
-</form>
-{% endblock content %}
+{% block pagecontent %}
+<div class="container">
+	<div class="row">
+		<div class="col mb-4">
+			<h1 class="mt-4 text-center">Education</h1>
+			<form method="post" id="education_form">
+				{% csrf_token %}
+				{{ formset.management_form }}
+				{% for form in formset %}
+				<div class="card bg-light mb-3">
+					<div class="card-header">
+						Education {{ forloop.counter }}
+					</div>
+					<div class="card-body">
+						{{ form|crispy }}
+					</div>
+				</div>
+				{% endfor %}
+				<input class="btn btn-primary" type="submit" value="submit">
+			</form>
+		</div>
+	</div>
+</div>
+{% endblock pagecontent %}
