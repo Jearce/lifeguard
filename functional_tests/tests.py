@@ -1,4 +1,5 @@
 import re
+import time
 
 from django.core import mail
 from django.urls import reverse,reverse_lazy
@@ -230,7 +231,7 @@ class PasswordResetTest(BaseTestFixture):
         self.assertIn('complete',self.browser.current_url)
 
         #user gets redirected to login page after resetting password
-        self.browser.find_element_by_id('id_login').click()
+        self.browser.find_element_by_id('id_login_from_password_reset').click()
         self.assertIn('login',self.browser.current_url)
 
         #user logs in with new password
