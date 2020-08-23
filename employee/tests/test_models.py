@@ -34,3 +34,18 @@ class EmployeeTest(TestCase):
         self.employee.save()
         self.assertTrue(self.user.is_employee)
 
+    def test_applied_for_non_lifeguard_position(self):
+        self.employee.save()
+        self.employee.applied_positions.set([self.position2])
+        self.assertFalse(self.employee.applied_to_lifeguard_position())
+
+    def test_applied_for_lifeguard_position(self):
+        self.employee.save()
+        self.employee.applied_positions.set([self.position1,self.position2])
+        self.assertTrue(self.employee.applied_to_lifeguard_position())
+
+
+
+
+
+
