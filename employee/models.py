@@ -63,6 +63,9 @@ class Employee(models.Model):
     is_hired = models.BooleanField("Accepted for hire",choices=BOOLEAN_CHOICES,blank=True,null=True)
     created_on = models.DateTimeField(auto_now_add=True)
 
+    def applied_to_lifeguard_position(self):
+        return any(position.lifeguard_required for position in self.applied_positions.all())
+
     def save(self, *args, **kwargs):
         self.user.is_employee = True
         self.user.save()
