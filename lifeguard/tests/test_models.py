@@ -43,4 +43,9 @@ class LifeguardTest(TestCase):
 
         self.assertFalse(lifeguard.certificate_expired())
 
+    def test_user_is_lifeguard(self):
+        lifeguard = self.factory.create()
+        self.assertTrue(self.user.is_lifeguard)
+
+
 
