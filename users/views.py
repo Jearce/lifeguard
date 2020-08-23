@@ -73,32 +73,6 @@ class ContactInformationUpdate(UpdateView):
     def get_success_url(self):
         return reverse_lazy('users:emergency_contact')
 
-#class EmergencyContactCreate(CreateView):
-#    model = EmergencyContact
-#    template_name = 'users/emergency_contact_form.html'
-#    form_class = EmergencyContactForm
-#
-#    def get_context_data(self, **kwargs):
-#        context = super().get_context_data(**kwargs)
-#        context['formset'] = EmergencyContactFormSet(queryset=EmergencyContact.objects.none())
-#        return context
-#
-#    def post(self,request,*args,**kwargs):
-#        formset = EmergencyContactFormSet(request.POST)
-#        if formset.is_valid():
-#            return self.form_valid(formset)
-#        return render(request,self.template_name,context={'formset':formset})
-#
-#    def form_valid(self,formset):
-#        instances = formset.save(commit=False)
-#        for instance in instances:
-#            instance.user = self.request.user
-#            instance.save()
-#        return super().form_valid(formset)
-#
-#    def get_success_url(self):
-#        return reverse_lazy('users:address')
-
 class EmergencyContactCreateOrUpdate(UpdateView):
     model = EmergencyContact
     template_name = 'users/emergency_contact_form.html'
