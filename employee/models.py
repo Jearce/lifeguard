@@ -60,6 +60,7 @@ class Employee(models.Model):
     has_felony = models.BooleanField('',choices=BOOLEAN_CHOICES,blank=False,default=None)
     contract_employment_agreement = models.BooleanField("I agree")
     electronic_signature = models.CharField("Your name",max_length=255)
+    is_hired = models.BooleanField("Accepted for hire",choices=BOOLEAN_CHOICES,blank=True,null=True)
     created_on = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
