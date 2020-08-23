@@ -34,9 +34,9 @@ class LifeguardCreateOrUpdate(UpdateView):
         user = self.request.user
         if user.lifeguard.already_certified:
             return reverse_lazy('lifeguard:already_certified')
-        elif hasattr(user,'employee'):
-            return reverse_lazy('lifeguard:classes')
-        elif user.lifeguard.wants_to_work_for_company:
+        #if the user wants to work have them fill out the employee application if
+        #they have not already done so
+        elif user.lifeguard.wants_to_work_for_company and not user.is_employee:
             return reverse_lazy('employee:create')
         return reverse_lazy('lifeguard:classes')
 
