@@ -13,6 +13,8 @@ class User(AbstractUser):
     email = models.EmailField('email address',unique=True)
     phone = models.CharField('phone number',max_length=16,blank=True,null=True)
     dob = models.DateField('date of birth',max_length=8,blank=True,null=True)
+    is_employee = models.BooleanField(default=False)
+    is_lifeguard = models.BooleanField(default=False)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
