@@ -48,6 +48,12 @@ class Lifeguard(models.Model):
     def __str__(self):
         return self.user.first_name + " " + self.user.last_name
 
+    def save(self,*args,**kwargs):
+        self.user.is_lifeguard = True
+        self.user.save()
+        super().save(*args,**kwargs)
+
+
 class LifeguardClass(models.Model):
     course = models.CharField(max_length=255)
     start_date = models.DateTimeField()

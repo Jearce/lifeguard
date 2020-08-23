@@ -63,8 +63,14 @@ class Employee(models.Model):
     is_hired = models.BooleanField("Accepted for hire",choices=BOOLEAN_CHOICES,blank=True,null=True)
     created_on = models.DateTimeField(auto_now_add=True)
 
+    def save(self, *args, **kwargs):
+        self.user.is_employee = True
+        self.user.save()
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return self.user.email
+
 
 class EmployeeEducation(models.Model):
     CHOOICES = [(True,"Yes"),(False,"No")]
