@@ -47,7 +47,6 @@ class EmployeeCreateOrUpdate(UpdateView):
     def get_success_url(self):
         return reverse_lazy('employee:education')
 
-
 class EmployeeEducation(InlineFormSetViewMixin,UpdateView):
     parent_model = Employee
     model = EmployeeEducation
@@ -68,12 +67,11 @@ class JobHistory(InlineFormSetViewMixin,UpdateView):
     def get_success_url(self):
         #check if user applied to a position that requires a lifeguard certification
         user = self.request.user
-        if hasattr(user, 'lifeguard'):
+        if user.is_lifeguard:
             return reverse_lazy('lifeguard:classes')
-        elif any(ap.lifeguard_required for ap in user.employee.applied_positions.all()):
+        elif user.employee.applied_to_lifeguard_position():
             return reverse_lazy('lifeguard:create')
-        else:
-            return reverse_lazy('users:dashboard')
+        return reverse_lazy('users:dashboard')
 
 def employee_registration(request):
     #user started employee registration path
