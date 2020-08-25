@@ -1,0 +1,43 @@
+{% extends 'sidebar.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+<title>Application Status</title>
+{% endblock title %}
+
+{% block pagecontent %}
+<div class="container">
+	<div class="row">
+		<div class="col mb-4">
+			<h1 class="mt-4 text-center">Application Status</h1>
+			{% if object.application_under_review %}
+
+			    {% if object.is_hired is None %}
+
+					 <p>Your application is currently under review. Check back later.</p>
+
+					{% elif object.is_hired %}
+
+					 <p>You have been accpeted as an employee!</p>
+					 <p>
+						 Go to your <a href="{% url 'users:dashboard' %}">dashboard</a>
+						 and check your todo list to complete any required tasks.
+					 </p>
+
+					{% else %}
+
+					 <p>Sorry, we are unable to take you as an employee.</p>
+
+					{% endif %}
+
+			{% else %}
+
+			 <p>Your application has been successfully submitted and is waiting for review.</p>
+
+			{% endif %}
+		</div>
+	</div>
+</div>
+{% endblock pagecontent %}
+
+
