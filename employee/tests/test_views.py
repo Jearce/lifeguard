@@ -314,6 +314,17 @@ class EmployeeRegistrationTest(CommonSetUp):
         registration_path = response.wsgi_request.session.get("registration_path")
         self.assertEqual(registration_path,"employee:create")
 
-class EmployeeApplicationDetailTest(TestCase):
-    pass
+class EmployeeApplicationDetailTest(CommonSetUp):
+    def setUp(self):
+        super().setUp()
+        self.employee = self.create_employee()
+
+    def test_view_url_exists_at_desired_location(self):
+        response = self.client.get(reverse('employee:application_status'))
+        self.assertEqual(response.status_code,200)
+
+    def test_uses_correct_template(self):
+        response = self.client.get(reverse('employee:application_status'))
+        self.assertTemplateUsed(response,'employee/application_status_detail.html')
+
 
