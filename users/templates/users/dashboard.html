@@ -3,9 +3,9 @@
 {% block pagecontent %}
 <div class="container-fluid">
 	<h1 class="mt-4">Dashboard</h1>
-	<div id="applications">
-		<div class="row">
-			<div class="col-sm-6">
+	<div class="row">
+		<div class="col-sm-6">
+			<div id="applications">
 				<div class="card mr-4">
 					<div class="card-body">
 						<h5 class="card-title">Applications</h5>
@@ -21,7 +21,9 @@
 					</div>
 				</div>
 			</div>
-			<div class="col-sm-6">
+		</div>
+		<div class="col-sm-6">
+			<div id="classes">
 				<div class="card mr-4">
 					<div class="card-body">
 						<h5 class="card-title">My Classes</h5>
@@ -33,35 +35,51 @@
 				</div>
 			</div>
 		</div>
-		<div class="row">
-			<div class="col-sm-6">
+	</div>
+	<div class="row">
+		<div class="col-sm-6">
+			<div id="todo">
 				<div class="card mr-4">
 					<div class="card-body">
-						<h5 class="card-title">What to do next</h5>
-						<p class="card-text">Below are any things you may need to finish to continue on in your application process.</p>
+						<h5 class="card-title">To Do List</h5>
 						<ul class="list-group list-group-flush">
+							{% if user.is_employee %}
 							<li class="list-group-item">
-								A link to a form.
+								<a href='#' id="employee_checklist">Employee checklist</a>
 							</li>
+							{% else %}
+							<li class="list-group-item">
+								You have no tasks to do at the moment.
+							</li>
+							{% endif %}
 						</ul>
 					</div>
 				</div>
 			</div>
-			<div class="col-sm-6">
+		</div>
+		<div class="col-sm-6">
+			<div id="myApplications">
 				<div class="card mr-4">
 					<div class="card-body">
 						<h5 class="card-title">My Applications</h5>
 						<p class="card-text">Below are any applications you have submitted. Click on their link to check your application status.</p>
 						<ul class="list-group list-group-flush">
-							<li class="list-group-item">Some Classes</li>
+							{% if user.is_employee %}
+							<li class="list-group-item">
+								<a href="#" id="employee_application">Employee Application Status</a>
+							</li>
+							{% else %}
+							<li class="list-group-item">
+								No applications have been submitted yet.
+							</li>
+							{% endif %}
 						</ul>
 					</div>
 				</div>
 			</div>
-
 		</div>
-
 	</div>
+</div>
 </div>
 <!-- /#page-content-wrapper -->
 {% endblock pagecontent %}
