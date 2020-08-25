@@ -8,7 +8,7 @@ from selenium.webdriver.common.keys import Keys
 
 from users.models import User,EmergencyContact,Address
 from lifeguard.models import LifeguardClass,Enroll,Lifeguard
-from employee.models import Transportation,Position
+from employee.models import Transportation,Position,Employee
 
 from .helpers import BaseTestFixture
 
@@ -118,9 +118,6 @@ class SignUpTest(BaseTestFixture):
         #makes payment
         self.fail("Finish Payment Test")
 
-
-
-
     def sign_up(self):
         #select account opitions to get to sign up link
         self.browser.find_element_by_class_name('navbar-toggler').click()
@@ -181,6 +178,30 @@ class LogInTest(BaseTestFixture):
 
         self.fail("Finish payment test")
 
+    def test_login_and_check_application_status(self):
+        employee = Employee.objects.create(
+            user=self.user,
+            home_phone="712 634 3328",
+            who_referred_you="A friend.",
+            transportation=Transportation.objects.all()[0],
+            start_date="2020-8-8",
+            end_date="2021-12-8",
+            work_hours_desired="40",
+            desired_pay_rate="17.50",
+            pool_preference="Village Pool",
+            subdivision="My subdivision 122",
+            work_authorization=True,
+            charged_or_arrested=False,
+            has_felony=False,
+            contract_employment_agreement=True,
+            electronic_signature="Larry Johnson",
+        )
+        employee.applied_positions.set(Position.objects.all())
+        employee.save()
+
+        self.login()
+        self.browser.find_element_by_id('application_status').click()
+        self.assertIn('/application-status/',self.browser.current_url)
 
     def login(self):
         self.browser.get('%s%s' % (self.live_server_url,'/users/login'))
