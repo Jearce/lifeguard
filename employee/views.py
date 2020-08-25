@@ -2,10 +2,15 @@ from django.shortcuts import render,redirect
 from django.urls import reverse_lazy
 from django.views.generic.edit import UpdateView
 from django.views.generic import TemplateView
+from django.views.generic.detail import DetailView
 
 from .models import Employee,EmployeeEducation,JobHistory
 
-from .forms import EmployeeForm,EducationInlineFormset,EducationForm,JobHistoryForm,JobHistoryInlineFormset
+from .forms import (EmployeeForm,
+                    EducationInlineFormset,
+                    EducationForm,
+                    JobHistoryForm,
+                    JobHistoryInlineFormset)
 
 class InlineFormSetViewMixin:
     parent_model = None
@@ -72,6 +77,11 @@ class JobHistory(InlineFormSetViewMixin,UpdateView):
         elif user.employee.applied_to_lifeguard_position():
             return reverse_lazy('lifeguard:create')
         return reverse_lazy('users:dashboard')
+
+class ApplicationStatus(DetailView):
+    template_name = 'employee/application_status_detail.html'
+    def get_object(self):
+        return self.request.user.employee
 
 def employee_registration(request):
     #user started employee registration path
