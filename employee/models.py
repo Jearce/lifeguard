@@ -61,6 +61,7 @@ class Employee(models.Model):
     contract_employment_agreement = models.BooleanField("I agree")
     electronic_signature = models.CharField("Your name",max_length=255)
     is_hired = models.BooleanField("Accepted for hire",choices=BOOLEAN_CHOICES,blank=True,null=True)
+    application_under_review = models.BooleanField(default=False)
     created_on = models.DateTimeField(auto_now_add=True)
 
     def applied_to_lifeguard_position(self):
