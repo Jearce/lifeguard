@@ -1,7 +1,9 @@
 from django.contrib import admin
-from .models import Employee,Transportation,Position
+from employee import models
 
 # Register your models here.
-admin.site.register(Employee)
-admin.site.register(Transportation)
-admin.site.register(Position)
+admin.site.register(models.Employee)
+admin.site.register(models.Transportation)
+admin.site.register(models.Position)
+admin.site.register(models.Checklist)
+admin.site.register(models.EmployeeFile)
