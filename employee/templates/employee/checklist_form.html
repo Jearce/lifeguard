@@ -1,0 +1,17 @@
+{% extends 'sidebar.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+<title>Employee Checklist</title>
+{% endblock title %}
+
+{% block pagecontent %}
+<div class="container">
+	<div class="row">
+		<div class="col mb-4">
+			<h1 class="mt-4 text-center">Employee Checklist</h1>
+			{{ form|crispy }}
+		</div>
+	</div>
+</div>
+{% endblock pagecontent %}
