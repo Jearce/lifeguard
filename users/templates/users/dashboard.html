@@ -44,13 +44,19 @@
 						<h5 class="card-title">To Do List</h5>
 						<ul class="list-group list-group-flush">
 							{% if user.is_employee %}
-							<li class="list-group-item">
-								<a href='#' id="employee_checklist">Employee checklist</a>
-							</li>
+							     {% if user.employee.is_hired %}
+										 <li class="list-group-item">
+											 <a href='#' id="employee_checklist">Employee checklist</a>
+										 </li>
+									 {% else %}
+										 <li class="list-group-item">
+											 You have no tasks to do at the moment.
+										 </li>
+									 {% endif %}
 							{% else %}
-							<li class="list-group-item">
-								You have no tasks to do at the moment.
-							</li>
+								<li class="list-group-item">
+									You have no tasks to do at the moment.
+								</li>
 							{% endif %}
 						</ul>
 					</div>
