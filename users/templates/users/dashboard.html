@@ -46,7 +46,7 @@
 							{% if user.is_employee %}
 							     {% if user.employee.is_hired %}
 										 <li class="list-group-item">
-											 <a href='#' id="employee_checklist">Employee checklist</a>
+											 <a href='{% url 'employee:checklist' %}' id="employee_checklist">Employee checklist</a>
 										 </li>
 									 {% else %}
 										 <li class="list-group-item">
