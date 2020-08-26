@@ -327,4 +327,16 @@ class EmployeeApplicationDetailTest(CommonSetUp):
         response = self.client.get(reverse('employee:application_status'))
         self.assertTemplateUsed(response,'employee/application_status_detail.html')
 
+class EmployeeCheckListTest(CommonSetUp):
+    def setUp(self):
+        super().setUp()
+        self.employee = self.create_employee()
+        self.employee.is_hired = True
 
+    def test_view_url_exists_at_desired_location(self):
+        response = self.client.get(reverse('employee:checklist'))
+        self.assertEqual(response.status_code,200)
+
+    def test_view_uses_correct_template(self):
+        response = self.client.get(reverse('employee:checklist'))
+        self.assertTemplateUsed(response,'employee/checklist_form.html')
