@@ -4,7 +4,7 @@ from django.forms import (ModelForm,
                           CheckboxSelectMultiple,
                           inlineformset_factory)
 
-from .models import Employee,EmployeeEducation,JobHistory
+from .models import Employee,EmployeeEducation,JobHistory,Checklist
 
 
 BOOLEAN_CHOICES = [(True,"Yes"),(False,"No")]
@@ -48,6 +48,26 @@ class EducationForm(ModelForm):
         elif date_leaving and not attending:
             self.add_error("attending_college","This field is required.")
 
+class ChecklistForm(ModelForm):
+    class Meta:
+        model = Checklist
+        fields = [
+            'photo_id',
+            'social_security_card',
+            'social_security_number',
+            'birth_certificate',
+            'w2',
+            'i9',
+            'workers_comp',
+            'hepB_vaccine_signature',
+            'banking_name',
+            'account_type',
+            'account_number',
+            'savings_number',
+            'email_address',
+            'auth_signature',
+        ]
+
 
 class JobHistoryForm(ModelForm):
     class Meta:
@@ -84,3 +104,4 @@ JobHistoryInlineFormset = inlineformset_factory(
     can_delete=False,
     can_order=False
 )
+
