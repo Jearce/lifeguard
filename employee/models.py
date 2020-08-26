@@ -108,7 +108,6 @@ class JobHistory(models.Model):
     end_date = models.DateField("Ending date of employement?")
     reason_for_leaving = models.TextField()
 
-
 class Checklist(models.Model):
     employee = models.OneToOneField(Employee,on_delete=models.CASCADE)
     photo_id = models.FileField(blank=True,null=True)
@@ -127,5 +126,17 @@ class Checklist(models.Model):
     auth_signature = models.CharField(blank=True,null=True,max_length=255)
     awknowledgement = models.BooleanField(blank=True,null=True)
     date = models.DateField(default=timezone.now)
+
+    def __str__(self):
+        return f"Checklist for {self.employee.user.get_full_name}"
+
+
+class EmployeeFile(models.Model):
+    w2 = models.FileField()
+    i9 = models.FileField()
+    workers_comp = models.FileField()
+
+    def __str__(self):
+        return f"Employee files {self.pk}"
 
 
