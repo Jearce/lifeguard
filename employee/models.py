@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 from users.models import User
 
 # Create your models here.
@@ -75,7 +76,6 @@ class Employee(models.Model):
     def __str__(self):
         return self.user.email
 
-
 class EmployeeEducation(models.Model):
     CHOOICES = [(True,"Yes"),(False,"No")]
     employee = models.ForeignKey(Employee,on_delete=models.CASCADE)
@@ -107,5 +107,25 @@ class JobHistory(models.Model):
     start_date = models.DateField("Starting date of employement")
     end_date = models.DateField("Ending date of employement?")
     reason_for_leaving = models.TextField()
+
+
+class Checklist(models.Model):
+    employee = models.OneToOneField(Employee,on_delete=models.CASCADE)
+    photo_id = models.FileField(blank=True,null=True)
+    social_security_card = models.FileField(blank=True,null=True)
+    social_security_number = models.CharField(blank=True,null=True,max_length=10)
+    birth_certificate = models.FileField(blank=True,null=True)
+    w2 = models.FileField(blank=True,null=True)
+    i9 = models.FileField(blank=True,null=True)
+    workers_comp = models.FileField(blank=True,null=True)
+    hepB_vaccine_signature = models.CharField(blank=True,null=True,max_length=255)
+    banking_name = models.CharField(blank=True,null=True,max_length=255)
+    account_type = models.CharField(blank=True,null=True,max_length=1)
+    account_number = models.CharField(blank=True,null=True,max_length=255)
+    savings_number = models.CharField(blank=True,null=True,max_length=255)
+    email_address = models.EmailField(blank=True,null=True,max_length=255)
+    auth_signature = models.CharField(blank=True,null=True,max_length=255)
+    awknowledgement = models.BooleanField(blank=True,null=True)
+    date = models.DateField(default=timezone.now)
 
 
