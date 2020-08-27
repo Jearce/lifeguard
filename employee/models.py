@@ -1,5 +1,7 @@
 from django.db import models
 from django.utils import timezone
+from django.contrib.sites.models import Site
+
 from users.models import User
 
 # Create your models here.
@@ -130,13 +132,13 @@ class Checklist(models.Model):
     def __str__(self):
         return f"Checklist for {self.employee.user.get_full_name}"
 
-
-class EmployeeFile(models.Model):
+class PDFFile(models.Model):
+    site = models.OneToOneField(Site,on_delete=models.CASCADE)
     w2 = models.FileField()
     i9 = models.FileField()
     workers_comp = models.FileField()
 
     def __str__(self):
-        return f"Employee files {self.pk}"
+        return f"PDF files for {self.site.name}"
 
 
