@@ -137,7 +137,7 @@ class Checklist(models.Model):
 
 class PDFFile(models.Model):
     site = models.OneToOneField(Site,on_delete=models.CASCADE)
-    w2 = models.FileField()
+    w4 = models.FileField()
     i9 = models.FileField()
     workers_comp = models.FileField()
 
