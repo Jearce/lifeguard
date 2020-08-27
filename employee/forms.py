@@ -1,8 +1,13 @@
 from django.forms import (ModelForm,
+                          Select,
                           DateInput,
                           RadioSelect,
                           CheckboxSelectMultiple,
                           inlineformset_factory)
+
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout,Div,Submit,HTML
+
 
 from .models import Employee,EmployeeEducation,JobHistory,Checklist
 
@@ -68,6 +73,32 @@ class ChecklistForm(ModelForm):
             'auth_signature',
         ]
 
+        widgets = {
+            'account_type':RadioSelect,
+
+        }
+
+        labels = {
+            "banking_name":"Banking or Financial Institution Name:",
+            "account_type":"Account Type: Select One Account:",
+            "email_address":"Email Address (to receive pay stubs):",
+            "auth_signature":"Authorize Signature",
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Div(
+                HTML("<h3>Employee Direct Deposit Authorization</h3>"),
+                'banking_name',
+                'account_type',
+                'account_number',
+                'savings_number',
+                'email_address',
+                'auth_signature',
+            )
+        )
 
 class JobHistoryForm(ModelForm):
     class Meta:
