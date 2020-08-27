@@ -5,6 +5,9 @@ from django.contrib.sites.models import Site
 from users.models import User
 
 # Create your models here.
+
+BOOLEAN_CHOICES = [(True,"Yes"),(False,"No")]
+
 class Transportation(models.Model):
     name = models.CharField(max_length=255)
     description = models.CharField(max_length=255)
@@ -20,7 +23,7 @@ class Position(models.Model):
     )
     lifeguard_required = models.BooleanField(
         "Is lifeguard certification required for this position?",
-        choices=[(True,"Yes"),(False,"No")],
+        choices=BOOLEAN_CHOICES,
         default=True
     )
 
@@ -57,7 +60,6 @@ class Employee(models.Model):
         max_length=255
     )
 
-    BOOLEAN_CHOICES = [(True,"Yes"),(False,"No")]
     work_authorization = models.BooleanField('',choices=BOOLEAN_CHOICES,blank=False,default=None)
     charged_or_arrested = models.BooleanField('',choices=BOOLEAN_CHOICES,blank=False,default=None)
     has_felony = models.BooleanField('',choices=BOOLEAN_CHOICES,blank=False,default=None)
@@ -79,7 +81,6 @@ class Employee(models.Model):
         return self.user.email
 
 class EmployeeEducation(models.Model):
-    CHOOICES = [(True,"Yes"),(False,"No")]
     employee = models.ForeignKey(Employee,on_delete=models.CASCADE)
     school_name = models.CharField(
         "Name of school",
@@ -91,7 +92,7 @@ class EmployeeEducation(models.Model):
     )
     attending_college =  models.BooleanField(
         "Will you attend college this fall?",
-        choices=CHOOICES,
+        choices=BOOLEAN_CHOICES,
         blank=True,
         null=True,
     )
@@ -111,6 +112,8 @@ class JobHistory(models.Model):
     reason_for_leaving = models.TextField()
 
 class Checklist(models.Model):
+    ACCOUNT_TYPES = [('S',"Savings Account"),("C","Checkings Account")]
+
     employee = models.OneToOneField(Employee,on_delete=models.CASCADE)
     photo_id = models.FileField(blank=True,null=True)
     social_security_card = models.FileField(blank=True,null=True)
@@ -121,7 +124,7 @@ class Checklist(models.Model):
     workers_comp = models.FileField(blank=True,null=True)
     hepB_vaccine_signature = models.CharField(blank=True,null=True,max_length=255)
     banking_name = models.CharField(blank=True,null=True,max_length=255)
-    account_type = models.CharField(blank=True,null=True,max_length=1)
+    account_type = models.CharField(choices=ACCOUNT_TYPES,max_length=1,blank=False,null=True,default=None)
     account_number = models.CharField(blank=True,null=True,max_length=255)
     savings_number = models.CharField(blank=True,null=True,max_length=255)
     email_address = models.EmailField(blank=True,null=True,max_length=255)
