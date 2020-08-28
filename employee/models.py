@@ -122,14 +122,15 @@ class Checklist(models.Model):
     w4 = models.FileField(blank=True,null=True)
     i9 = models.FileField(blank=True,null=True)
     workers_comp = models.FileField(blank=True,null=True)
-    hepB_vaccine_signature = models.CharField(blank=True,null=True,max_length=255)
+    vaccination_record = models.FileField(blank=True,null=True)
+    hepB_waiver_signature = models.CharField(blank=True,null=True,max_length=255)
     banking_name = models.CharField(blank=True,null=True,max_length=255)
     account_type = models.CharField(choices=ACCOUNT_TYPES,max_length=1,blank=False,null=True,default=None)
     account_number = models.CharField(blank=True,null=True,max_length=255)
     savings_number = models.CharField(blank=True,null=True,max_length=255)
     email_address = models.EmailField(blank=True,null=True,max_length=255)
     auth_signature = models.CharField(blank=True,null=True,max_length=255)
-    awknowledgement = models.BooleanField(blank=True,null=True)
+    awknowledgement_form_signature = models.CharField(blank=True,null=True,max_length=255)
     date = models.DateField(default=timezone.now)
 
     def __str__(self):
