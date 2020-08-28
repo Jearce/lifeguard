@@ -239,7 +239,7 @@ class ChecklistForm(ModelForm):
             "awknowledgement_form_signature",
             css_class="isolate-form"
         ),
-        Submit('','Submit'),
+        Submit('','Submit',css_class="btn-lg btn-block"),
         )
 
 class JobHistoryForm(ModelForm):
