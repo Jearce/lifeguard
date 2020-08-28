@@ -8,7 +8,7 @@ from django.forms import (ModelForm,
 from django.contrib.sites.models import Site
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout,Div,Submit,HTML
+from crispy_forms.layout import Layout,Div,Submit,HTML,Fieldset
 
 
 from .models import Employee,EmployeeEducation,JobHistory,Checklist,PDFFile
@@ -55,27 +55,29 @@ class EducationForm(ModelForm):
         elif date_leaving and not attending:
             self.add_error("attending_college","This field is required.")
 
-def render_download_html(url,name):
-    return f"You can download <a href='{url}'>{name}</a> here."
+def render_html(url,name):
+    return f"(<i>You can download the <a href='{url}'>{name}</a> form here.</i>)"
 
 class ChecklistForm(ModelForm):
     class Meta:
         model = Checklist
         fields = [
             'photo_id',
+            'birth_certificate',
             'social_security_card',
             'social_security_number',
-            'birth_certificate',
-            'w2',
+            'w4',
             'i9',
             'workers_comp',
-            'hepB_vaccine_signature',
+            'vaccination_record',
+            'hepB_waiver_signature',
             'banking_name',
             'account_type',
             'account_number',
             'savings_number',
             'email_address',
             'auth_signature',
+            'awknowledgement_form_signature',
         ]
 
         widgets = {
@@ -84,11 +86,16 @@ class ChecklistForm(ModelForm):
         }
 
         labels = {
-            "hepB_vaccine_signature":"Employee Signature",
+            "w4":"",
+            "i9":"",
+            "workers_comp":"",
+            'birth_certificate':"Birth certificate - ONLY if you are 15",
+            "hepB_waiver_signature":"Employee Signature",
             "banking_name":"Banking or Financial Institution Name:",
             "account_type":"Account Type: Select One Account",
             "email_address":"Email Address (to receive pay stubs):",
             "auth_signature":"Authorize Signature",
+            "awknowledgement_form_signature":"Signature",
         }
 
     def __init__(self, *args, **kwargs):
@@ -96,18 +103,53 @@ class ChecklistForm(ModelForm):
         pdfs = Site.objects.get_current().pdffile
 
         self.helper = FormHelper()
+        self.helper.form_method = "post"
+        self.helper.form_class = "center-form"
+        self.helper.form_id = "employee_checklist_form"
         self.helper.layout = Layout(
-            'photo_id',
-            'social_security_card',
-            'social_security_number',
-            'birth_certificate',
             Div(
-                HTML(render_download_html(pdfs.w4.url,"W4")),
-                'w2',
-                HTML(render_download_html(pdfs.i9.url,"I9")),
-                'i9',
-                HTML(render_download_html(pdfs.workers_comp.url,"Workers Comp")),
-                'workers_comp',
+                HTML("<h4>Identification</h4>"),
+                Div(
+                    Div('photo_id',css_class="form-group col"),
+                    Div('birth_certificate',css_class="form-group col"),
+                    css_class="form-row"
+                ),
+                Div(
+                    Div('social_security_number',css_class="form-group col"),
+                    Div('social_security_card',css_class="form-group col"),
+                    css_class="form-row"
+                ),
+                css_class = "isolate-form"
+            ),
+            Div(
+                HTML("<h4>W4, I-9, & Workers Compensation Forms</h4>"),
+                Div(
+                    HTML("W4 Form " + render_html(pdfs.w4.url,"W4")),
+                    'w4',
+                    HTML(
+                        "I-9 Employee ID Verification Form "+
+                        render_html(pdfs.i9.url,"I9")
+                    ),
+                    'i9',
+                    HTML(
+                        "Employee Acknowledgement of Workers' Compensation Network "+
+                        render_html(pdfs.workers_comp.url,"Workers Comp")
+                    ),
+                    'workers_comp',
+                ),
+                css_class="isolate-form"
+            ),
+            Div(
+                HTML("""
+                     <h4>Vaccination Record</h4>
+                     <p>
+                     Your vaccination record needs to have <b>Hapatitis B
+                     vaccine</b> listed. If you do not want to get vaccinated
+                     please fill out the Hapatitis B vaccine waiver below.
+                     </p>
+                     """),
+                "vaccination_record",
+                css_class="isolate-form",
             ),
             Div(
                 HTML("""
@@ -129,39 +171,76 @@ class ChecklistForm(ModelForm):
                      at no charge to me.
                      </p>
                      """),
-                'hepB_vaccine_signature',
+                'hepB_waiver_signature',
                 css_id="hepVaccineWaiver",
+                css_class="isolate-form"
             ),
-            Div(
-                HTML("<h4>Employee Direct Deposit Authorization</h4>"),
-                'banking_name',
-                'account_type',
-                'account_number',
-                'savings_number',
-                'email_address',
-                HTML("""
-                     <p>Authorization:</p>
-                     <p>
-                     This authorizes Gulf Coast Aquatics, Inc. to send credit
-                     entries (and appropriate debit and adjustment entries),
-                     electronically or by any other commercially accepted
-                     method, to my (our) account indicated above and to other
-                     accounts I (we) identify in the future (the "Account").
-                     This authorizes the financial institution holding
-                     the Account to post all such entries. I agree that
-                     the ACH transactions  authorized herein shall comply
-                     with all the applicable U.S. Laws. This authorization
-                     will be in effect until the company receives a written
-                     termination notice from myself and has a reasonable
-                     opportunity to act on it.
-                     </p>
-                     """),
-                'auth_signature',
-                css_id="directDeposit"
-            ),
+        Div(
+            HTML("<h4>Employee Direct Deposit Authorization</h4>"),
+            'banking_name',
+            'account_type',
+            'account_number',
+            'savings_number',
+            'email_address',
+            HTML("""
+                 <p>Authorization:</p>
+                 <p>
+                 This authorizes Gulf Coast Aquatics, Inc. to send credit
+                 entries (and appropriate debit and adjustment entries),
+                 electronically or by any other commercially accepted
+                 method, to my (our) account indicated above and to other
+                 accounts I (we) identify in the future (the "Account").
+                 This authorizes the financial institution holding
+                 the Account to post all such entries. I agree that
+                 the ACH transactions  authorized herein shall comply
+                 with all the applicable U.S. Laws. This authorization
+                 will be in effect until the company receives a written
+                 termination notice from myself and has a reasonable
+                 opportunity to act on it.
+                 </p>
+                 """),
+            'auth_signature',
+            css_id="directDeposit",
+            css_class="isolate-form"
+        ),
+        Div(
+            HTML("""
+                 <h4>Release Form</h4>
+                 <p>
+                 <b>I HAVE READ AND UNDERSTAND THE SEASONAL
+                 EMPLOYEE HANDBOOK & SAFETY INFORMATION.</b>
+                 I will abide by all rules, regulations, policies,
+                 and procedures throughout my employment with Gulf Coast
+                 Aquatics,Inc. Furthermore, I acknowledge that violations
+                 of any Gulf Coast Aquatics, Inc. rules and regulations
+                 could result in disciplinary action and/or termination of
+                 my employment.
+                 </p>
+
+                 <p>
+                 I understand it is my responsibility to attend In-Service
+                 training throughout my employment with Gulf Coast
+                 Aquatics, Inc.
+                 </p>
+
+                 <p>I will always conduct myself in a professional manner
+                 throughout my employment with Gulf Coast Aquatics, Inc.</p>
+
+                 <p>
+                 I understand that if I do not submit a 2-week notice when
+                 quitting, I will not be eligible for rehire.
+                 </p>
+
+                 <p>
+                 I have read and received a copy of “Employee Acknowledgement
+                 of Worker’s Compensation Network”.
+                 </p>
+                """),
+            "awknowledgement_form_signature",
+            css_class="isolate-form"
+        ),
         Submit('','Submit'),
         )
-
 
 class JobHistoryForm(ModelForm):
     class Meta:
