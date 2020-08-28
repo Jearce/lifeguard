@@ -119,7 +119,7 @@ class Checklist(models.Model):
     social_security_card = models.FileField(blank=True,null=True)
     social_security_number = models.CharField(blank=True,null=True,max_length=10)
     birth_certificate = models.FileField(blank=True,null=True)
-    w2 = models.FileField(blank=True,null=True)
+    w4 = models.FileField(blank=True,null=True)
     i9 = models.FileField(blank=True,null=True)
     workers_comp = models.FileField(blank=True,null=True)
     hepB_vaccine_signature = models.CharField(blank=True,null=True,max_length=255)
