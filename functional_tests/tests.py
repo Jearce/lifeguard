@@ -1,16 +1,23 @@
 import re
 import time
+import os
 
 from django.core import mail
 from django.urls import reverse,reverse_lazy
+from django.utils import timezone
+from django.contrib.sites.models import Site
 
 from selenium.webdriver.common.keys import Keys
 
 from users.models import User,EmergencyContact,Address
 from lifeguard.models import LifeguardClass,Enroll,Lifeguard
-from employee.models import Transportation,Position,Employee
+from employee.models import Transportation,Position,Employee,PDFFile
 
+from functional_tests import helpers
 from .helpers import BaseTestFixture
+
+BASE_DIR = helpers.BASE_DIR
+DOMAIN = "http:\/\/example.com\/"
 
 class SignUpTest(BaseTestFixture):
     def setUp(self):
@@ -150,6 +157,33 @@ class LogInTest(BaseTestFixture):
         EmergencyContact.objects.create(user=self.user,**self.emergency_contact)
         Address.objects.create(user=self.user,**self.address)
 
+        path_to_files = os.path.join(BASE_DIR,"functional_tests/files_used_to_test")
+        PDFFile.objects.create(
+            site=Site.objects.get_current(),
+            w4=f"{path_to_files}/w4.pdf",
+            i9=f"{path_to_files}/i9.pdf",
+            workers_comp=f"{path_to_files}/workers_comp.pdf",
+        )
+
+        self.employee_checklist = {
+            "photo_id":f"{path_to_files}/photoid.pdf",
+            "social_security_card":f"{path_to_files}/social.pdf",
+            "social_security_number":"444-44-444",
+            "birth_certificate":f"{path_to_files}/birthcertificate.pdf",
+            "w4":f"{path_to_files}/w4.pdf",
+            "i9":f"{path_to_files}/i9.pdf",
+            "workers_comp":f"{path_to_files}/workers_comp.pdf",
+            "vaccination_record":f"{path_to_files}/vaccination.pdf",
+            "hepB_waiver_signature":"Larry Johnson",
+            "banking_name":"Banking 123",
+            "account_type_1":"click",#choose savings
+            "account_number":"19282739",
+            "savings_number":"1728327",
+            "email_address":self.user.email,
+            "auth_signature":"Larry Johnson",
+            "awknowledgement_form_signature":"Larry Johnson",
+        }
+
     def test_at_login_page(self):
         self.browser.get('%s%s' % (self.live_server_url,'/users/login'))
         self.assertIn('Login',self.browser.title)
@@ -228,9 +262,7 @@ class LogInTest(BaseTestFixture):
         self.login()
         self.browser.find_element_by_id('employee_checklist').click()
         self.assertIn('/employee-checklist/',self.browser.current_url)
-
-
-
+        self.fill_employee_checklist(redirect_url="/users/dashboard/")
 
     def login(self):
         self.browser.get('%s%s' % (self.live_server_url,'/users/login'))
@@ -240,6 +272,10 @@ class LogInTest(BaseTestFixture):
 
     def submit_form(self,form_id):
         self.browser.find_element_by_id(form_id).submit()
+
+    def fill_employee_checklist(self,redirect_url):
+        self.general_form_input(data=self.employee_checklist,form_id="employee_checklist_form")
+        self.assertIn(redirect_url,self.browser.current_url)
 
 class PasswordResetTest(BaseTestFixture):
 
@@ -267,10 +303,17 @@ class PasswordResetTest(BaseTestFixture):
 
         #user goes to password reset url
         self.assertIn('reset',mail.outbox[0].subject)
-        match = re.search(r'http:\/\/[\w]+:[\w]+\/users\/password_reset_confirm\/[\w]+\/.+\/',mail.outbox[0].body)
+
+        pattern = r'http:\/\/example.com\/users\/password_reset_confirm\/[\w]+\/.+\/'
+
+        #r'http:\/\/[\w]+:[\w]+\/users\/password_reset_confirm\/[\w]+\/.+\/',
+        match = re.search(pattern,mail.outbox[0].body)
         self.assertTrue(match)
-        reset_url = match[0]
-        self.browser.get(reset_url)
+
+        passwordreset_url = match[0]
+        url = self.live_server_url + passwordreset_url[18:]
+
+        self.browser.get(url)
         self.assertIn('Change password',self.browser.page_source)
 
         #user resets password
