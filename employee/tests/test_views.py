@@ -1,12 +1,14 @@
 from django.urls import resolve,reverse
 from django.http import HttpRequest
 from django.test import TestCase
+from django.contrib.sites.models import Site
 
 from employee.models import (Transportation,
                              Employee,
                              EmployeeEducation,
                              JobHistory,
-                             Position)
+                             Position,
+                             PDFFile)
 
 from employee.forms import (EducationInlineFormset,
                             JobHistoryInlineFormset)
@@ -330,6 +332,15 @@ class EmployeeApplicationDetailTest(CommonSetUp):
 class EmployeeCheckListTest(CommonSetUp):
     def setUp(self):
         super().setUp()
+
+        path_to_files = "files_used_to_test"
+        PDFFile.objects.create(
+            site=Site.objects.get_current(),
+            w4=f"{path_to_files}/w4.pdf",
+            i9="f{path_to_files}/photoid.pdf",
+            workers_comp=f"{path_to_files}/workers_comp.pdf",
+        )
+
         self.employee = self.create_employee()
         self.employee.is_hired = True
 
@@ -340,3 +351,4 @@ class EmployeeCheckListTest(CommonSetUp):
     def test_view_uses_correct_template(self):
         response = self.client.get(reverse('employee:checklist'))
         self.assertTemplateUsed(response,'employee/checklist_form.html')
+
