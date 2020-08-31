@@ -3,6 +3,7 @@ import os
 
 from django.test import LiveServerTestCase
 
+import selenium
 from selenium import webdriver
 
 from lifeguard.models import Enroll
@@ -198,9 +199,16 @@ class BaseTestFixture(LiveServerTestCase):
 
     def general_form_input(self,data,form_id):
         for key,value in data.items():
-            element = self.browser.find_element_by_id(f"id_{key}")
+            try:
+                element = self.browser.find_element_by_id(f"id_{key}")
+            except selenium.common.exceptions.NoSuchElementException:
+                element = self.browser.find_element_by_xpath(f"//input[@name='{key}']")
+
             if value == 'click':
-                element.click()
+                try:
+                    element.click()
+                except selenium.common.exceptions.ElementClickInterceptedException:
+                    self.browser.execute_script("arguments[0].click();",element)
             else:
                 element.send_keys(value)
         self.browser.find_element_by_id(form_id).submit()
