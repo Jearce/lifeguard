@@ -1,4 +1,6 @@
+from django import forms
 from django.forms import (ModelForm,
+                          CheckboxInput,
                           Select,
                           DateInput,
                           RadioSelect,
@@ -8,7 +10,7 @@ from django.forms import (ModelForm,
 from django.contrib.sites.models import Site
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout,Div,Submit,HTML,Fieldset
+from crispy_forms.layout import Layout,Div,Submit,HTML,Fieldset,Field
 
 
 from .models import Employee,EmployeeEducation,JobHistory,Checklist,PDFFile
@@ -59,6 +61,12 @@ def render_html(url,name):
     return f"(<i>You can download the <a href='{url}'>{name}</a> form here.</i>)"
 
 class ChecklistForm(ModelForm):
+
+    need_to_fill_out_wavier = forms.BooleanField(
+        label="I do not want to get vaccinated for Hapatitis B.",
+        required=False,
+    )
+
     class Meta:
         model = Checklist
         fields = [
@@ -69,6 +77,7 @@ class ChecklistForm(ModelForm):
             'w4',
             'i9',
             'workers_comp',
+            "need_to_fill_out_wavier",
             'vaccination_record',
             'hepB_waiver_signature',
             'banking_name',
@@ -81,6 +90,7 @@ class ChecklistForm(ModelForm):
         ]
 
         widgets = {
+            "need_to_fill_out_wavier":CheckboxInput,
             'account_type':RadioSelect,
 
         }
@@ -89,6 +99,7 @@ class ChecklistForm(ModelForm):
             "w4":"",
             "i9":"",
             "workers_comp":"",
+            "vaccination_record":"Hepatitis B Vaccine Record",
             'birth_certificate':"Birth certificate - ONLY if you are 15",
             "hepB_waiver_signature":"Employee Signature",
             "banking_name":"Banking or Financial Institution Name:",
@@ -98,8 +109,11 @@ class ChecklistForm(ModelForm):
             "awknowledgement_form_signature":"Signature",
         }
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self,user=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        if user:
+            self.fields["email_address"].initial = user.email
+
         pdfs = Site.objects.get_current().pdffile
 
         self.helper = FormHelper()
@@ -141,14 +155,14 @@ class ChecklistForm(ModelForm):
             ),
             Div(
                 HTML("""
-                     <h4>Vaccination Record</h4>
+                     <h4>Hepatitis B Vaccination Record</h4>
                      <p>
                      Your vaccination record needs to have <b>Hapatitis B
-                     vaccine</b> listed. If you do not want to get vaccinated
-                     please fill out the Hapatitis B vaccine waiver below.
+                     vaccine</b> listed.
                      </p>
                      """),
-                "vaccination_record",
+                "need_to_fill_out_wavier",
+                Field("vaccination_record",id="id_vaccination_record"),
                 css_class="isolate-form",
             ),
             Div(
@@ -165,7 +179,7 @@ class ChecklistForm(ModelForm):
                      B vaccination at this time. I understand that by declining this vaccine
                      I continue  to be at a risk of acquiring hepatitis B,
                      a serious disease. If, in the future I continue to have
-                     occupational exposure to bllod or other potentially
+                     occupational exposure to blood or other potentially
                      infectious materials and I want to be vaccinated with
                      hepatitis B vaccine, I can recieve the vaccination series
                      at no charge to me.
@@ -173,7 +187,8 @@ class ChecklistForm(ModelForm):
                      """),
                 'hepB_waiver_signature',
                 css_id="hepVaccineWaiver",
-                css_class="isolate-form"
+                css_class="isolate-form",
+                style="display: none;",
             ),
         Div(
             HTML("<h4>Employee Direct Deposit Authorization</h4>"),
