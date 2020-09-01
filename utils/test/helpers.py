@@ -1,3 +1,12 @@
+import os
+
+from django.conf import settings
+from django.contrib.sites.models import Site
+
+from employee.models import PDFFile
+
+BASE_DIR = settings.BASE_DIR
+
 class InlineFormsetManagmentFactory:
     def __init__(self,formset,extra,initial,min_num,max_num,records):
         '''
@@ -24,5 +33,15 @@ class InlineFormsetManagmentFactory:
             for key,value in record.items():
                 mf[f"{prefix}-{i}-{key}"] = value
         return mf
+
+def set_up_pdf_files_for_download():
+    path_to_files = os.path.join(BASE_DIR,"functional_tests/files_used_to_test")
+    PDFFile.objects.create(
+        site=Site.objects.get_current(),
+        w4=f"{path_to_files}/w4.pdf",
+        i9=f"{path_to_files}/i9.pdf",
+        workers_comp=f"{path_to_files}/workers_comp.pdf",
+    )
+
 
 
