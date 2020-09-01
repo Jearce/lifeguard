@@ -174,7 +174,6 @@ class LogInTest(BaseTestFixture):
             "i9":f"{path_to_files}/i9.pdf",
             "workers_comp":f"{path_to_files}/workers_comp.pdf",
             "vaccination_record":f"{path_to_files}/vaccination.pdf",
-            "hepB_waiver_signature":"Larry Johnson",
             "banking_name":"Banking 123",
             "account_type_1":"click",#choose savings
             "account_number":"19282739",
