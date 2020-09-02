@@ -6,7 +6,7 @@ it will be extended to track employees times and pools managed by the lifeguardi
 ## Getting started
 
 ### Cloning this repository
-> git clone https://github.com/Jearce/lifeguarding.git
+> git clone https://github.com/Jearce/lifeguard.git
 
 ### Move into repository
 > cd lifeguarding
