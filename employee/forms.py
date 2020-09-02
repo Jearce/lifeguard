@@ -64,13 +64,13 @@ def render_html(url,name):
 class ChecklistForm(ModelForm):
 
     need_to_fill_out_wavier = forms.BooleanField(
-        label="I do not want to get vaccinated for Hapatitis B.",
+        label="I have not recieved or do not want a vaccination for Hep B.",
         required=False,
     )
 
     error_messages = {
         "invalid_wavier_and_record":"""You cannot submit a Hep B vaccine
-         record and sign the Hep B vaccination record""",
+         record and sign the Hep B vaccination record.""",
     }
 
     class Meta:
