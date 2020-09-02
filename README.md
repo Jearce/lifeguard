@@ -9,7 +9,7 @@ it will be extended to track employees times and pools managed by the lifeguardi
 > git clone https://github.com/Jearce/lifeguard.git
 
 ### Move into repository
-> cd lifeguarding
+> cd lifeguard
 
 ### Download requirements
 > pip3 install -r requirements.txt
