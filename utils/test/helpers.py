@@ -42,6 +42,4 @@ def set_up_pdf_files_for_download():
         i9=f"{path_to_files}/i9.pdf",
         workers_comp=f"{path_to_files}/workers_comp.pdf",
     )
-
-
-
+    return path_to_files
