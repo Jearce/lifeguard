@@ -14,9 +14,7 @@
 		</div>
 	</div>
 </div>
-{% endblock pagecontent %}
 
-{% block js %}
 <script>
 let needsFillOutWaiverElement = document.getElementById("id_need_to_fill_out_wavier");
 let selected;
@@ -26,5 +24,4 @@ needsFillOutWaiverElement.addEventListener("click", event => {
 	document.getElementById("div_id_vaccination_record").style.display =  selected ? "none":"block";
 });
 </script>
-
-{% endblock js %}
+{% endblock pagecontent %}
