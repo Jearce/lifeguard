@@ -112,7 +112,7 @@ class ChecklistForm(ModelForm):
     def __init__(self,user=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if user:
-            self.fields["email_address"].initial = user.email
+            self.initial["email_address"] = user.email
 
         pdfs = Site.objects.get_current().pdffile
 
