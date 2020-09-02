@@ -8,6 +8,7 @@ from django.forms import (ModelForm,
                           inlineformset_factory)
 
 from django.contrib.sites.models import Site
+from django.core.exceptions import ValidationError
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout,Div,Submit,HTML,Fieldset,Field
@@ -66,6 +67,11 @@ class ChecklistForm(ModelForm):
         label="I do not want to get vaccinated for Hapatitis B.",
         required=False,
     )
+
+    error_messages = {
+        "invalid_wavier_and_record":"""You cannot submit a Hep B vaccine
+         record and sign the Hep B vaccination record""",
+    }
 
     class Meta:
         model = Checklist
@@ -256,6 +262,21 @@ class ChecklistForm(ModelForm):
         ),
         Submit('','Submit',css_class="btn-lg btn-block"),
         )
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        wavier_signature = cleaned_data["hepB_waiver_signature"]
+        vacc_record = self.files.get("vaccination_record")
+
+        if vacc_record and wavier_signature:
+            raise ValidationError(
+                self.error_messages["invalid_wavier_and_record"],
+                code="invalid_wavier_and_record"
+            )
+
+
+
 
 class JobHistoryForm(ModelForm):
     class Meta:
