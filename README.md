@@ -15,8 +15,11 @@ it will be extended to track employees times and pools managed by the lifeguardi
 > pip3 install -r requirements.txt
 
 ### Make migrations and migrate
-> python manage.py makemigrations
-> python manage.py migrate
+```
+python manage.py makemigrations
+python manage.py migrate
+
+```
 
 ### Run development server
 > python manage.py runserver 
