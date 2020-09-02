@@ -40,7 +40,8 @@ class CommonSetUp(TestCase):
         cls.position2 = Position.objects.create(title="Supervisor",minimum_age=18,lifeguard_required=False)
         cls.transportation = Transportation.objects.create(name="Car",description="I will drive by car")
 
-        set_up_pdf_files_for_download()
+        #w4,i9,workers comp, and vaccination record
+        cls.path_to_test_files = set_up_pdf_files_for_download()
 
     def setUp(self):
         self.user = User.objects.create_user(email=self.email, password=self.password)
