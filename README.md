@@ -14,6 +14,9 @@ it will be extended to track employees times and pools managed by the lifeguardi
 ### Download requirements
 > pip3 install -r requirements.txt
 
+### Make migrations and migrate
+> python manage.py makemigrations
+> python manage.py migrate
 
 ### Run development server
 > python manage.py runserver 
@@ -29,6 +32,6 @@ Functional tests are written with selenium and unit tests are written with djang
 * Jessie Arce
 
 ## Status of project
-> Still in development
+Still in development
 
 
