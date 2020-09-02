@@ -43,6 +43,16 @@ class EmployeeCheckListFormTest(CommonSetUp):
         self.employee.is_hired = True
         self.employee.save()
         self.checklist_data = {
+            "banking_name":"Banking 123",
+            "account_type":"S",#choose savings
+            "account_number":"19282739",
+            "savings_number":"1728327",
+            "email_address":self.user.email,
+            "auth_signature":"Larry Johnson",
+            "awknowledgement_form_signature":"Larry Johnson",
+        }
+
+        self.checklist_files = {
             "photo_id":f"{self.path_to_test_files}/photoid.pdf",
             "social_security_card":f"{self.path_to_test_files}/social.pdf",
             "social_security_number":"444-44-444",
@@ -51,13 +61,6 @@ class EmployeeCheckListFormTest(CommonSetUp):
             "i9":f"{self.path_to_test_files}/i9.pdf",
             "workers_comp":f"{self.path_to_test_files}/workers_comp.pdf",
             "vaccination_record":f"{self.path_to_test_files}/vaccination.pdf",
-            "banking_name":"Banking 123",
-            "account_type":"S",#choose savings
-            "account_number":"19282739",
-            "savings_number":"1728327",
-            "email_address":self.user.email,
-            "auth_signature":"Larry Johnson",
-            "awknowledgement_form_signature":"Larry Johnson",
         }
 
 
@@ -69,9 +72,9 @@ class EmployeeCheckListFormTest(CommonSetUp):
     def test_cannot_submit_vaccination_record_and_fill_wavier(self):
         #sign wavier to
         self.checklist_data["hepB_waiver_signature"] = "Larry Johnson"
-        form = self.ChecklistForm(self.user,self.checklist_data)
-        errors = form.non_field_errors
-        print(errors)
+        form = self.ChecklistForm(self.user,self.checklist_data,files=self.checklist_files)
+        self.assertFalse(form.is_valid())
+        self.assertIn(form.error_messages["invalid_wavier_and_record"],form.non_field_errors())
         #self.assertEqual(errors["hepB_waiver_signature"]
 
 
