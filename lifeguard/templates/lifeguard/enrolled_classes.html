@@ -1,0 +1,29 @@
+{% extends 'sidebar.html' %}
+{% load crispy_forms_tags %} 
+
+{% block title %}
+<title>My Classes</title>
+{% endblock title %}
+
+{% block pagecontent %}
+<div class="container">
+	<div class="row">
+		<div class="col mb-4">
+			<h1 class="mt-4 text-center">My classes</h1>
+			{% for enrolled_class in enrolled_classes %}
+			{% with class=enrolled_class.lifeguard_class %}
+			<div class="card bg-light mb-3">
+				<div class="card-header">{{ class.course }}</div>
+				<div class="card-body">
+					<div class="card-text">
+						<p>Start date: {{ class.start_date }}</p>
+						<p>End date: {{ class.end_date }}</p>
+					</div>
+				</div>
+			</div>
+			{% endwith %}
+			{% endfor %}
+		</div>
+	</div>
+</div>
+{% endblock pagecontent %}
