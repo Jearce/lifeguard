@@ -272,7 +272,7 @@ class LifeguardEnrolledClassesTest(BaseUserSetUp):
 
     def test_classes_are_in_context(self):
         response = self.client.get(reverse('lifeguard:enrolled_classes'))
-        lifeguard_classes = response.context["classes"]
+        lifeguard_classes = response.context["enrolled_classes"]
         self.assertEqual(lifeguard_classes.count(),1)
 
 
