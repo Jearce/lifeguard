@@ -1,8 +1,9 @@
 from django.test import TestCase
-from employee import forms
 from django.conf import settings
 
 from employee.tests.helpers import CommonSetUp
+from employee import forms
+from employee import models as employee_models
 
 BASE_DIR = settings.BASE_DIR
 
@@ -42,6 +43,11 @@ class EmployeeCheckListFormTest(CommonSetUp):
         self.employee = self.create_employee()
         self.employee.is_hired = True
         self.employee.save()
+
+        #once employee gets to the checklist form a checklist record
+        #is already created for them
+        employee_models.Checklist.objects.create(employee=self.employee)
+
         self.checklist_data = {
             "banking_name":"Banking 123",
             "account_type":"S",#choose savings
