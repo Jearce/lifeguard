@@ -70,7 +70,7 @@ class ChecklistForm(ModelForm):
 
     error_messages = {
         "invalid_wavier_and_record":"""You cannot submit a Hep B vaccine
-         record and sign the Hep B vaccination record.""",
+         record and sign the Hep B waiver. Please choose one or the other.""",
     }
 
     class Meta:
@@ -117,8 +117,13 @@ class ChecklistForm(ModelForm):
 
     def __init__(self,user=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
         if user:
             self.initial["email_address"] = user.email
+
+            signed_wavier = user.employee.checklist.hepB_waiver_signature
+            self.initial["need_to_fill_out_wavier"] = True if signed_wavier else False
+
 
         pdfs = Site.objects.get_current().pdffile
 
@@ -194,7 +199,6 @@ class ChecklistForm(ModelForm):
                 'hepB_waiver_signature',
                 css_id="hepVaccineWaiver",
                 css_class="isolate-form",
-                style="display: none;",
             ),
         Div(
             HTML("<h4>Employee Direct Deposit Authorization</h4>"),
@@ -274,9 +278,6 @@ class ChecklistForm(ModelForm):
                 self.error_messages["invalid_wavier_and_record"],
                 code="invalid_wavier_and_record"
             )
-
-
-
 
 class JobHistoryForm(ModelForm):
     class Meta:
