@@ -134,7 +134,7 @@ class Checklist(models.Model):
     date = models.DateField(default=timezone.now)
 
     def __str__(self):
-        return f"Checklist for {self.employee.user.get_full_name}"
+        return "Checklist for" +" "+ self.employee.user.get_full_name()
 
 class PDFFile(models.Model):
     site = models.OneToOneField(Site,on_delete=models.CASCADE)
