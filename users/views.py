@@ -2,7 +2,8 @@ from django.shortcuts import render,redirect
 from django.urls import reverse,reverse_lazy
 from django.views.generic import CreateView,TemplateView
 from django.contrib.auth.views import LoginView
-from django.contrib.auth import logout,login,authenticate,LoginRequiredMixin
+from django.contrib.auth import logout,login,authenticate
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.edit import UpdateView,CreateView
 from django.contrib.auth import views as auth_views
 
