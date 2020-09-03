@@ -29,7 +29,11 @@
 						<h5 class="card-title">My Classes</h5>
 						<ul class="list-group list-group-flush">
 							<li class="list-group-item">
-								<a href="{% url 'lifeguard:enrolled_classes' %}">Enrolled Classes</a>
+								{% if user.is_lifeguard and user.lifeguard.enroll_set.count != 0 %}
+								 <a href="{% url 'lifeguard:enrolled_classes' %}">Enrolled Classes</a>
+								{% else %}
+								<p>You haven't enrolled in any classes.</p>
+								{% endif %}
 							</li>
 						</ul>
 					</div>
