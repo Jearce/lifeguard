@@ -97,6 +97,18 @@ class LifeguardClasses(LoginRequiredMixin,View):
         else:
             return redirect("lifeguard:create")
 
+class EnrolledClasses(LoginRequiredMixin,View):
+    login_url= '/users/login/'
+
+    def get(self, request,*args,**kwargs):
+        user = self.request.user
+        enrolled_classes = user.lifeguard.enroll_set.all()
+        return render(
+            request,'lifeguard/enrolled_classes.html',
+            context={"enrolled_classes":enrolled_classes}
+        )
+
+
 def lifeguard_registration(request):
     if request.method == 'GET':
         request.session["registration_path"] = "lifeguard:create"
