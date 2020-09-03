@@ -21,7 +21,6 @@ class BaseUserSetUp(TestCase):
         self.password = 'sdfh328j!'
         self.user = User.objects.create_user(email=self.email,password=self.password)
 
-
 class HomeViewTest(TestCase):
     def test_view_url_exists_at_desired_location(self):
         response = self.client.get(reverse('home'))
@@ -179,7 +178,6 @@ class LifeguardAlreadyCertifiedTest(BaseUserSetUp):
             response = self.client.post(reverse('lifeguard:already_certified'),{'last_certified':'2000-06-09','certification':pdf})
         return response
 
-
 class LifeguardClassesTest(BaseUserSetUp):
     fixtures = ['classes.json']
     def setUp(self):
@@ -231,7 +229,12 @@ class LifeguardClassesTest(BaseUserSetUp):
             )
         )
 
-
+    def test_not_lifeguard_yet_cant_enroll(self):
+        classes = LifeguardClass.objects.all()
+        response = self.client.post(reverse('lifeguard:classes',kwargs={'pk':classes[0].id}))
+        self.assertEqual(response.status_code,302)
+        self.assertEqual(Enroll.objects.all().count(),0)
+        self.assertRedirects(response,reverse('lifeguard:create'))
 
 
 class LifeguardRegistrationTest(BaseUserSetUp):
