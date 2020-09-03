@@ -13,7 +13,7 @@ from .forms import LifeguardCertifiedForm,LifeguardForm
 class HomeView(TemplateView):
     template_name = 'home.html'
 
-class LifeguardCreateOrUpdate(UpdateView):
+class LifeguardCreateOrUpdate(LoginRequiredMixin,UpdateView):
     model = Lifeguard
     template_name = 'lifeguard/lifeguard_form.html'
     form_class = LifeguardForm
@@ -40,7 +40,7 @@ class LifeguardCreateOrUpdate(UpdateView):
             return reverse_lazy('employee:create')
         return reverse_lazy('lifeguard:classes')
 
-class LifeguardCertified(UpdateView):
+class LifeguardCertified(LoginRequiredMixin,UpdateView):
     template_name = "lifeguard/already_certified_form.html"
     form_class = LifeguardCertifiedForm
 
@@ -107,7 +107,6 @@ class EnrolledClasses(LoginRequiredMixin,View):
             request,'lifeguard/enrolled_classes.html',
             context={"enrolled_classes":enrolled_classes}
         )
-
 
 def lifeguard_registration(request):
     if request.method == 'GET':
