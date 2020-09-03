@@ -60,15 +60,17 @@ class LifeguardClasses(LoginRequiredMixin,View):
 
     def get(self,request,*args,**kwargs):
         user = self.request.user
-        if hasattr(user,'lifeguard'):
+        if user.is_lifeguard:
             lifeguard = user.lifeguard
+
             if lifeguard.already_certified:
-                if lifeguard.certificate_expired():
-                    classes = LifeguardClass.objects.filter(lifeguard_certified_required=False)
-                elif lifeguard.needs_review():
-                    classes = LifeguardClass.objects.filter(lifeguard_certified_required=True,is_review=True)
-                else:
-                    classes = LifeguardClass.objects.filter(lifeguard_certified_required=True,is_review=False)
+                needs_to_retake_class = not lifeguard.certificate_expired()
+
+                classes = LifeguardClass.objects.filter(
+                    lifeguard_certified_required=needs_to_retake_class,
+                    is_review=lifeguard.needs_review()
+                )
+
             else:
                 classes = LifeguardClass.objects.filter(lifeguard_certified_required=False)
         else:
@@ -77,12 +79,23 @@ class LifeguardClasses(LoginRequiredMixin,View):
         return render(request,'lifeguard/classes.html',context={'classes':classes})
 
     def post(self,request,*args,**kwargs):
-        lifeguard = Lifeguard.objects.get(user=request.user)
-        lifeguard_class = LifeguardClass.objects.get(pk=self.kwargs['pk'])
-        Enroll.objects.create(lifeguard=lifeguard,lifeguard_class=lifeguard_class)
 
-        #TODO: redirect to payment view after successful enrollment
-        return redirect('users:dashboard')
+        user = self.request.user
+        class_pk = self.kwargs['pk']
+
+        if user.is_lifeguard:
+
+            lifeguard_class = LifeguardClass.objects.get(pk=class_pk)
+            Enroll.objects.create(
+                lifeguard=user.lifeguard,
+                lifeguard_class=lifeguard_class
+            )
+
+            #TODO: redirect to payment view after successful enrollment
+            return redirect('users:dashboard')
+
+        else:
+            return redirect("lifeguard:create")
 
 def lifeguard_registration(request):
     if request.method == 'GET':
