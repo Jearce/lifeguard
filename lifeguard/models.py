@@ -53,7 +53,6 @@ class Lifeguard(models.Model):
         self.user.save()
         super().save(*args,**kwargs)
 
-
 class LifeguardClass(models.Model):
     course = models.CharField(max_length=255)
     start_date = models.DateTimeField()
