@@ -16,12 +16,22 @@
 </div>
 
 <script>
+
 let needsFillOutWaiverElement = document.getElementById("id_need_to_fill_out_wavier");
-let selected;
+
+//check if user already signed the waiver 
+hideOrShowElementsBasedOnCheckbox(needsFillOutWaiverElement)
+
 needsFillOutWaiverElement.addEventListener("click", event => {
-	selected = selected ? false : true;
-	document.getElementById("hepVaccineWaiver").style.display = selected ? "block":"none";
-	document.getElementById("div_id_vaccination_record").style.display =  selected ? "none":"block";
+	hideOrShowElementsBasedOnCheckbox(needsFillOutWaiverElement)
 });
+
+function hideOrShowElementsBasedOnCheckbox(checkBox){
+	let checked  = checkBox.checked
+	document.getElementById("hepVaccineWaiver").style.display = checked ? "block":"none";
+	document.getElementById("div_id_vaccination_record").style.display =  checked ? "none":"block";
+}
+
+
 </script>
 {% endblock pagecontent %}
