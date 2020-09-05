@@ -19,19 +19,99 @@ from .models import Employee,EmployeeEducation,JobHistory,Checklist,PDFFile
 
 BOOLEAN_CHOICES = [(True,"Yes"),(False,"No")]
 class EmployeeForm(ModelForm):
-
     class Meta:
+        long_labels = {
+            "work_authorization":"Are you legally authorized to work in the United States?",
+            "charged_or_arrested_resolved":
+            """
+            Have you ever been charged, detained, or arrested for a felony or
+            sex crime that was resolved by conviction, probation, deferred
+            adjudication, court ordered community supervision, or pretrial diversion?
+            """,
+            "charged_or_arrested_not_resolved":
+            """
+            Have you ever been charged, detained, or arrested for a felony
+            or sex-related crime that has not been resolved by any method?
+            """,
+        }
+
         model = Employee
-        exclude = ('user',)
+        fields = [
+            'home_phone',
+            'who_referred_you',
+            'transportation',
+            'applied_positions',
+            'start_date',
+            'end_date',
+            'work_hours_desired',
+            'desired_pay_rate',
+            'pool_preference',
+            'subdivision',
+            'work_authorization',
+            'charged_or_arrested_resolved',
+            'charged_or_arrested_not_resolved',
+            'contract_employment_agreement',
+            'electronic_signature'
+        ]
+
         widgets = {
             'applied_position':RadioSelect,
             'start_date':DateInput(attrs={'type':'date'}),
             'end_date':DateInput(attrs={'type':'date'}),
             "applied_positions":CheckboxSelectMultiple,
             "work_authorization":RadioSelect,
-            "charged_or_arrested":RadioSelect,
-            "has_felony":RadioSelect,
+            "charged_or_arrested_resolved":RadioSelect,
+            "charged_or_arrested_not_resolved":RadioSelect,
         }
+
+        labels = {
+            "start_date":"Date available to start",
+            'ending_date':"Ending date - This is not official. A notice is still required.",
+            "work_hours_desired":"Number of hours desired per week",
+            "contract_employment_agreement":"I agree",
+            'work_authorization':long_labels['work_authorization'],
+            'charged_or_arrested_resolved':long_labels['charged_or_arrested_resolved'],
+            'charged_or_arrested_not_resolved':long_labels['charged_or_arrested_not_resolved'],
+            'contract_employment_agreement':'I agree',
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_id = "employee_form"
+        self.helper.form_class = "w-25 center-form isolate-form"
+        self.helper.layout = Layout(
+            'home_phone',
+            'who_referred_you',
+            'transportation',
+            'applied_positions',
+            'start_date',
+            'end_date',
+            'work_hours_desired',
+            'desired_pay_rate',
+            'pool_preference',
+            'subdivision',
+            'work_authorization',
+            'charged_or_arrested_resolved',
+            'charged_or_arrested_not_resolved',
+            HTML("""
+                 <p>
+                   I understand that this application is not a contract of employment.
+                   I understand that false or misleading information given in my application
+                   or interview(s) will result in termination. I understand that in the event
+                   of employment, employment relationship is terminable at will and
+                   is not governed by an employment contract. I also understand that
+                   the use of illegal drugs or alcohol is prohibited during employment
+                   and is grounds for immediate termination. In the event that I am employed,
+                   I agree and abide by all policies and standards of
+                   Gulf Coast Aquatics, Inc.Gulf Coast Aquatics, Inc is an
+                   equal opportunity employer.*
+                 </p>
+                 """),
+            'contract_employment_agreement',
+            'electronic_signature',
+            Submit('','Submit',css_class="btn btn-outline-primary btn-block btn-lg")
+        )
 
 class EducationForm(ModelForm):
     class Meta:
@@ -70,7 +150,7 @@ class ChecklistForm(ModelForm):
 
     error_messages = {
         "invalid_wavier_and_record":"""You cannot submit a Hep B vaccine
-         record and sign the Hep B waiver. Please choose one or the other.""",
+        record and sign the Hep B waiver. Please choose one or the other.""",
     }
 
     class Meta:
@@ -260,12 +340,13 @@ class ChecklistForm(ModelForm):
                  I have read and received a copy of “Employee Acknowledgement
                  of Worker’s Compensation Network”.
                  </p>
-                """),
+                 """),
             "awknowledgement_form_signature",
             css_class="isolate-form"
         ),
         Submit('','Submit',css_class="btn-lg btn-block"),
         )
+
 
     def clean(self):
         cleaned_data = super().clean()
@@ -278,6 +359,7 @@ class ChecklistForm(ModelForm):
                 self.error_messages["invalid_wavier_and_record"],
                 code="invalid_wavier_and_record"
             )
+
 
 class JobHistoryForm(ModelForm):
     class Meta:
