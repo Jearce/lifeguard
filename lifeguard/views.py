@@ -5,9 +5,9 @@ from django.views.generic.edit import UpdateView,CreateView
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from users.models import User
-from .models import Lifeguard,Enroll,LifeguardClass
-from .forms import LifeguardCertifiedForm,LifeguardForm
+from users.models import User,EmergencyContact
+from lifeguard.models import Lifeguard,Enroll,LifeguardClass
+from lifeguard.forms import LifeguardCertifiedForm,LifeguardForm
 
 # Create your views here.
 class HomeView(TemplateView):
@@ -17,6 +17,14 @@ class LifeguardCreateOrUpdate(UpdateView):
     model = Lifeguard
     template_name = 'lifeguard/lifeguard_form.html'
     form_class = LifeguardForm
+
+    def get(self,request,*args,**kwargs):
+
+        any_emergency_contacts = EmergencyContact.objects.filter(user=self.request.user)
+        if not any_emergency_contacts.exists():
+            return redirect('users:emergency_contact')
+
+        return super().get(request,*args,**kwargs)
 
     def get_object(self):
         try:
