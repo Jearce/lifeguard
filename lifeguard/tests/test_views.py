@@ -7,20 +7,29 @@ from django.test import TestCase
 from django.http import HttpRequest
 from django.contrib.auth import get_user_model
 
-from .. import views
-from users.models import User
+from lifeguard import views
+from users.models import User,EmergencyContact
 from employee.models import Employee,Transportation,Position
-from ..models import LifeguardClass,Enroll,Lifeguard
+from lifeguard.models import LifeguardClass,Enroll,Lifeguard
 from lifeguard.tests.helpers import set_up_time,LifeguardFactory
 
 from dateutil.relativedelta import relativedelta
 
 class BaseUserSetUp(TestCase):
     def setUp(self):
-        self.email = 'test@example.com'
-        self.password = 'sdfh328j!'
-        self.user = User.objects.create_user(email=self.email,password=self.password)
-
+        self.email='test@example.com'
+        self.password='2dhd7!42'
+        self.credentials = {
+            'first_name':'Larry',
+            'last_name':'John',
+            'dob':'1995-06-09',
+            'phone':'121 382 8292',
+        }
+        self.user = User.objects.create_user(
+            email=self.email,
+            password=self.password,
+            **self.credentials
+        )
 
 class HomeViewTest(TestCase):
     def test_view_url_exists_at_desired_location(self):
@@ -81,24 +90,32 @@ class LifeguardCreateTest(BaseUserSetUp):
 
 
     def test_view_url_exists_at_desired_location(self):
+        self.create_emergency_contact()
         response = self.client.get(reverse('lifeguard:create'))
         self.assertEqual(response.status_code,200)
 
     def test_view_uses_correct_template(self):
+        self.create_emergency_contact()
         response = self.client.get(reverse('lifeguard:create'))
         self.assertTemplateUsed(response,'lifeguard/lifeguard_form.html')
 
+    def test_has_not_completed_emergency_contact_form(self):
+        response = self.client.get(reverse('lifeguard:create'))
+        self.assertEqual(response.status_code,302)
+        self.assertRedirects(response,reverse('users:emergency_contact'))
+
     def test_lifeguard_create(self):
+        self.create_emergency_contact()
         response = self.client.post(reverse('lifeguard:create'),self.new_working_lifeguard)
         self.assertEqual(response.status_code,302)
 
     def test_lifeguard_update(self):
         #user is already a lifeguard
         Lifeguard.objects.create(user=self.user,**self.new_working_lifeguard)
-
         response = self.client.post(reverse('lifeguard:create'),self.certified_working_lifeguard)
         self.assertEqual(Lifeguard.objects.count(),1)
         self.assertEqual(response.status_code,302)
+
 
     def test_redirect_for_already_certified_lifeguard(self):
         response = self.client.post(reverse('lifeguard:create'),self.certified_working_lifeguard)
@@ -127,6 +144,27 @@ class LifeguardCreateTest(BaseUserSetUp):
         response = self.client.post(reverse('lifeguard:create'),self.new_lifeguard)
         self.assertRedirects(response,reverse('lifeguard:classes'))
 
+    def create_emergency_contact(self):
+        emergency_contacts = [
+            {
+                "name":"Mary",
+                "relationship":"mom",
+                "phone":"712 434 2348"
+            },
+            {
+                "name":"Jerry",
+                "relationship":"dad",
+                "phone":"712 434 2348"
+            }
+        ]
+
+        user_ems = []
+        for em in emergency_contacts:
+            user_em = EmergencyContact.objects.create(user=self.user,**em)
+            user_ems.append(user_em)
+        return user_ems
+
+
 class LifeguardAlreadyCertifiedTest(BaseUserSetUp):
     def setUp(self):
         super().setUp()
@@ -147,10 +185,10 @@ class LifeguardAlreadyCertifiedTest(BaseUserSetUp):
             "no_refunds_agreement":True,
             "electronic_signature":"Larry Johnson",
         }
-    def test_view_url_exists_at_desired_location(self):
-        self.create_lifeguard(self.certified_lifeguard)
-        response = self.client.get(reverse('lifeguard:already_certified'))
-        self.assertEqual(response.status_code,200)
+        def test_view_url_exists_at_desired_location(self):
+            self.create_lifeguard(self.certified_lifeguard)
+            response = self.client.get(reverse('lifeguard:already_certified'))
+            self.assertEqual(response.status_code,200)
 
     def test_view_uses_correct_template(self):
         self.create_lifeguard(self.certified_lifeguard)
@@ -177,8 +215,7 @@ class LifeguardAlreadyCertifiedTest(BaseUserSetUp):
         self.create_lifeguard(lifeguard_data)
         with open(path_to_certificate,'rb') as pdf:
             response = self.client.post(reverse('lifeguard:already_certified'),{'last_certified':'2000-06-09','certification':pdf})
-        return response
-
+            return response
 
 class LifeguardClassesTest(BaseUserSetUp):
     fixtures = ['classes.json']
@@ -230,9 +267,6 @@ class LifeguardClassesTest(BaseUserSetUp):
                 for lgclass in response.context['classes']
             )
         )
-
-
-
 
 class LifeguardRegistrationTest(BaseUserSetUp):
     def setUp(self):
