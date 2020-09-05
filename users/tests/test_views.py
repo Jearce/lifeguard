@@ -4,9 +4,9 @@ from django.test import TestCase
 from django.http import HttpRequest
 from django.contrib.auth import get_user_model
 
-from .. import views
-from ..models import User,EmergencyContact,Address
-from ..forms import EmergencyContactInlineFormSet
+from users import views
+from users.models import User,EmergencyContact,Address
+from users.forms import EmergencyContactInlineFormSet
 
 from utils.test.helpers import InlineFormsetManagmentFactory
 
@@ -15,7 +15,19 @@ from utils.test.helpers import InlineFormsetManagmentFactory
 class SignUpViewTest(TestCase):
 
     def setUp(self):
-        self.credentials = {'email':'test@example.com', 'password1':'2dhd7!42','password2':'2dhd7!42'}
+        self.credentials = {
+            'email':'test@example.com',
+            'first_name':'Larry',
+            'last_name':'John',
+            'dob':'1995-06-09',
+            'phone':'121 382 8292',
+            'street1':"123 Main St",
+            'state':'Oregon',
+            'city':'Portland',
+            'zip':'97035',
+            'password1':'2dhd7!42',
+            'password2':'2dhd7!42'
+        }
 
     def test_view_url_exists_at_desired_location(self):
         response = self.client.get(reverse('users:signup'))
@@ -29,6 +41,7 @@ class SignUpViewTest(TestCase):
         response = self.client.post(reverse('users:signup'),data=self.credentials)
         users = get_user_model().objects.all()
         self.assertEqual(users.count(),1)
+        self.assertEqual(Address.objects.count(),1)
 
     def test_redirect_after_signup(self):
         response = self.client.post(reverse('users:signup'),data=self.credentials)
