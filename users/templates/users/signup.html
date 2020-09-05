@@ -18,12 +18,8 @@
 
 <div class="container">
 	<h3 class="pb-3 pt-3 text-center">Sign Up</h3>
-	<form class="center-form" method="post" id="signup-form">
-		{% csrf_token %}
-		{{ form|crispy }}
+		{% crispy form %}
 		<p><a href="{% url 'users:login' %}" id="id_login">Already have an account?</a></p>
-		<input class="btn btn-primary" type='submit' value='sign up'>
-	</form>
 </div>
 {% endblock content %}
 
