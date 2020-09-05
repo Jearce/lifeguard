@@ -32,13 +32,13 @@ class SignUpView(CreateView):
         password = form.cleaned_data['password1']
         new_user = log_user_in(self.request,email,password)
 
-        #create address
+        #create address and
         assign_address_to_user(new_user,form.cleaned_data)
 
         return valid
 
     def get_success_url(self):
-        return reverse_lazy('users:dashboard')
+        return reverse_lazy('users:emergency_contact')
 
 def log_user_in(request,email,password):
     new_user = authenticate(email=email,password=password)
@@ -120,7 +120,7 @@ class EmergencyContactCreateOrUpdate(UpdateView):
         return render(request,self.template_name,context={'formset':formset})
 
     def get_success_url(self):
-        return reverse_lazy('users:address')
+        return reverse_lazy('users:dashboard')
 
 class AddressCreateOrUpdate(UpdateView):
     model = Address
