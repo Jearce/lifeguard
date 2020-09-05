@@ -19,7 +19,7 @@ class User(AbstractUser):
     is_lifeguard = models.BooleanField(default=False)
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = ['first_name', 'last_name','phone','dob']
     objects = CustomUserManager()
 
     def __str__(self):
