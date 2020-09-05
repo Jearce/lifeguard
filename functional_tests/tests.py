@@ -131,20 +131,9 @@ class SignUpTest(BaseTestFixture):
         self.browser.implicitly_wait(10)
         self.browser.find_element_by_id('navbarDropdown').click()
         self.browser.find_element_by_id('id_signup').click()
+
         self.assertIn('signup',self.browser.current_url)
-
-        email_input = self.browser.find_element_by_id('id_email')
-        password1_input = self.browser.find_element_by_id('id_password1')
-        password2_input = self.browser.find_element_by_id('id_password2')
-
-        email = self.credentials['username']
-        password = self.credentials['password']
-
-        email_input.send_keys(email)
-        password1_input.send_keys(password)
-        password2_input.send_keys(password)
-
-        self.browser.find_element_by_id('signup-form').submit()
+        self.general_form_input(self.credentials,form_id="signup_form")
         self.assertIn('dashboard',self.browser.current_url)
 
 class LogInTest(BaseTestFixture):
