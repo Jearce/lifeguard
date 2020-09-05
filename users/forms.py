@@ -4,7 +4,7 @@ from .models import EmergencyContact,User
 from django import forms
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout,Div,Submit,Field,Button
+from crispy_forms.layout import Layout,Div,Submit,Field,Button,HTML
 
 class CustomUserCreationForm(UserCreationForm):
     street1 = forms.CharField(max_length=255)
@@ -24,7 +24,7 @@ class CustomUserCreationForm(UserCreationForm):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_id = "signup_form"
-        self.helper.form_class = "center-form isolate-form"
+        self.helper.form_class = "w-25 center-form isolate-form shadow-form mb-3 mt-3"
         self.helper.layout = Layout(
             Div("email",css_class="form-group"),
             Div(
@@ -45,7 +45,14 @@ class CustomUserCreationForm(UserCreationForm):
 
             Div("password1",css_class="form-group"),
             Div("password2",css_class="form-group"),
-            Submit('','Submit')
+            Submit('','Submit',css_class="btn btn-outline-primary btn-block btn-lg mb-2"),
+            HTML("""
+                 <p>
+                 <a href="{% url 'users:login' %}" id="id_login">
+                 Already have an account?
+                 </a>
+                 </p>
+                 """),
         )
 
 class CustomUserChangeForm(UserChangeForm):
