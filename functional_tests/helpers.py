@@ -20,9 +20,19 @@ class BaseTestFixture(LiveServerTestCase):
         cls.browser = webdriver.Chrome()
 
         cls.credentials = {
-            'username':'test@example.com',
-            'password':'u7efd!hd',
+            'email':'test@example.com',
+            'first_name':'Larry',
+            'last_name':'John',
+            'phone':'121 382 8292',
+            'dob':'09/06/1995',
+            'street1':"123 Main St",
+            'state':'Oregon',
+            'city':'Portland',
+            'zip':'97035',
+            'password1':'2dhd7!42',
+            'password2':'2dhd7!42'
         }
+
         cls.contact_information = {
             'first_name':'John',
             'last_name' : 'Doe',
@@ -81,6 +91,7 @@ class BaseTestFixture(LiveServerTestCase):
             "end_date":"04/06/2020",
             "reason_for_leaving":"I've done all I can there.",
         }
+
 
     @classmethod
     def tearDownClass(cls):
