@@ -136,7 +136,7 @@ class BaseTestFixture(LiveServerTestCase):
             form_id="emergency_contact_form",
             prefix=prefix
         )
-        self.assertIn('address/',self.browser.current_url)
+        self.assertIn('/users/dashboard/',self.browser.current_url)
 
     def fill_employee_education_form(self):
         prefix = 'id_employeeeducation_set'
