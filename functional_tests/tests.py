@@ -24,6 +24,10 @@ class SignUpTest(BaseTestFixture):
         #user lands on homepage
         self.start_at_home_page()
 
+    def test_signup(self):
+        self.signup()
+        self.fill_out_emergency_contact()
+
     def test_register_as_new_lifeguard_and_employee(self):
 
         #creates account and is taken to the dashboard
@@ -125,7 +129,7 @@ class SignUpTest(BaseTestFixture):
         #makes payment
         self.fail("Finish Payment Test")
 
-    def sign_up(self):
+    def signup(self):
         #select account opitions to get to sign up link
         self.browser.find_element_by_class_name('navbar-toggler').click()
         self.browser.implicitly_wait(10)
@@ -134,7 +138,7 @@ class SignUpTest(BaseTestFixture):
 
         self.assertIn('signup',self.browser.current_url)
         self.general_form_input(self.credentials,form_id="signup_form")
-        self.assertIn('dashboard',self.browser.current_url)
+        self.assertIn('emergency-contact/',self.browser.current_url)
 
 class LogInTest(BaseTestFixture):
     def setUp(self):
