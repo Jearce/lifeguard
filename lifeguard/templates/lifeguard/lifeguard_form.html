@@ -10,19 +10,7 @@
 	<div class="row">
 		<div class="col mb-4">
 			<h1 class="mt-4 text-center">Lifeguard Form</h1>
-			<form method="post" id="lifeguard_form">
-				{% csrf_token %}
-				{{ form.already_certified|as_crispy_field }}
-				{{ form.wants_to_work_for_company|as_crispy_field }}
-				<p><b>NOTE:</b> Gulf Coast Aquatics American Red Cross courses are <b>ONLY</b> discounted for those intending to work with us for the summer. All others will be charged <b>FULL</b> cost of the course, failure to pay this amount online will result in billing for the balance on your account on the first day of the course prior to starting.</p>
-				<p>Please check that you have read and understand the above statement and then sign your name below.</p>
-				{{ form.payment_agreement|as_crispy_field }}
-				{{ form.payment_agreement_signature|as_crispy_field }}
-				<p>I understand there are no refunds for this course once the course begins which includes if I do not pass the prerequisite requirements. I understand if I am unable to pass the prerequisites, I will be given the opportunity to try again one other time in a later available class. Students must pass the prerequisite skills in order to continue in the class.</p>
-				{{ form.no_refunds_agreement|as_crispy_field }}
-				{{ form.electronic_signature|as_crispy_field }}
-				<input class="btn btn-primary" type="submit" value="submit">
-			</form>
+			{% crispy form %}
 		</div>
 	</div>
 </div>
