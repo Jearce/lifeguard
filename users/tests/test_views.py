@@ -11,6 +11,22 @@ from users.forms import EmergencyContactInlineFormSet
 from utils.test.helpers import InlineFormsetManagmentFactory
 
 
+class BaseUserSetUp(TestCase):
+    def setUp(self):
+        self.email = 'test@example.com'
+        self.password = 'sdfh328j!'
+        self.credentials = {
+            'first_name':'Larry',
+            'last_name':'John',
+            'dob':'1995-06-09',
+            'phone':'121 382 8292',
+        }
+        self.user = User.objects.create_user(
+            email=self.email,
+            password=self.password,
+            **self.credentials
+        )
+        self.client.login(email=self.email,password=self.password)
 
 class SignUpViewTest(TestCase):
 
@@ -45,14 +61,9 @@ class SignUpViewTest(TestCase):
 
     def test_redirect_after_signup(self):
         response = self.client.post(reverse('users:signup'),data=self.credentials)
-        self.assertRedirects(response,reverse('users:dashboard'))
+        self.assertRedirects(response,reverse('users:emergency_contact'))
 
-class LogInViewTest(TestCase):
-
-    def setUp(self):
-        self.credentials = {'email':'test@example.com', 'password':'2dhd7!42'}
-        User.objects.create_user(**self.credentials)
-
+class LogInViewTest(BaseUserSetUp):
     def test_view_url_exists_at_desired_location(self):
         response = self.client.get(reverse('users:login'))
         self.assertEqual(response.status_code,200)
@@ -72,12 +83,11 @@ class LogInViewTest(TestCase):
                   'password':self.credentials['password']})
         self.assertRedirects(response,reverse('users:dashboard'))
 
-class DashboardViewTest(TestCase):
+class DashboardViewTest(BaseUserSetUp):
 
     def setUp(self):
-        self.credentials = {'email':'test@example.com', 'password':'2dhd7!42'}
-        user = User.objects.create_user(**self.credentials)
-        self.client.login(**self.credentials)
+        super().setUp()
+        self.client.login(email=self.email,password=self.password)
 
     def test_view_url_exists_at_desired_location(self):
         response = self.client.get('/users/login/')
@@ -87,11 +97,6 @@ class DashboardViewTest(TestCase):
         response = self.client.get('/users/dashboard/')
         self.assertTemplateUsed(response,'users/dashboard.html')
 
-class BaseUserSetUp(TestCase):
-    def setUp(self):
-        self.email = 'test@example.com'
-        self.password = 'sdfh328j!'
-        self.user = User.objects.create_user(email=self.email,password=self.password)
 
 class ContactUpdateViewTest(BaseUserSetUp):
     def setUp(self):
@@ -214,6 +219,21 @@ class EmergencyContactCreateOrUpdateTest(BaseUserSetUp):
         self.assertEqual(response.status_code,302)
         self.assertEqual(EmergencyContact.objects.filter(user=self.user).count(),2)
 
+    def test_redirect_after_form_submit(self):
+        #Emergency Contact
+        management_factory = InlineFormsetManagmentFactory(
+            EmergencyContactInlineFormSet,
+            extra=2,
+            initial=0,
+            min_num=0,
+            max_num=2,
+            records=self.emergency_contacts_to_create
+        )
+
+        em_contacts = management_factory.create_management_form()
+        response = self.client.post(reverse('users:emergency_contact'),em_contacts)
+        self.assertRedirects(response,reverse('users:dashboard'))
+
 class AddressCreateOrUpdateTest(BaseUserSetUp):
     def setUp(self):
         super().setUp()
@@ -232,7 +252,6 @@ class AddressCreateOrUpdateTest(BaseUserSetUp):
             "zip":"94103"
         }
         self.user_login = self.client.login(email=self.email,password=self.password)
-        self.assertTrue(self.user_login)
 
     def test_view_url_exists_at_desired_location(self):
         response = self.client.get(reverse('users:address'))
