@@ -26,14 +26,39 @@ class SignUpView(CreateView):
 
     def form_valid(self,form):
         valid = super().form_valid(form)
+
+        #log user in on sign up
         email = form.cleaned_data['email']
         password = form.cleaned_data['password1']
-        new_user = authenticate(email=email,password=password)
-        login(self.request,new_user)
+        new_user = log_user_in(self.request,email,password)
+
+        #create address
+        assign_address_to_user(new_user,form.cleaned_data)
+
         return valid
 
     def get_success_url(self):
         return reverse_lazy('users:dashboard')
+
+def log_user_in(request,email,password):
+    new_user = authenticate(email=email,password=password)
+    login(request,new_user)
+    return new_user
+
+def assign_address_to_user(user,cleaned_data):
+    street1 = cleaned_data['street1']
+    street2 = cleaned_data['street2']
+    state = cleaned_data['state']
+    city = cleaned_data['city']
+    zip = cleaned_data['zip']
+    Address.objects.create(
+        user=user,
+        street1=street1,
+        street2=street2,
+        city=city,
+        state=state,
+        zip=zip
+    )
 
 class LogInView(LoginView):
     template_name = 'users/login.html'
