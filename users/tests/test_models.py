@@ -24,7 +24,14 @@ class UsersManagersTests(TestCase):
 
     def test_create_superuser(self):
         User = get_user_model()
-        admin_user = User.objects.create_superuser('super@user.com','foo')
+        admin_user = User.objects.create_superuser(
+            email='super@user.com',
+            password='foo',
+            first_name="Larry Jones",
+            last_name="Smith",
+            phone="713 373 3738",
+            dob="1994-12-09",
+        )
         self.assertEqual(admin_user.email, 'super@user.com')
         self.assertTrue(admin_user.is_active)
         self.assertTrue(admin_user.is_staff)
