@@ -179,7 +179,7 @@ class BaseTestFixture(LiveServerTestCase):
 
     def register_new_lifeguard_who_applied_as_employee(self,redirect_url):
         register_data = {
-           "already_certified" : "N",
+           "already_certified_2" : "click",
            "payment_agreement":"click",
            "payment_agreement_signature":"Larry Jones",
            "no_refunds_agreement" : "click",
