@@ -42,6 +42,13 @@ class EmployeeCreateOrUpdate(UpdateView):
     form_class = EmployeeForm
     template_name = 'employee/employee_form.html'
 
+    def get(self, request,*args,**kwargs):
+        user = self.request.user
+        emergency_contacts = user.emergencycontact_set.all()
+        if not emergency_contacts.exists():
+            return redirect('users:emergency_contact')
+        return super().get(request,*args,**kwargs)
+
     def get_object(self):
         user = self.request.user
         try:
