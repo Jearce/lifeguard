@@ -19,9 +19,9 @@ class LifeguardCreateOrUpdate(UpdateView):
     form_class = LifeguardForm
 
     def get(self,request,*args,**kwargs):
-
-        any_emergency_contacts = EmergencyContact.objects.filter(user=self.request.user)
-        if not any_emergency_contacts.exists():
+        user = self.request.user
+        emergency_contacts = user.emergencycontact_set.all()
+        if not emergency_contacts.exists():
             return redirect('users:emergency_contact')
 
         return super().get(request,*args,**kwargs)
