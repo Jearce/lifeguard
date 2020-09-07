@@ -79,15 +79,14 @@ class LifeguardCreateTest(BaseUserSetUp):
             "pool_preference":"Village Pool",
             "subdivision":"My subdivision 122",
             "work_authorization":True,
-            "charged_or_arrested":False,
-            "has_felony":False,
+            "charged_or_arrested_resolved":False,
+            "charged_or_arrested_not_resolved":False,
             "contract_employment_agreement":True,
             "electronic_signature":"Larry Johnson",
         }
         self.transportation = Transportation.objects.create(name="Car",description="I will drive by car")
         self.position1 = Position.objects.create(title="Lifeguard",minimum_age=15,lifeguard_required=True)
         self.position2 = Position.objects.create(title="Supervisor",minimum_age=18,lifeguard_required=False)
-
 
     def test_view_url_exists_at_desired_location(self):
         self.create_emergency_contact()
@@ -163,7 +162,6 @@ class LifeguardCreateTest(BaseUserSetUp):
             user_em = EmergencyContact.objects.create(user=self.user,**em)
             user_ems.append(user_em)
         return user_ems
-
 
 class LifeguardAlreadyCertifiedTest(BaseUserSetUp):
     def setUp(self):
