@@ -4,6 +4,7 @@ from django.conf import settings
 from django.contrib.sites.models import Site
 
 from employee.models import PDFFile
+from users.models import EmergencyContact
 
 BASE_DIR = settings.BASE_DIR
 
@@ -32,7 +33,7 @@ class InlineFormsetManagmentFactory:
         for i,record in enumerate(self.records):
             for key,value in record.items():
                 mf[f"{prefix}-{i}-{key}"] = value
-        return mf
+                return mf
 
 def set_up_pdf_files_for_download():
     path_to_files = os.path.join(BASE_DIR,"functional_tests/files_used_to_test")
@@ -43,3 +44,26 @@ def set_up_pdf_files_for_download():
         workers_comp=f"{path_to_files}/workers_comp.pdf",
     )
     return path_to_files
+
+def create_emergency_contact(user):
+    emergency_contacts = [
+        {
+            "name":"Mary",
+            "relationship":"mom",
+            "phone":"712 434 2348"
+        },
+        {
+            "name":"Jerry",
+            "relationship":"dad",
+            "phone":"712 434 2348"
+        }
+    ]
+
+    user_ems = [
+        EmergencyContact.objects.create(user=user,**em)
+        for em in emergency_contacts
+    ]
+    return user_ems
+
+
+
