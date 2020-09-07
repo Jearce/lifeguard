@@ -13,7 +13,7 @@ from employee.models import (Transportation,
 from employee.forms import (EducationInlineFormset,
                             JobHistoryInlineFormset)
 from employee import views
-from users.models import User
+from users.models import User,EmergencyContact
 from lifeguard.models import Lifeguard
 
 from employee.tests.helpers import CommonSetUp
@@ -22,13 +22,19 @@ from utils.test.helpers import InlineFormsetManagmentFactory
 class EmployeeCreateOrUpdateTest(CommonSetUp):
 
     def test_view_url_exists_at_desired_location(self):
+        self.create_emergency_contact()
         response = self.client.get(reverse('employee:create'))
         self.assertEqual(response.status_code,200)
 
     def test_view_uses_correct_template(self):
+        self.create_emergency_contact()
         response = self.client.get(reverse('employee:create'))
         self.assertTemplateUsed(response,'employee/employee_form.html')
 
+    def test_has_not_completed_emergency_contact_form(self):
+        response = self.client.get(reverse('employee:create'))
+        self.assertEqual(response.status_code,302)
+        self.assertRedirects(response,reverse('users:emergency_contact'))
     def test_create_employee(self):
         response =self.client.post(reverse('employee:create'),{**self.employee_data,"applied_positions":(1,2)})
         self.assertEqual(response.status_code,302)
@@ -39,6 +45,31 @@ class EmployeeCreateOrUpdateTest(CommonSetUp):
         response =self.client.post(reverse('employee:create'),{**self.employee_data,"applied_positions":1})
         self.assertEqual(response.status_code,302)
         self.assertEqual(Employee.objects.count(),1)
+
+    def create_emergency_contact(self):
+        emergency_contacts = [
+            {
+                "name":"Mary",
+                "relationship":"mom",
+                "phone":"712 434 2348"
+            },
+            {
+                "name":"Jerry",
+                "relationship":"dad",
+                "phone":"712 434 2348"
+            }
+        ]
+
+        user_ems = []
+        for em in emergency_contacts:
+            user_em = EmergencyContact.objects.create(user=self.user,**em)
+            user_ems.append(user_em)
+        return user_ems
+
+
+
+
+
 
 class EmployeeEducationTest(CommonSetUp):
     def setUp(self):
