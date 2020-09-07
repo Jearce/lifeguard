@@ -7,6 +7,7 @@ import selenium
 from selenium import webdriver
 
 from lifeguard.models import Enroll
+from users.models import User
 
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -91,7 +92,6 @@ class BaseTestFixture(LiveServerTestCase):
             "end_date":"04/06/2020",
             "reason_for_leaving":"I've done all I can there.",
         }
-
 
     @classmethod
     def tearDownClass(cls):
@@ -241,6 +241,17 @@ class BaseTestFixture(LiveServerTestCase):
         enrollment_btns[0].submit()
         self.assertEqual(Enroll.objects.count(),1)
         self.assertIn('users/dashboard/',self.browser.current_url)
+
+    def create_user(self):
+        user = User.objects.create_user(
+            email=self.credentials['email'],
+            first_name=self.credentials['first_name'],
+            last_name=self.credentials['last_name'],
+            phone=self.credentials['phone'],
+            dob='1996-09-12',
+            password=self.credentials['password1']
+        )
+        return user
 
     def make_payment(self):
         pass
