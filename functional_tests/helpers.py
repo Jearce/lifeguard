@@ -62,8 +62,8 @@ class BaseTestFixture(LiveServerTestCase):
             "pool_preference":"Village Pool",
             "subdivision":"My subdivision 122",
             "work_authorization_1":"click",
-            "charged_or_arrested_2":"click",
-            "has_felony_2":"click",
+            "charged_or_arrested_resolved_2":"click",
+            "charged_or_arrested_not_resolved_2":"click",
             "contract_employment_agreement":"click",
             "electronic_signature":"Larry Johnson",
         }
@@ -167,8 +167,8 @@ class BaseTestFixture(LiveServerTestCase):
     def register_new_lifeguard_who_wants_to_work(self,redirect_url):
         #user is a new lifeguard
         register_data = {
-           "already_certified" : "N", #user is a new lifeguard
-           "wants_to_work_for_company":"Y", #and wants to work as a lifeguard
+           "already_certified_2" : "click", #user is a new lifeguard
+           "wants_to_work_for_company_1":"click", #and wants to work as a lifeguard
            "payment_agreement":"click",
            "payment_agreement_signature":"Larry Jones",
            "no_refunds_agreement" : "click",
@@ -190,8 +190,8 @@ class BaseTestFixture(LiveServerTestCase):
 
     def register_returning_lifeguard_who_applied_as_employee(self,redirect_url):
         register_data = {
-           "already_certified" : "Yes",
-           "wants_to_work_for_company":"Yes", #and wants to work as a lifeguard
+           "already_certified_1" : "click",
+           "wants_to_work_for_company_1":"click", #and wants to work as a lifeguard
            "payment_agreement":"click",
            "payment_agreement_signature":"Larry Jones",
            "no_refunds_agreement" : "click",
