@@ -15,6 +15,8 @@ from lifeguard.tests.helpers import set_up_time,LifeguardFactory
 
 from dateutil.relativedelta import relativedelta
 
+from utils.test.helpers import create_emergency_contact
+
 class BaseUserSetUp(TestCase):
     def setUp(self):
         self.email='test@example.com'
@@ -89,12 +91,12 @@ class LifeguardCreateTest(BaseUserSetUp):
         self.position2 = Position.objects.create(title="Supervisor",minimum_age=18,lifeguard_required=False)
 
     def test_view_url_exists_at_desired_location(self):
-        self.create_emergency_contact()
+        create_emergency_contact(self.user)
         response = self.client.get(reverse('lifeguard:create'))
         self.assertEqual(response.status_code,200)
 
     def test_view_uses_correct_template(self):
-        self.create_emergency_contact()
+        create_emergency_contact(self.user)
         response = self.client.get(reverse('lifeguard:create'))
         self.assertTemplateUsed(response,'lifeguard/lifeguard_form.html')
 
@@ -104,7 +106,6 @@ class LifeguardCreateTest(BaseUserSetUp):
         self.assertRedirects(response,reverse('users:emergency_contact'))
 
     def test_lifeguard_create(self):
-        self.create_emergency_contact()
         response = self.client.post(reverse('lifeguard:create'),self.new_working_lifeguard)
         self.assertEqual(response.status_code,302)
 
@@ -115,12 +116,12 @@ class LifeguardCreateTest(BaseUserSetUp):
         self.assertEqual(Lifeguard.objects.count(),1)
         self.assertEqual(response.status_code,302)
 
-
     def test_redirect_for_already_certified_lifeguard(self):
         response = self.client.post(reverse('lifeguard:create'),self.certified_working_lifeguard)
         self.assertRedirects(response,reverse('lifeguard:already_certified'))
 
     def test_redirect_for_new_lifeguard_that_wants_to_work(self):
+        create_emergency_contact(self.user)
         response = self.client.post(reverse('lifeguard:create'),self.new_working_lifeguard)
         self.assertRedirects(response,reverse('employee:create'))
 
@@ -129,12 +130,12 @@ class LifeguardCreateTest(BaseUserSetUp):
         self.assertRedirects(response,reverse('lifeguard:classes'))
 
     def test_redirect_for_lifeguard_who_applied_as_employee(self):
+        create_emergency_contact(self.user)
         employee = Employee(
             user=self.user,
             transportation=self.transportation,
             **{
-                key:value
-                for key, value in self.employee_data.items()
+                key:value for key,value in self.employee_data.items()
                 if key != 'transportation' and key != 'applied_positions'
             }
         )
@@ -142,26 +143,6 @@ class LifeguardCreateTest(BaseUserSetUp):
         employee.applied_positions.set([self.position1,self.position2])
         response = self.client.post(reverse('lifeguard:create'),self.new_lifeguard)
         self.assertRedirects(response,reverse('lifeguard:classes'))
-
-    def create_emergency_contact(self):
-        emergency_contacts = [
-            {
-                "name":"Mary",
-                "relationship":"mom",
-                "phone":"712 434 2348"
-            },
-            {
-                "name":"Jerry",
-                "relationship":"dad",
-                "phone":"712 434 2348"
-            }
-        ]
-
-        user_ems = []
-        for em in emergency_contacts:
-            user_em = EmergencyContact.objects.create(user=self.user,**em)
-            user_ems.append(user_em)
-        return user_ems
 
 class LifeguardAlreadyCertifiedTest(BaseUserSetUp):
     def setUp(self):
@@ -202,9 +183,9 @@ class LifeguardAlreadyCertifiedTest(BaseUserSetUp):
         self.assertRedirects(response,reverse('lifeguard:classes'))
 
     def test_redirect_for_working_certified_lifeguard(self):
+        create_emergency_contact(self.user)
         response = self.submit_certificate('lifeguard/tests/certificate.pdf',self.working_certified_lifeguard)
         self.assertRedirects(response,reverse('employee:create'))
-
 
     def create_lifeguard(self,data):
         Lifeguard.objects.create(user=self.user,**data)
