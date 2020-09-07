@@ -28,25 +28,6 @@ class SignUpTest(BaseTestFixture):
         self.signup()
         self.fill_out_emergency_contact()
 
-    def test_register_as_employee_and_apply_as_nonlifeguard(self):
-        #creates account and is taken to the dashboard
-        self.sign_up()
-
-        #clicks on employee registration link
-        self.start_registration(element_id='id_employee_registration')
-
-        #fills out contact information,emergency contact,and address forms
-        self.fill_out_contact_information()
-        self.fill_out_emergency_contact()
-        self.fill_out_address_form(redirect_url="employee/create/")
-
-        #now fills out employee,education, and job history forms
-        self.fill_employee_form({**self.employee_data,**self.only_supervisor})
-        self.fill_employee_education_form()
-        self.fill_employee_job_history(redirect_url="/users/dashboard/")
-
-        self.fail("Wait for application status")
-
     def test_register_as_employee_and_apply_as_lifeguard(self):
         #creates account and is taken to the dashboard
         self.sign_up()
@@ -187,7 +168,28 @@ class LoginTest(BaseTestFixture):
 
         self.fail("Wait for application status")
 
-    def test_login_and_check_application_status(self):
+    def test_register_as_employee_and_apply_as_lifeguard(self):
+        #creates account and is taken to the dashboard
+        self.login()
+
+        #clicks on employee registration link
+        self.browser.find_element_by_id('id_employee_registration').click()
+
+        #now fills out employee,education, and job history forms
+        self.fill_employee_form({**self.employee_data,**self.lifeguard_and_supervisor})
+        self.fill_employee_education_form()
+        self.fill_employee_job_history(redirect_url="/lifeguard/create/")
+
+        #register lifeguard who is already filled out the employee application
+        self.register_new_lifeguard_who_applied_as_employee(redirect_url="/lifeguard/classes/")
+
+        #picks a class to attend
+        self.enroll_in_class()
+
+        #makes payment
+        self.fail("Finish Payment Test")
+
+    def test_check_application_status(self):
         employee = Employee.objects.create(
             user=self.user,
             home_phone="712 634 3328",
@@ -200,8 +202,8 @@ class LoginTest(BaseTestFixture):
             pool_preference="Village Pool",
             subdivision="My subdivision 122",
             work_authorization=True,
-            charged_or_arrested=False,
-            has_felony=False,
+            charged_or_arrested_resolved=False,
+            charged_or_arrested_not_resolved=False,
             contract_employment_agreement=True,
             electronic_signature="Larry Johnson",
         )
@@ -212,7 +214,7 @@ class LoginTest(BaseTestFixture):
         self.browser.find_element_by_id('application_status').click()
         self.assertIn('/application-status/',self.browser.current_url)
 
-    def test_login_and_complete_employee_checklist(self):
+    def test_complete_employee_checklist(self):
         employee = Employee.objects.create(
             user=self.user,
             home_phone="712 634 3328",
@@ -225,8 +227,8 @@ class LoginTest(BaseTestFixture):
             pool_preference="Village Pool",
             subdivision="My subdivision 122",
             work_authorization=True,
-            charged_or_arrested=False,
-            has_felony=False,
+            charged_or_arrested_resolved=False,
+            charged_or_arrested_not_resolved=False,
             contract_employment_agreement=True,
             electronic_signature="Larry Johnson",
         )
@@ -238,7 +240,6 @@ class LoginTest(BaseTestFixture):
         self.browser.find_element_by_id('employee_checklist').click()
         self.assertIn('/employee-checklist/',self.browser.current_url)
         self.fill_employee_checklist(redirect_url="/users/dashboard/")
-
 
     def login(self):
         self.browser.get('%s%s' % (self.live_server_url,'/users/login'))
