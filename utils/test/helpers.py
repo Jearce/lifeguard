@@ -33,7 +33,7 @@ class InlineFormsetManagmentFactory:
         for i,record in enumerate(self.records):
             for key,value in record.items():
                 mf[f"{prefix}-{i}-{key}"] = value
-                return mf
+        return mf
 
 def set_up_pdf_files_for_download():
     path_to_files = os.path.join(BASE_DIR,"functional_tests/files_used_to_test")
