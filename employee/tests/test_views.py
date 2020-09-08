@@ -18,6 +18,7 @@ from lifeguard.models import Lifeguard
 
 from employee.tests.helpers import CommonSetUp
 from utils.test.helpers import InlineFormsetManagmentFactory
+from utils.test.helpers import create_emergency_contact
 
 class EmployeeCreateOrUpdateTest(CommonSetUp):
 
@@ -35,6 +36,7 @@ class EmployeeCreateOrUpdateTest(CommonSetUp):
         response = self.client.get(reverse('employee:create'))
         self.assertEqual(response.status_code,302)
         self.assertRedirects(response,reverse('users:emergency_contact'))
+
     def test_create_employee(self):
         response =self.client.post(reverse('employee:create'),{**self.employee_data,"applied_positions":(1,2)})
         self.assertEqual(response.status_code,302)
@@ -67,10 +69,6 @@ class EmployeeCreateOrUpdateTest(CommonSetUp):
         return user_ems
 
 
-
-
-
-
 class EmployeeEducationTest(CommonSetUp):
     def setUp(self):
         super().setUp()
@@ -79,7 +77,7 @@ class EmployeeEducationTest(CommonSetUp):
             'school_name':'Django High School',
             'grade_year':"12th grade",
             'attending_college':True,
-            'date_leaving_to_college':'9/10/2020',
+            'date_leaving_to_college':'2020-09-12',
             'employee':self.employee.pk,
             'id':'',
         }]
@@ -97,7 +95,7 @@ class EmployeeEducationTest(CommonSetUp):
                 'school_name':'Django Collegge',
                 'grade_year':"Freshmen",
                 'attending_college':True,
-                'date_leaving_to_college':'9/10/2020',
+                'date_leaving_to_college':'2020-10-9',
                 'employee':self.employee.pk,
                 'id':'1',
             },
@@ -105,7 +103,7 @@ class EmployeeEducationTest(CommonSetUp):
                 'school_name':'Django Collegge',
                 'grade_year':"Freshmen",
                 'attending_college':True,
-                'date_leaving_to_college':'9/10/2020',
+                'date_leaving_to_college':'2020-10-9',
                 'employee':self.employee.pk,
                 'id':'',
             }
@@ -251,6 +249,7 @@ class JobHistoryTest(CommonSetUp):
         self.assertRedirects(response,reverse('users:dashboard'))
 
     def test_redirect_for_applied_lifeguard_position(self):
+        create_emergency_contact(self.user)
         employee = self.create_employee(applied_positions=[self.position1,self.position2])
 
         management_factory = InlineFormsetManagmentFactory(
