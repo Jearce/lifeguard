@@ -73,14 +73,14 @@ class LogInViewTest(BaseUserSetUp):
         self.assertTemplateUsed(response,'users/login.html')
 
     def test_login(self):
-        user_login = self.client.login(**self.credentials)
+        user_login = self.client.login(email=self.email,password=self.password)
         self.assertTrue(user_login)
 
     def test_redirect_after_login(self):
         response = self.client.post(
             reverse('users:login'),
-            data={'username':self.credentials['email'],
-                  'password':self.credentials['password']})
+            data={'username':self.email,
+                  'password':self.password})
         self.assertRedirects(response,reverse('users:dashboard'))
 
 class DashboardViewTest(BaseUserSetUp):
@@ -96,7 +96,6 @@ class DashboardViewTest(BaseUserSetUp):
     def test_view_uses_correct_template(self):
         response = self.client.get('/users/dashboard/')
         self.assertTemplateUsed(response,'users/dashboard.html')
-
 
 class ContactUpdateViewTest(BaseUserSetUp):
     def setUp(self):
@@ -272,12 +271,3 @@ class AddressCreateOrUpdateTest(BaseUserSetUp):
         response = self.client.post(reverse('users:address'),self.new_address)
         self.assertEqual(response.status_code,302)
         self.assertEqual(self.user.address_set.count(),1)
-
-    def test_correct_redirect_to_employee_form(self):
-
-        #set the registration path
-        self.client.get(reverse('lifeguard:registration'))
-
-        response = self.client.post(reverse('users:address'),self.current_address)
-        self.assertRedirects(response,reverse('lifeguard:create'))
-
