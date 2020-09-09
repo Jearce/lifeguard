@@ -27,21 +27,18 @@ class AgeListFilter(admin.SimpleListFilter):
     def queryset(self,request,queryset):
         age_15 = (datetime.date.today() - relativedelta(years=15)).year
         age_18 = (datetime.date.today() - relativedelta(years=18)).year
-        print(age_15)
+
         if self.value() == ">=18":
             return queryset.filter(dob__year__lt=age_18)
 
         if self.value() == "18&15":
             return queryset.filter(dob__year__range=[age_18,age_15])
 
-
         if self.value() == "15":
             return queryset.filter(dob__year=age_15)
 
         if self.value() == "<15":
             return queryset.filter(dob__year__gt=age_15)
-
-
 
 class CustomUserAdmin(UserAdmin):
     add_form = CustomUserCreationForm
