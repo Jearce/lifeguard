@@ -1,6 +1,7 @@
 {% extends 'sidebar.html' %}
 {% load crispy_forms_tags %}
 
+
 {% block title %}
 <title>Application Status</title>
 {% endblock title %}
@@ -11,29 +12,34 @@
 		<div class="col mb-4">
 			<h1 class="mt-4 text-center">Application Status</h1>
 			{% if object.application_under_review %}
-
 			    {% if object.is_hired is None %}
-
-					 <p>Your application is currently under review. Check back later.</p>
+					<div class="alert alert-primary w-50 center-form" role="alert">
+						<p>Your application is currently under review.</p>
+				    <hr>
+				    <p class="mb-0">Come back a later time to check your application status.</p>
+			    </div>
 
 					{% elif object.is_hired %}
-
-					 <p>You have been accpeted as an employee!</p>
-					 <p>
-						 Go to your <a href="{% url 'users:dashboard' %}">dashboard</a>
-						 and check your todo list to complete any required tasks.
-					 </p>
+					<div class="alert alert-success w-50 center-form" role="alert">
+						<h4 class="alert-heading">You have been accpeted as an employee!</h4>
+						<p>
+							Go to your <a class="alert-link" href="{% url 'users:dashboard' %}">dashboard</a>
+							and check your todo list to complete any required tasks.
+					  </p>
+					</div>
 
 					{% else %}
-
-					 <p>Sorry, we are unable to take you as an employee.</p>
+					<div class="alert alert-primary w-50 center-form" role="alert">
+						<p>Sorry, we are unable to take you as an employee.</p>
+					</div>
 
 					{% endif %}
-
 			{% else %}
-
-			 <p>Your application has been successfully submitted and is waiting for review.</p>
-
+			<div class="alert alert-primary w-50 center-form" role="alert">
+				<p>Your application has been successfully submitted.</p>
+				<hr>
+				<p class="mb-0">Come back a later time to check your application status.</p>
+			</div>
 			{% endif %}
 		</div>
 	</div>
