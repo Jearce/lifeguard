@@ -3,31 +3,29 @@
 {% block pagecontent %}
 <div class="container-fluid">
 	<h1 class="mt-4">Dashboard</h1>
+
 	<div class="row">
-		<div class="col-sm-6">
-			<div id="applications">
-				<div class="card mr-4">
+		<div class="col-12">
+			<div class="card-deck mt-3 mr-4 mb-3 text-center">
+
+				<div class="card">
 					<div class="card-body">
 						<h5 class="card-title">Applications</h5>
-						<p class="card-text">Below are available applications for you to fill out.</p>
 						<ul class="list-group list-group-flush">
 							<li class="list-group-item">
-								<a href="{% url 'lifeguard:create' %}" id="id_lifeguard_registration">Lifeguard Registration</a>
+								<a href="{% url 'lifeguard:create' %}" id="id_lifeguard_registration">Lifeguard Application</a>
 							</li>
 							<li class="list-group-item">
-								<a href="{% url 'employee:create' %}" id="id_employee_registration">Employee Registration</a>
+								<a href="{% url 'employee:create' %}" id="id_employee_registration">Employee Application</a>
 							</li>
 						</ul>
 					</div>
 				</div>
-			</div>
-		</div>
-		<div class="col-sm-6">
-			<div id="classes">
-				<div class="card mr-4">
+
+
+				<div class="card">
 					<div class="card-body">
 						<h5 class="card-title">My Classes</h5>
-						<p class="card-text">Below are the classes you have enrolled in.</p>
 						<ul class="list-group list-group-flush">
 							<li class="list-group-item">Some Classes</li>
 						</ul>
@@ -36,39 +34,37 @@
 			</div>
 		</div>
 	</div>
+
 	<div class="row">
-		<div class="col-sm-6">
-			<div id="todo">
-				<div class="card mr-4">
+		<div class="col-12">
+			<div class="card-deck mr-4 mb-3 text-center">
+
+				<div class="card">
 					<div class="card-body">
 						<h5 class="card-title">To Do List</h5>
 						<ul class="list-group list-group-flush">
 							{% if user.is_employee %}
-							     {% if user.employee.is_hired %}
-										 <li class="list-group-item">
-											 <a href='{% url 'employee:checklist' %}' id="employee_checklist">Employee checklist</a>
-										 </li>
-									 {% else %}
-										 <li class="list-group-item">
-											 You have no tasks to do at the moment.
-										 </li>
-									 {% endif %}
+							{% if user.employee.is_hired %}
+							<li class="list-group-item">
+								<a href='{% url 'employee:checklist' %}' id="employee_checklist">Employee checklist</a>
+							</li>
 							{% else %}
-								<li class="list-group-item">
-									You have no tasks to do at the moment.
-								</li>
+							<li class="list-group-item">
+								You have no tasks to do at the moment.
+							</li>
+							{% endif %}
+							{% else %}
+							<li class="list-group-item">
+								You have no tasks to do at the moment.
+							</li>
 							{% endif %}
 						</ul>
 					</div>
 				</div>
-			</div>
-		</div>
-		<div class="col-sm-6">
-			<div id="myApplications">
-				<div class="card mr-4">
+
+				<div class="card">
 					<div class="card-body">
-						<h5 class="card-title">My Applications</h5>
-						<p class="card-text">Below are any applications you have submitted. Click on their link to check your application status.</p>
+						<h5 class="card-title">Application Status</h5>
 						<ul class="list-group list-group-flush">
 							{% if user.is_employee %}
 							<li class="list-group-item">
@@ -85,7 +81,6 @@
 			</div>
 		</div>
 	</div>
-</div>
 </div>
 <!-- /#page-content-wrapper -->
 {% endblock pagecontent %}
