@@ -4,18 +4,46 @@ from django.test import TestCase
 from django.http import HttpRequest
 from django.contrib.auth import get_user_model
 
-from .. import views
-from ..models import User,EmergencyContact,Address
-from ..forms import EmergencyContactInlineFormSet
+from users import views
+from users.models import User,EmergencyContact,Address
+from users.forms import EmergencyContactInlineFormSet
 
 from utils.test.helpers import InlineFormsetManagmentFactory
 
 
+class BaseUserSetUp(TestCase):
+    def setUp(self):
+        self.email = 'test@example.com'
+        self.password = 'sdfh328j!'
+        self.credentials = {
+            'first_name':'Larry',
+            'last_name':'John',
+            'dob':'1995-06-09',
+            'phone':'121 382 8292',
+        }
+        self.user = User.objects.create_user(
+            email=self.email,
+            password=self.password,
+            **self.credentials
+        )
+        self.client.login(email=self.email,password=self.password)
 
 class SignUpViewTest(TestCase):
 
     def setUp(self):
-        self.credentials = {'email':'test@example.com', 'password1':'2dhd7!42','password2':'2dhd7!42'}
+        self.credentials = {
+            'email':'test@example.com',
+            'first_name':'Larry',
+            'last_name':'John',
+            'dob':'1995-06-09',
+            'phone':'121 382 8292',
+            'street1':"123 Main St",
+            'state':'Oregon',
+            'city':'Portland',
+            'zip':'97035',
+            'password1':'2dhd7!42',
+            'password2':'2dhd7!42'
+        }
 
     def test_view_url_exists_at_desired_location(self):
         response = self.client.get(reverse('users:signup'))
@@ -29,17 +57,13 @@ class SignUpViewTest(TestCase):
         response = self.client.post(reverse('users:signup'),data=self.credentials)
         users = get_user_model().objects.all()
         self.assertEqual(users.count(),1)
+        self.assertEqual(Address.objects.count(),1)
 
     def test_redirect_after_signup(self):
         response = self.client.post(reverse('users:signup'),data=self.credentials)
-        self.assertRedirects(response,reverse('users:dashboard'))
+        self.assertRedirects(response,reverse('users:emergency_contact'))
 
-class LogInViewTest(TestCase):
-
-    def setUp(self):
-        self.credentials = {'email':'test@example.com', 'password':'2dhd7!42'}
-        User.objects.create_user(**self.credentials)
-
+class LogInViewTest(BaseUserSetUp):
     def test_view_url_exists_at_desired_location(self):
         response = self.client.get(reverse('users:login'))
         self.assertEqual(response.status_code,200)
@@ -49,22 +73,21 @@ class LogInViewTest(TestCase):
         self.assertTemplateUsed(response,'users/login.html')
 
     def test_login(self):
-        user_login = self.client.login(**self.credentials)
+        user_login = self.client.login(email=self.email,password=self.password)
         self.assertTrue(user_login)
 
     def test_redirect_after_login(self):
         response = self.client.post(
             reverse('users:login'),
-            data={'username':self.credentials['email'],
-                  'password':self.credentials['password']})
+            data={'username':self.email,
+                  'password':self.password})
         self.assertRedirects(response,reverse('users:dashboard'))
 
-class DashboardViewTest(TestCase):
+class DashboardViewTest(BaseUserSetUp):
 
     def setUp(self):
-        self.credentials = {'email':'test@example.com', 'password':'2dhd7!42'}
-        user = User.objects.create_user(**self.credentials)
-        self.client.login(**self.credentials)
+        super().setUp()
+        self.client.login(email=self.email,password=self.password)
 
     def test_view_url_exists_at_desired_location(self):
         response = self.client.get('/users/login/')
@@ -73,12 +96,6 @@ class DashboardViewTest(TestCase):
     def test_view_uses_correct_template(self):
         response = self.client.get('/users/dashboard/')
         self.assertTemplateUsed(response,'users/dashboard.html')
-
-class BaseUserSetUp(TestCase):
-    def setUp(self):
-        self.email = 'test@example.com'
-        self.password = 'sdfh328j!'
-        self.user = User.objects.create_user(email=self.email,password=self.password)
 
 class ContactUpdateViewTest(BaseUserSetUp):
     def setUp(self):
@@ -201,6 +218,21 @@ class EmergencyContactCreateOrUpdateTest(BaseUserSetUp):
         self.assertEqual(response.status_code,302)
         self.assertEqual(EmergencyContact.objects.filter(user=self.user).count(),2)
 
+    def test_redirect_after_form_submit(self):
+        #Emergency Contact
+        management_factory = InlineFormsetManagmentFactory(
+            EmergencyContactInlineFormSet,
+            extra=2,
+            initial=0,
+            min_num=0,
+            max_num=2,
+            records=self.emergency_contacts_to_create
+        )
+
+        em_contacts = management_factory.create_management_form()
+        response = self.client.post(reverse('users:emergency_contact'),em_contacts)
+        self.assertRedirects(response,reverse('users:dashboard'))
+
 class AddressCreateOrUpdateTest(BaseUserSetUp):
     def setUp(self):
         super().setUp()
@@ -219,7 +251,6 @@ class AddressCreateOrUpdateTest(BaseUserSetUp):
             "zip":"94103"
         }
         self.user_login = self.client.login(email=self.email,password=self.password)
-        self.assertTrue(self.user_login)
 
     def test_view_url_exists_at_desired_location(self):
         response = self.client.get(reverse('users:address'))
@@ -240,12 +271,3 @@ class AddressCreateOrUpdateTest(BaseUserSetUp):
         response = self.client.post(reverse('users:address'),self.new_address)
         self.assertEqual(response.status_code,302)
         self.assertEqual(self.user.address_set.count(),1)
-
-    def test_correct_redirect_to_employee_form(self):
-
-        #set the registration path
-        self.client.get(reverse('lifeguard:registration'))
-
-        response = self.client.post(reverse('users:address'),self.current_address)
-        self.assertRedirects(response,reverse('lifeguard:create'))
-

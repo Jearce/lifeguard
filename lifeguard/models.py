@@ -12,11 +12,11 @@ class Lifeguard(models.Model):
         (False,"No, I will be working elsewhere (NOT eligible for discount)"),
     ]
     user = models.OneToOneField(User,on_delete=models.CASCADE)
-    already_certified = models.BooleanField("Are you a certified lifeguard?",choices=[(True,"Yes"),(False,"No")])
-    wants_to_work_for_company = models.BooleanField("Do you plan to work for Gulf Coast Aquatics?",choices=WORK_CHOICES)
-    payment_agreement = models.BooleanField("I understand and agree")
-    payment_agreement_signature = models.CharField("Your name",max_length=255)
-    no_refunds_agreement = models.BooleanField("I agree")
+    already_certified = models.BooleanField("Are you a certified lifeguard?",choices=[(True,"Yes"),(False,"No")],default=None)
+    wants_to_work_for_company = models.BooleanField("Do you plan to work for Gulf Coast Aquatics?",choices=WORK_CHOICES,default=None)
+    payment_agreement = models.BooleanField()
+    payment_agreement_signature = models.CharField(max_length=255)
+    no_refunds_agreement = models.BooleanField()
     electronic_signature = models.CharField("Electronic signature",max_length=255)
     last_certified = models.DateField(blank=False,null=True)
     certification = models.FileField(blank=False,null=True)

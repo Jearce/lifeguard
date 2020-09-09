@@ -10,14 +10,16 @@ from dateutil.relativedelta import relativedelta
 # Create your models here.
 class User(AbstractUser):
     username = None
+    first_name = models.CharField(max_length=255)
+    last_name = models.CharField(max_length=255)
     email = models.EmailField('email address',unique=True)
-    phone = models.CharField('phone number',max_length=16,blank=True,null=True)
-    dob = models.DateField('date of birth',max_length=8,blank=True,null=True)
+    phone = models.CharField('phone number',max_length=16)
+    dob = models.DateField('date of birth',max_length=8)
     is_employee = models.BooleanField(default=False)
     is_lifeguard = models.BooleanField(default=False)
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = ['first_name', 'last_name','phone','dob']
     objects = CustomUserManager()
 
     def __str__(self):

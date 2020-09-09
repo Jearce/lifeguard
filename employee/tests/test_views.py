@@ -13,21 +13,29 @@ from employee.models import (Transportation,
 from employee.forms import (EducationInlineFormset,
                             JobHistoryInlineFormset)
 from employee import views
-from users.models import User
+from users.models import User,EmergencyContact
 from lifeguard.models import Lifeguard
 
 from employee.tests.helpers import CommonSetUp
 from utils.test.helpers import InlineFormsetManagmentFactory
+from utils.test.helpers import create_emergency_contact
 
 class EmployeeCreateOrUpdateTest(CommonSetUp):
 
     def test_view_url_exists_at_desired_location(self):
+        self.create_emergency_contact()
         response = self.client.get(reverse('employee:create'))
         self.assertEqual(response.status_code,200)
 
     def test_view_uses_correct_template(self):
+        self.create_emergency_contact()
         response = self.client.get(reverse('employee:create'))
         self.assertTemplateUsed(response,'employee/employee_form.html')
+
+    def test_has_not_completed_emergency_contact_form(self):
+        response = self.client.get(reverse('employee:create'))
+        self.assertEqual(response.status_code,302)
+        self.assertRedirects(response,reverse('users:emergency_contact'))
 
     def test_create_employee(self):
         response =self.client.post(reverse('employee:create'),{**self.employee_data,"applied_positions":(1,2)})
@@ -40,6 +48,27 @@ class EmployeeCreateOrUpdateTest(CommonSetUp):
         self.assertEqual(response.status_code,302)
         self.assertEqual(Employee.objects.count(),1)
 
+    def create_emergency_contact(self):
+        emergency_contacts = [
+            {
+                "name":"Mary",
+                "relationship":"mom",
+                "phone":"712 434 2348"
+            },
+            {
+                "name":"Jerry",
+                "relationship":"dad",
+                "phone":"712 434 2348"
+            }
+        ]
+
+        user_ems = []
+        for em in emergency_contacts:
+            user_em = EmergencyContact.objects.create(user=self.user,**em)
+            user_ems.append(user_em)
+        return user_ems
+
+
 class EmployeeEducationTest(CommonSetUp):
     def setUp(self):
         super().setUp()
@@ -48,7 +77,7 @@ class EmployeeEducationTest(CommonSetUp):
             'school_name':'Django High School',
             'grade_year':"12th grade",
             'attending_college':True,
-            'date_leaving_to_college':'9/10/2020',
+            'date_leaving_to_college':'2020-09-12',
             'employee':self.employee.pk,
             'id':'',
         }]
@@ -66,7 +95,7 @@ class EmployeeEducationTest(CommonSetUp):
                 'school_name':'Django Collegge',
                 'grade_year':"Freshmen",
                 'attending_college':True,
-                'date_leaving_to_college':'9/10/2020',
+                'date_leaving_to_college':'2020-10-9',
                 'employee':self.employee.pk,
                 'id':'1',
             },
@@ -74,7 +103,7 @@ class EmployeeEducationTest(CommonSetUp):
                 'school_name':'Django Collegge',
                 'grade_year':"Freshmen",
                 'attending_college':True,
-                'date_leaving_to_college':'9/10/2020',
+                'date_leaving_to_college':'2020-10-9',
                 'employee':self.employee.pk,
                 'id':'',
             }
@@ -220,6 +249,7 @@ class JobHistoryTest(CommonSetUp):
         self.assertRedirects(response,reverse('users:dashboard'))
 
     def test_redirect_for_applied_lifeguard_position(self):
+        create_emergency_contact(self.user)
         employee = self.create_employee(applied_positions=[self.position1,self.position2])
 
         management_factory = InlineFormsetManagmentFactory(

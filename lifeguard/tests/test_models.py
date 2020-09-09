@@ -8,7 +8,13 @@ class LifeguardTest(TestCase):
     def setUp(self):
         self.password = 'secret!234'
         self.email = 'test@example.com'
-        self.user = User.objects.create_user(password=self.password,email=self.email)
+        self.credentials = {
+            'first_name':'Larry',
+            'last_name':'John',
+            'dob':'1995-06-09',
+            'phone':'121 382 8292',
+        }
+        self.user = User.objects.create_user(password=self.password,email=self.email,**self.credentials)
         self.factory = LifeguardFactory(user=self.user)
 
     def test_needs_a_review(self):

@@ -38,32 +38,24 @@ class Employee(models.Model):
         "Transportation",
         on_delete=models.CASCADE
     )
-
     applied_positions = models.ManyToManyField(Position)
-
-    start_date = models.DateField("Date available to start")
-    end_date = models.DateField(
-        "Ending date - This is not official. A notice is still required."
-    )
-
-    work_hours_desired = models.PositiveIntegerField(
-        "Number of hours desired per week"
-    )
+    start_date = models.DateField()
+    end_date = models.DateField()
+    work_hours_desired = models.PositiveIntegerField()
     desired_pay_rate = models.DecimalField(
         "Asking rate of pay",
         max_digits=6,
         decimal_places=2
     )
-    pool_preference = models.CharField("Pool preference",max_length=255,default="")
+    pool_preference = models.CharField(max_length=255)
     subdivision = models.CharField(
         "Which subdivision do you live in or nearby",
         max_length=255
     )
-
-    work_authorization = models.BooleanField('',choices=BOOLEAN_CHOICES,blank=False,default=None)
-    charged_or_arrested = models.BooleanField('',choices=BOOLEAN_CHOICES,blank=False,default=None)
-    has_felony = models.BooleanField('',choices=BOOLEAN_CHOICES,blank=False,default=None)
-    contract_employment_agreement = models.BooleanField("I agree")
+    work_authorization = models.BooleanField(choices=BOOLEAN_CHOICES,blank=False,default=None)
+    charged_or_arrested_resolved = models.BooleanField(choices=BOOLEAN_CHOICES,blank=False,default=None)
+    charged_or_arrested_not_resolved = models.BooleanField(choices=BOOLEAN_CHOICES,blank=False,default=None)
+    contract_employment_agreement = models.BooleanField()
     electronic_signature = models.CharField("Your name",max_length=255)
     is_hired = models.BooleanField("Accepted for hire",choices=BOOLEAN_CHOICES,blank=True,null=True)
     application_under_review = models.BooleanField(default=False)

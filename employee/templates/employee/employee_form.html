@@ -10,48 +10,7 @@
 	<div class="row">
 		<div class="col mb-4">
 			<h1 class="mt-4 text-center">Employee Form</h1>
-			<form method="post" id="employee_form">
-				{% csrf_token %}
-				{{ form.home_phone|as_crispy_field }}
-				{{ form.who_referred_you|as_crispy_field }}
-				{{ form.transportation|as_crispy_field }}
-				{{ form.applied_positions|as_crispy_field }}
-				{{ form.start_date|as_crispy_field }}
-				{{ form.end_date|as_crispy_field }}
-				{{ form.work_hours_desired|as_crispy_field }}
-				{{ form.desired_pay_rate|as_crispy_field }}
-				{{ form.pool_preference|as_crispy_field }}
-				{{ form.subdivision|as_crispy_field }}
-				<p>
-					Are you legally authorized to work in the United States?*
-				</p>
-				{{ form.work_authorization |as_crispy_field }}
-				<p>
-					Have you ever been charged, detained, or arrested for a felony or
-					sex crime that was resolved by conviction, probation, deferred
-					adjudication, court ordered community supervision, or pretrial diversion?*
-				</p>
-				{{ form.charged_or_arrested|as_crispy_field }}
-				<p>
-					Have you ever been charged, detained, or arrested for a felony
-					or sex-related crime that has not been resolved by any method?*
-				</p>
-				{{ form.has_felony|as_crispy_field }}
-				<p>
-					I understand that this application is not a contract of employment.
-					I understand that false or misleading information given in my application
-					or interview(s) will result in termination. I understand that in the event
-					of employment, employment relationship is terminable at will and
-					is not governed by an employment contract. I also understand that
-					the use of illegal drugs or alcohol is prohibited during employment
-					and is grounds for immediate termination. In the event that I am employed,
-					I agree and abide by all policies and standards of
-					Gulf Coast Aquatics, Inc.Gulf Coast Aquatics, Inc is an
-					equal opportunity employer.*
-				</p>
-				{{ form.contract_employment_agreement|as_crispy_field }}
-				{{ form.electronic_signature|as_crispy_field }}
-				<input class="btn btn-primary" type="submit" value="submit">
+			{% crispy form %}
 		</div>
 	</div>
 </div>

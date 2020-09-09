@@ -7,6 +7,7 @@ import selenium
 from selenium import webdriver
 
 from lifeguard.models import Enroll
+from users.models import User
 
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -20,9 +21,19 @@ class BaseTestFixture(LiveServerTestCase):
         cls.browser = webdriver.Chrome()
 
         cls.credentials = {
-            'username':'test@example.com',
-            'password':'u7efd!hd',
+            'email':'test@example.com',
+            'first_name':'Larry',
+            'last_name':'John',
+            'phone':'121 382 8292',
+            'dob':'09/06/1995',
+            'street1':"123 Main St",
+            'state':'Oregon',
+            'city':'Portland',
+            'zip':'97035',
+            'password1':'2dhd7!42',
+            'password2':'2dhd7!42'
         }
+
         cls.contact_information = {
             'first_name':'John',
             'last_name' : 'Doe',
@@ -52,8 +63,8 @@ class BaseTestFixture(LiveServerTestCase):
             "pool_preference":"Village Pool",
             "subdivision":"My subdivision 122",
             "work_authorization_1":"click",
-            "charged_or_arrested_2":"click",
-            "has_felony_2":"click",
+            "charged_or_arrested_resolved_2":"click",
+            "charged_or_arrested_not_resolved_2":"click",
             "contract_employment_agreement":"click",
             "electronic_signature":"Larry Johnson",
         }
@@ -125,7 +136,7 @@ class BaseTestFixture(LiveServerTestCase):
             form_id="emergency_contact_form",
             prefix=prefix
         )
-        self.assertIn('address/',self.browser.current_url)
+        self.assertIn('/users/dashboard/',self.browser.current_url)
 
     def fill_employee_education_form(self):
         prefix = 'id_employeeeducation_set'
@@ -156,8 +167,8 @@ class BaseTestFixture(LiveServerTestCase):
     def register_new_lifeguard_who_wants_to_work(self,redirect_url):
         #user is a new lifeguard
         register_data = {
-           "already_certified" : "N", #user is a new lifeguard
-           "wants_to_work_for_company":"Y", #and wants to work as a lifeguard
+           "already_certified_2" : "click", #user is a new lifeguard
+           "wants_to_work_for_company_1":"click", #and wants to work as a lifeguard
            "payment_agreement":"click",
            "payment_agreement_signature":"Larry Jones",
            "no_refunds_agreement" : "click",
@@ -168,7 +179,7 @@ class BaseTestFixture(LiveServerTestCase):
 
     def register_new_lifeguard_who_applied_as_employee(self,redirect_url):
         register_data = {
-           "already_certified" : "N",
+           "already_certified_2" : "click",
            "payment_agreement":"click",
            "payment_agreement_signature":"Larry Jones",
            "no_refunds_agreement" : "click",
@@ -179,8 +190,8 @@ class BaseTestFixture(LiveServerTestCase):
 
     def register_returning_lifeguard_who_applied_as_employee(self,redirect_url):
         register_data = {
-           "already_certified" : "Yes",
-           "wants_to_work_for_company":"Yes", #and wants to work as a lifeguard
+           "already_certified_1" : "click",
+           "wants_to_work_for_company_1":"click", #and wants to work as a lifeguard
            "payment_agreement":"click",
            "payment_agreement_signature":"Larry Jones",
            "no_refunds_agreement" : "click",
@@ -230,6 +241,17 @@ class BaseTestFixture(LiveServerTestCase):
         enrollment_btns[0].submit()
         self.assertEqual(Enroll.objects.count(),1)
         self.assertIn('users/dashboard/',self.browser.current_url)
+
+    def create_user(self):
+        user = User.objects.create_user(
+            email=self.credentials['email'],
+            first_name=self.credentials['first_name'],
+            last_name=self.credentials['last_name'],
+            phone=self.credentials['phone'],
+            dob='1996-09-12',
+            password=self.credentials['password1']
+        )
+        return user
 
     def make_payment(self):
         pass

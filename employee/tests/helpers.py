@@ -30,8 +30,8 @@ class CommonSetUp(TestCase):
             "pool_preference":"Village Pool",
             "subdivision":"My subdivision 122",
             "work_authorization":True,
-            "charged_or_arrested":False,
-            "has_felony":False,
+            "charged_or_arrested_resolved":False,
+            "charged_or_arrested_not_resolved":False,
             "contract_employment_agreement":True,
             "electronic_signature":"Larry Johnson",
         }
@@ -44,7 +44,12 @@ class CommonSetUp(TestCase):
         cls.path_to_test_files = set_up_pdf_files_for_download()
 
     def setUp(self):
-        self.user = User.objects.create_user(email=self.email, password=self.password)
+        self.user = User.objects.create_user(
+            email=self.email,
+            password=self.password,
+            phone='832 188 2828',
+            dob="1994-12-04",
+        )
         self.client.login(email=self.email,password=self.password)
 
     def create_employee(self,applied_positions=None):

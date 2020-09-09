@@ -11,7 +11,12 @@ class EmployeeTest(TestCase):
         self.position1 = Position.objects.create(title="Lifeguard",minimum_age=15,lifeguard_required=True)
         self.position2 = Position.objects.create(title="Supervisor",minimum_age=18,lifeguard_required=False)
         self.transportation = Transportation.objects.create(name="Car",description="I will drive by car")
-        self.user = User.objects.create_user(email="test@example.com",password="t3es3t123!")
+        self.user = User.objects.create_user(
+            email="test@example.com",
+            password="t3es3t123!",
+            phone="713 383 8383",
+            dob="1994-12-09",
+        )
         self.employee = Employee.objects.create(
             user=self.user,
             who_referred_you="A friend",
@@ -23,8 +28,8 @@ class EmployeeTest(TestCase):
             pool_preference="Village Pool",
             subdivision="Village Subdivision",
             work_authorization=True,
-            charged_or_arrested=False,
-            has_felony=False,
+            charged_or_arrested_resolved=False,
+            charged_or_arrested_not_resolved=False,
             contract_employment_agreement=True,
             electronic_signature="Larry Berry",
             is_hired=True
@@ -43,9 +48,3 @@ class EmployeeTest(TestCase):
         self.employee.save()
         self.employee.applied_positions.set([self.position1,self.position2])
         self.assertTrue(self.employee.applied_to_lifeguard_position())
-
-
-
-
-
-

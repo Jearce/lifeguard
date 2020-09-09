@@ -4,6 +4,7 @@ from django.conf import settings
 from django.contrib.sites.models import Site
 
 from employee.models import PDFFile
+from users.models import EmergencyContact
 
 BASE_DIR = settings.BASE_DIR
 
@@ -43,3 +44,26 @@ def set_up_pdf_files_for_download():
         workers_comp=f"{path_to_files}/workers_comp.pdf",
     )
     return path_to_files
+
+def create_emergency_contact(user):
+    emergency_contacts = [
+        {
+            "name":"Mary",
+            "relationship":"mom",
+            "phone":"712 434 2348"
+        },
+        {
+            "name":"Jerry",
+            "relationship":"dad",
+            "phone":"712 434 2348"
+        }
+    ]
+
+    user_ems = [
+        EmergencyContact.objects.create(user=user,**em)
+        for em in emergency_contacts
+    ]
+    return user_ems
+
+
+
