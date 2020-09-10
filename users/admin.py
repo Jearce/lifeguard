@@ -12,6 +12,38 @@ from django.contrib.auth.admin import UserAdmin
 from .forms import CustomUserCreationForm, CustomUserChangeForm
 from .models import User,EmergencyContact,Address
 
+class LifeguardListFilter(admin.SimpleListFilter):
+    title = ("applied as a lifeguard")
+    parameter_name = "lifeguard"
+
+    def lookups(self,request,model_admin):
+        return (
+            ("complete","completed lifeguard application"),
+            ("not","did not complete lifeguard application"),
+        )
+
+    def queryset(self,request,queryset):
+        if self.value() == "completed":
+            return queryset.filter(lifeguard__isnull=False)
+        if self.value() == "not":
+            return queryset.filter(lifeguard__isnull=True)
+
+class EmployeeListFilter(admin.SimpleListFilter):
+    title = ("applied as a employee")
+    parameter_name = "employee"
+
+    def lookups(self,request,model_admin):
+        return (
+            ("complete","completed employee application"),
+            ("not","did not complete employee application"),
+        )
+
+    def queryset(self,request,queryset):
+        if self.value() == "completed":
+            return queryset.filter(employee__isnull=False)
+        if self.value() == "not":
+            return queryset.filter(employee__isnull=True)
+
 class AgeListFilter(admin.SimpleListFilter):
     title = ('age')
     parameter_name = "age"
@@ -55,9 +87,12 @@ class CustomUserAdmin(UserAdmin):
     )
 
     list_filter = (
-        AgeListFilter,
         'employee__is_hired',
-        'lifeguard__already_certified'
+        'lifeguard__already_certified',
+        AgeListFilter,
+        LifeguardListFilter,
+        EmployeeListFilter,
+
     )
 
     fieldsets = (
