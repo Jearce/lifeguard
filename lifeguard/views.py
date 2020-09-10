@@ -92,7 +92,6 @@ class LifeguardClasses(LoginRequiredMixin,View):
 
         user = self.request.user
         class_pk = self.kwargs['pk']
-
         if user.is_lifeguard:
 
             lifeguard_class = LifeguardClass.objects.get(pk=class_pk)

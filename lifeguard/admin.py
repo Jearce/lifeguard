@@ -20,5 +20,11 @@ class LifeguardAdmin(admin.ModelAdmin):
         elif exper == 0 and not obj.already_certified:
             return "certificate class"
 
+    def delete_queryset(self,request,queryset):
+        for e in queryset:
+            e.user.is_lifeguard = False
+            e.user.save()
+        return super().delete_queryset(request,queryset)
+
 admin.site.register(models.LifeguardClass)
 admin.site.register(models.Enroll)
