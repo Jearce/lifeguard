@@ -43,22 +43,69 @@
 
 	<div class="row">
 		<div class="col-12">
-			<div class="card-deck mr-4 mb-3 text-center">
+			<div class="card-deck mr-4 mb-3">
 
 				<div class="card">
 					<div class="card-body">
-						<h5 class="card-title">To Do List</h5>
+						<h5 class="card-title text-center">To Do List</h5>
 						<ul class="list-group list-group-flush">
-							{% if user.is_employee %}
-							{% if user.employee.is_hired %}
+
+							{% if not user.emergencycontact_set.all.exists %}
 							<li class="list-group-item">
-								<a href='{% url 'employee:checklist' %}' id="employee_checklist">Employee checklist</a>
-							</li>
-							{% else %}
-							<li class="list-group-item">
-								You have no tasks to do at the moment.
+								<a href="{% url 'users:emergency_contact' %}">Emergency Contact Form</a>
 							</li>
 							{% endif %}
+
+							{% if user.is_employee %}
+
+							    {% with employee=user.employee %}
+
+									   {% if employee.applied_to_lifeguard_position and not employee.user.is_lifeguard %}
+											<li class="list-group-item">
+												<a href="{% url 'lifeguard:create' %}">Lifeguard Application</a>:
+												<span>
+													You have applied to a position that requires a lifeguard certificate.
+													Please fill out the lifeguard application.
+												</span>
+											</li>
+											{% endif %}
+
+									    {% if not employee.employeeeducation_set.all.exists %}
+											<li class="list-group-item">
+												<a href="{% url 'employee:education' %}">Eduation Form</a>:
+												<span>
+													To complete your employee application please fill out the employee
+													education form.
+												</span>
+											</li>
+											{% endif %}
+
+											{% if not employee.jobhistory_set.all.exists %}
+											<li class="list-group-item">
+												<a href="{% url 'employee:job_history' %}">Employement History Form</a>:
+												<span>
+													To complete your employee application please fill out the employement history form.
+												</span>
+											</li>
+											{% endif %}
+
+											{% if employee.is_hired %}
+											    {% if not user.employee.checklist %}
+													<li class="list-group-item">
+														<a href='{% url 'employee:checklist' %}' id="employee_checklist">Employee Checklist</a>:
+														<span>
+															Please fill out the employee checklist as soon as possible.
+															This will ensure you are paid as soon as your check is ready.
+														</span>
+													</li>
+													{% else %}
+													<li class="list-group-item text-center">
+														You have no tasks to do at the moment.
+													</li>
+													{% endif %}
+											{% endif %}
+									{% endwith %}
+
 							{% else %}
 							<li class="list-group-item">
 								You have no tasks to do at the moment.
@@ -69,7 +116,7 @@
 				</div>
 
 				<div class="card">
-					<div class="card-body">
+					<div class="card-body text-center">
 						<h5 class="card-title">Application Status</h5>
 						<ul class="list-group list-group-flush">
 							{% if user.is_employee %}
