@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'users',
     'lifeguard',
     'employee',
+    'payment',
 
     'crispy_forms',
 
