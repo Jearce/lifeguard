@@ -1,14 +1,16 @@
 import json
+import os
 
-from djagon.conf import settings
+from django.conf import settings
 
 import braintree
 
-if DEBUG:
-    secrets_file = '../config.json'
+
+if settings.DEBUG:
+    secrets_file = 'config.json'
 
 with open(secrets_file) as f:
-    SECRETS = json.loads(f)
+    SECRETS = json.loads(f.read())
 
 gateway = braintree.BraintreeGateway(
     braintree.Configuration(
@@ -18,3 +20,6 @@ gateway = braintree.BraintreeGateway(
         private_key=SECRETS["BT_PRIVATE_KEY"],
     )
 )
+
+def generate_client_token():
+    return gateway.client_token.generate()
