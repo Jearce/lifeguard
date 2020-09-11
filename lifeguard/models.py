@@ -23,7 +23,7 @@ class Lifeguard(models.Model):
     online_portion_complete = models.BooleanField(default=False)
 
     def certificate_expired(self):
-        date_from_being_certified = self.last_certified + self.get_experience()
+        date_from_being_certified = self.get_last_certified() + self.get_experience()
         return date_from_being_certified > self.get_experiation_date_of_certificate()
 
     def needs_review(self):
@@ -42,8 +42,14 @@ class Lifeguard(models.Model):
 
     @property
     def date_certified(self):
-        date_certified = datetime(self.last_certified.year,self.last_certified.month,self.last_certified.day)
+        date_certified = self.get_last_certified()
         return date_certified
+
+    def get_last_certified(self):
+        if self.last_certified:
+            return datetime(self.last_certified.year,self.last_certified.month,self.last_certified.day)
+        else:
+            return datetime.now()
 
     def __str__(self):
         return self.user.first_name + " " + self.user.last_name
@@ -52,7 +58,6 @@ class Lifeguard(models.Model):
         self.user.is_lifeguard = True
         self.user.save()
         super().save(*args,**kwargs)
-
 
 class LifeguardClass(models.Model):
     course = models.CharField(max_length=255)

@@ -9,6 +9,13 @@
 <div class="container">
 	<div class="row">
 		<div class="col mb-4">
+			{% if not user.is_lifeguard %}
+			<div class="alert alert-info">
+				You have have not completed the lifeguard application.
+				To enroll in one of our lifeguard classes please complete the application
+				<a href="{% url 'lifeguard:create' %}" class="alert-link">here</a>.
+			</div>
+			{% endif %}
 			<h1 class="mt-4 text-center">Available Lifeguarding Classes</h1>
 			{% for class in classes %}
 			<div class="card bg-light mb-3">

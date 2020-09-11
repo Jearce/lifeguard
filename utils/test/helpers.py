@@ -4,7 +4,7 @@ from django.conf import settings
 from django.contrib.sites.models import Site
 
 from employee.models import PDFFile
-from users.models import EmergencyContact
+from users.models import EmergencyContact,User
 
 BASE_DIR = settings.BASE_DIR
 
@@ -33,7 +33,7 @@ class InlineFormsetManagmentFactory:
         for i,record in enumerate(self.records):
             for key,value in record.items():
                 mf[f"{prefix}-{i}-{key}"] = value
-        return mf
+                return mf
 
 def set_up_pdf_files_for_download():
     path_to_files = os.path.join(BASE_DIR,"functional_tests/files_used_to_test")
@@ -65,5 +65,20 @@ def create_emergency_contact(user):
     ]
     return user_ems
 
+def create_user():
+    '''Creates user and returns user,email,password, and credentials as tuple'''
 
-
+    email='test@example.com'
+    password='2dhd7!42'
+    credentials = {
+        'first_name':'Larry',
+        'last_name':'John',
+        'dob':'1995-06-09',
+        'phone':'121 382 8292',
+    }
+    user = User.objects.create_user(
+        email=email,
+        password=password,
+        **credentials
+    )
+    return user,email,password,credentials

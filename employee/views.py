@@ -3,6 +3,7 @@ from django.urls import reverse_lazy
 from django.views.generic.edit import UpdateView
 from django.views.generic import TemplateView
 from django.views.generic.detail import DetailView
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .models import Employee,EmployeeEducation,JobHistory,Checklist
 
@@ -38,7 +39,7 @@ class InlineFormSetViewMixin:
         return render(request,self.template_name,context={'formset':formset})
 
 # Create your views here.
-class EmployeeCreateOrUpdate(UpdateView):
+class EmployeeCreateOrUpdate(LoginRequiredMixin,UpdateView):
     form_class = EmployeeForm
     template_name = 'employee/employee_form.html'
 
@@ -60,7 +61,7 @@ class EmployeeCreateOrUpdate(UpdateView):
     def get_success_url(self):
         return reverse_lazy('employee:education')
 
-class EmployeeEducation(InlineFormSetViewMixin,UpdateView):
+class EmployeeEducation(LoginRequiredMixin,InlineFormSetViewMixin,UpdateView):
     parent_model = Employee
     model = EmployeeEducation
     form_class = EducationForm
@@ -70,7 +71,7 @@ class EmployeeEducation(InlineFormSetViewMixin,UpdateView):
     def get_success_url(self):
         return reverse_lazy('employee:job_history')
 
-class JobHistory(InlineFormSetViewMixin,UpdateView):
+class JobHistory(LoginRequiredMixin,InlineFormSetViewMixin,UpdateView):
     model = JobHistory
     parent_model = Employee
     form_class = JobHistoryForm
@@ -86,12 +87,12 @@ class JobHistory(InlineFormSetViewMixin,UpdateView):
             return reverse_lazy('lifeguard:create')
         return reverse_lazy('users:dashboard')
 
-class ApplicationStatus(DetailView):
+class ApplicationStatus(LoginRequiredMixin,DetailView):
     template_name = 'employee/application_status_detail.html'
     def get_object(self):
         return self.request.user.employee
 
-class EmployeeChecklist(UpdateView):
+class EmployeeChecklist(LoginRequiredMixin,UpdateView):
     form_class = ChecklistForm
     template_name = 'employee/checklist_form.html'
 

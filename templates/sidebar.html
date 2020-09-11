@@ -65,7 +65,7 @@
 		<div class="sidebar-heading">GCA</div>
 		<div class="list-group list-group-flush">
 			<a href="{% url "users:dashboard" %}" class="list-group-item list-group-item-action bg-light">Dashboard</a>
-			<a href="{% url "home" %}" class="list-group-item list-group-item-action bg-light">Home</a>
+			<a href="{% url "lifeguard:classes" %}" class="list-group-item list-group-item-action bg-light">Lifeguard Classes</a>
 			<a href="#" class="list-group-item list-group-item-action bg-light">Profile</a>
 		</div>
 	</div>
@@ -81,6 +81,7 @@
 			<svg id="plus"  style="display: none;" width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-plus-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
 				<path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
 			</svg>
+      <a href="{% url 'users:logout' %}" class="btn btn-outline-primary " id="id_logout">Log Out</a>
 			<!--<button class="btn btn-primary" id="menu-toggle">Toggle Menu</button>-->
 		</nav>
 
