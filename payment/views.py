@@ -1,4 +1,5 @@
 from django.shortcuts import render,redirect
+from django.views.generic import View
 
 import braintree
 
@@ -15,6 +16,10 @@ TRANSACTION_SUCCESS_STATUSES = [
     braintree.Transaction.Status.Settling,
     braintree.Transaction.Status.SubmittedForSettlement
 ]
+
+class EnrollmentCart(View):
+    def get(self, request, *args, **kwargs):
+        return render(request,'payment/enrollment_cart.html')
 
 # Create your views here.
 def new_checkout(request):
