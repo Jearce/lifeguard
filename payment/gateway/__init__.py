@@ -25,7 +25,7 @@ def generate_client_token():
     return gateway.client_token.generate()
 
 def transact(options):
-    return gateway.transact.sale(options)
+    return gateway.transaction.sale(options)
 
 def find_transaction(id):
-    return gateway.transact.find(id)
+    return gateway.transaction.find(id)
