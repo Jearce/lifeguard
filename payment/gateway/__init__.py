@@ -23,3 +23,9 @@ gateway = braintree.BraintreeGateway(
 
 def generate_client_token():
     return gateway.client_token.generate()
+
+def transact(options):
+    return gateway.transact.sale(options)
+
+def find_transaction(id):
+    return gateway.transact.find(id)
