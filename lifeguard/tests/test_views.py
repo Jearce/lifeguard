@@ -250,7 +250,16 @@ class LifeguardClassesTest(BaseUserSetUp):
         self.assertEqual(Enroll.objects.all().count(),0)
         #self.assertRedirects(response,reverse('lifeguard:create'))
 
-class LifeguardEnrolledClassesTest(BaseUserSetUp):
+    def test_correct_redirect_on_successful_enroll(self):
+        lifeguard = LifeguardFactory(user=self.user).create()
+        response = self.client.get(reverse('lifeguard:classes'))
+        enroll_in_this_class = response.context["classes"][0]
+        response = self.client.post(reverse('lifeguard:classes',kwargs={"pk":enroll_in_this_class.pk}))
+        self.assertRedirects(response,reverse('payment:lifeguard_class'))
+
+
+
+class EnrolledClassesTest(BaseUserSetUp):
     fixtures = ['classes.json']
 
     def setUp(self):
