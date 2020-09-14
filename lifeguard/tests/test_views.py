@@ -255,9 +255,7 @@ class LifeguardClassesTest(BaseUserSetUp):
         response = self.client.get(reverse('lifeguard:classes'))
         enroll_in_this_class = response.context["classes"][0]
         response = self.client.post(reverse('lifeguard:classes',kwargs={"pk":enroll_in_this_class.pk}))
-        self.assertRedirects(response,reverse('payment:lifeguard_class'))
-
-
+        self.assertRedirects(response,reverse('payment:enrollment_cart'))
 
 class EnrolledClassesTest(BaseUserSetUp):
     fixtures = ['classes.json']
