@@ -2,7 +2,9 @@ from django.test import TestCase
 
 from lifeguard.models import Lifeguard
 from users.models import User
-from lifeguard.tests.helpers import set_up_time,LifeguardFactory
+from lifeguard.tests.helpers import set_up_time
+
+from utils.test.helpers import LifeguardFactory
 
 class LifeguardTest(TestCase):
     def setUp(self):

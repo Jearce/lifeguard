@@ -7,15 +7,16 @@ from django.test import TestCase
 from django.http import HttpRequest
 from django.contrib.auth import get_user_model
 
-from lifeguard import views
 from users.models import User,EmergencyContact
 from employee.models import Employee,Transportation,Position
+
+
+from lifeguard import views
 from lifeguard.models import LifeguardClass,Enroll,Lifeguard
-from lifeguard.tests.helpers import set_up_time,LifeguardFactory
+from lifeguard.tests.helpers import set_up_time
 
 from dateutil.relativedelta import relativedelta
-
-from utils.test.helpers import create_emergency_contact,create_user
+from utils.test.helpers import create_emergency_contact,create_user,LifeguardFactory
 
 class BaseUserSetUp(TestCase):
     def setUp(self):
