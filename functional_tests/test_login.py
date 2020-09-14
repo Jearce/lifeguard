@@ -203,7 +203,7 @@ class LoginTest(BaseTestFixture):
         #choose an avaliable class
         enrollment_btns[0].submit()
         self.assertEqual(Enroll.objects.count(),1)
-        self.assertIn('users/payment/lifeguard-classes/',self.browser.current_url)
+        self.assertIn('/payment/enrollment-cart/',self.browser.current_url)
 
     def fill_employee_checklist(self,redirect_url):
         self.general_form_input(data=self.employee_checklist,form_id="employee_checklist_form")
