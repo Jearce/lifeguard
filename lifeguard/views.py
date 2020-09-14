@@ -100,8 +100,7 @@ class LifeguardClasses(LoginRequiredMixin,View):
                 lifeguard_class=lifeguard_class
             )
 
-            #TODO: redirect to payment view after successful enrollment
-            return redirect('users:dashboard')
+            return redirect("payment:enrollment_cart")
 
         else:
             return redirect("lifeguard:create")
