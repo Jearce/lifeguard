@@ -234,14 +234,6 @@ class BaseTestFixture(LiveServerTestCase):
                     element.send_keys(value)
         self.browser.find_element_by_id(form_id).submit()
 
-    def enroll_in_class(self):
-        enrollment_btns = self.browser.find_elements_by_name('enroll-btn')
-
-        #choose an avaliable class
-        enrollment_btns[0].submit()
-        self.assertEqual(Enroll.objects.count(),1)
-        self.assertIn('users/dashboard/',self.browser.current_url)
-
     def create_user(self):
         user = User.objects.create_user(
             email=self.credentials['email'],
