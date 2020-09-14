@@ -13,8 +13,6 @@ from employee.models import Transportation,Position,Employee,PDFFile
 
 from utils.test.helpers import create_user
 
-
-
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 class BaseTestFixture(LiveServerTestCase):
@@ -24,19 +22,6 @@ class BaseTestFixture(LiveServerTestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.browser = webdriver.Chrome()
-        #cls.credentials = {
-        #    'email':'test@example.com',
-        #    'first_name':'Larry',
-        #    'last_name':'John',
-        #    'phone':'121 382 8292',
-        #    'dob':'09/06/1995',
-        #    'street1':"123 Main St",
-        #    'state':'Oregon',
-        #    'city':'Portland',
-        #    'zip':'97035',
-        #    'password1':'2dhd7!42',
-        #    'password2':'2dhd7!42'
-        #}
 
         cls.contact_information = {
             'first_name':'John',
