@@ -1,4 +1,5 @@
 import os
+import time
 
 from django.conf import settings
 from django.contrib.sites.models import Site
@@ -10,13 +11,18 @@ from employee.models import Transportation,Position,Employee,PDFFile
 
 from functional_tests.helpers import BaseTestFixture
 from functional_tests import helpers
+from utils.test.helpers import create_user
 
 BASE_DIR = settings.BASE_DIR
 
 class LoginTest(BaseTestFixture):
     def setUp(self):
         super().setUp()
-        self.user = self.create_user()
+        user_and_data = create_user()
+
+        self.user = user_and_data[0]
+        self.email = user_and_data[1]
+        self.password = user_and_data[2]
 
         EmergencyContact.objects.create(user=self.user,**self.emergency_contact)
         Address.objects.create(user=self.user,**self.address)
@@ -191,11 +197,14 @@ class LoginTest(BaseTestFixture):
         #check user is redirected to dashboard on successful login
         self.assertIn('dashboard',self.browser.current_url)
 
-    def submit_form(self,form_id):
-        self.browser.find_element_by_id(form_id).submit()
+    def enroll_in_class(self):
+        enrollment_btns = self.browser.find_elements_by_name('enroll-btn')
+
+        #choose an avaliable class
+        enrollment_btns[0].submit()
+        self.assertEqual(Enroll.objects.count(),1)
+        self.assertIn('users/payment/lifeguard-classes/',self.browser.current_url)
 
     def fill_employee_checklist(self,redirect_url):
         self.general_form_input(data=self.employee_checklist,form_id="employee_checklist_form")
         self.assertIn(redirect_url,self.browser.current_url)
-
-
