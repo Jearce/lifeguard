@@ -3,6 +3,7 @@ import os
 
 from django.test import LiveServerTestCase
 from django.contrib.sites.models import Site
+from django.conf import settings
 
 from selenium import webdriver
 import selenium
@@ -13,7 +14,7 @@ from employee.models import Transportation,Position,Employee,PDFFile
 
 from utils.test.helpers import create_user
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = settings.BASE_DIR
 
 class BaseTestFixture(LiveServerTestCase):
     fixtures = ['classes.json','positions.json','transportation.json']

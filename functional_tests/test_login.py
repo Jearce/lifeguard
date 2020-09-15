@@ -90,6 +90,7 @@ class RegisterEmployeeTest(BaseTestLoginFixture):
         employee.save()
         return employee
 
+
 class RegisterLifeguardAndEmployeeTest(BaseTestLoginFixture):
     def test_register_new_lifeguard_and_employee(self):
 
@@ -151,6 +152,11 @@ class RegisterLifeguardAndEmployeeTest(BaseTestLoginFixture):
         #picks a class to attend
         self.enroll_in_class()
 
+        #continue to payment
+        self.continue_to_checkout()
+
+        #pay for class
+
         #makes payment
         self.fail("Finish Payment Test")
 
@@ -208,3 +214,10 @@ class RegisterLifeguardAndEmployeeTest(BaseTestLoginFixture):
         }
         self.general_form_input(register_data,form_id="lifeguard_form")
         self.assertIn(redirect_url,self.browser.current_url)
+
+    def pay_for_lifeguard_class(self):
+        pass
+
+    def continue_to_checkout(self):
+        self.browser.find_element_by_id('id_continue_to_checkout').click()
+
