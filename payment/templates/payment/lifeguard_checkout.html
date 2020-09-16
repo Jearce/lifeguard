@@ -1,0 +1,106 @@
+{% extends 'sidebar.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+<title>Lifeguard Checkout</title>
+{% endblock title%}
+
+{% block pagecontent %}
+
+<div class="container">
+	<div class="row">
+		<div class="col">
+			<h1 class="text-center">Pay to secure your spot</h1>
+		</div>
+	</div>
+	<div class="row center-form">
+		<div class="col-md-6">
+			{% crispy form %}
+		</div>
+		<div class="col-md-6">
+			<h3 class="mb-3 mt-3">Summary</h3>
+			<ul class="list-group mb-3 mt-3">
+				{% with lifeguard=user.lifeguard %}
+				  {% for enrollment in lifeguard.enroll_set.all %}
+					  {% with class=enrollment.lifeguard_class %}
+							<li class="list-group-item d-flex justify-content-between lh-condensed">
+								<div>
+									<h5 class="my-0 mb-3">{{ class.course }}</h5>
+									<small>Meeting dates:</small>
+									<p class="text-muted">
+										{{ class.start_date|date }} - {{ class.start_date|date }}
+									</p>
+
+									<small>Meeting time:</small>
+									<p class="text-muted">
+										{{ class.start_date|date:"P" }} - {{ class.start_date|date:"P" }}
+									</p>
+								</div>
+								  {% if lifeguard.user.is_employee %}
+									<span class="text-muted" style="text-decoration: line-through;">
+										${{ class.cost }}
+									</span>
+									<span class="text-muted">
+										${{ class.employee_cost }}
+									</span>
+									{% else %}
+									<span class="text-muted">
+										${{ class.cost }}
+									</span>
+									{% endif %}
+							</li>
+						{% endwith %}
+					{% endfor %}
+				{% endwith %}
+
+				{% if request.user.is_employee %}
+				<li class="list-group-item d-flex justify-content-between bg-light">
+					<div class="text-success">
+						<h6 class="my-0">Employee discount applied</h6>
+					</div>
+				</li>
+				{% endif %}
+
+				<li class="list-group-item d-flex justify-content-between rounded">
+					<span>Total (USD)</span>
+					<strong>$20</strong>
+				</li>
+
+			</ul>
+
+		</div>
+	</div>
+</div>
+
+<script src="https://js.braintreegateway.com/web/dropin/1.24.0/js/dropin.min.js"></script>
+<script>
+	var form = document.querySelector('#lifeguard_payment_form');
+	var client_token = '{{ client_token }}';
+
+	braintree.dropin.create({
+		authorization: client_token,
+		container: '#bt-dropin',
+		paypal: {
+			flow: 'vault'
+		}
+	}, function (createErr, instance) {
+		form.addEventListener('submit', function (event) {
+			event.preventDefault();
+
+			instance.requestPaymentMethod(function (err, payload) {
+				if (err) {
+					console.log('Error', err);
+					return;
+				}
+
+				// Add the nonce to the form and submit
+				document.querySelector('#id_nonce').value = payload.nonce;
+				form.submit();
+			});
+		});
+	});
+</script>
+
+
+{% endblock pagecontent %}
+
