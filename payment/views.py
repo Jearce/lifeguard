@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect
-from django.views.generic import View
+from django.views.generic import View,TemplateView
 
 import braintree
 
@@ -22,6 +22,10 @@ class EnrollmentCart(View):
         lifeguard = self.request.user.lifeguard
         enrolled_classes = lifeguard.enroll_set.all()
         return render(request,'payment/enrollment_cart.html',context={"enrolled_classes":enrolled_classes})
+
+class LifeguardCheckout(TemplateView):
+    template_name = "payment/lifeguard_checkout.html"
+
 
 # Create your views here.
 def new_checkout(request):
