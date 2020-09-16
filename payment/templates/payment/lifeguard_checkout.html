@@ -1,5 +1,6 @@
 {% extends 'sidebar.html' %}
 {% load crispy_forms_tags %}
+{% load humanize %}
 
 {% block title %}
 <title>Lifeguard Checkout</title>
@@ -63,7 +64,7 @@
 
 				<li class="list-group-item d-flex justify-content-between rounded">
 					<span>Total (USD)</span>
-					<strong>$20</strong>
+					<strong>${{ request.user.lifeguard.get_cost_for_enrolls|intcomma }}</strong>
 				</li>
 
 			</ul>
@@ -100,7 +101,6 @@
 		});
 	});
 </script>
-
 
 {% endblock pagecontent %}
 
