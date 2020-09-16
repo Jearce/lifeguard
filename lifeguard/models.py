@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from django.db import models
+from django.db.models import Sum
 from users.models import User
 
 from dateutil.relativedelta import relativedelta
@@ -21,6 +22,14 @@ class Lifeguard(models.Model):
     last_certified = models.DateField(blank=False,null=True)
     certification = models.FileField(blank=False,null=True)
     online_portion_complete = models.BooleanField(default=False)
+
+    def get_cost_for_enrolls(self):
+        enrolled_class = LifeguardClass.objects.filter(students=self)
+        if  self.user.is_employee:
+            return enrolled_class.aggregate(Sum("employee_cost")).get("employee_cost__sum")
+        else:
+            return enrolled_class.aggregate(Sum("cost")).get("cost__sum")
+
 
     def certificate_expired(self):
         date_from_being_certified = self.get_last_certified() + self.get_experience()
