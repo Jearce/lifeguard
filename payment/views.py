@@ -19,7 +19,9 @@ TRANSACTION_SUCCESS_STATUSES = [
 
 class EnrollmentCart(View):
     def get(self, request, *args, **kwargs):
-        return render(request,'payment/enrollment_cart.html')
+        lifeguard = self.request.user.lifeguard
+        enrolled_classes = lifeguard.enroll_set.all()
+        return render(request,'payment/enrollment_cart.html',context={"enrolled_classes":enrolled_classes})
 
 # Create your views here.
 def new_checkout(request):
