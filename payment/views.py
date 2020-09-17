@@ -1,9 +1,10 @@
 from django.shortcuts import render,redirect
 from django.views.generic import View,TemplateView
+from django.views.generic.edit import FormView
 
 import braintree
 
-from payment.forms import PaymentForm
+from payment.forms import LifeguardCheckoutForm
 from payment.gateway import generate_client_token, transact, find_transaction
 
 
@@ -23,9 +24,15 @@ class EnrollmentCart(View):
         enrolled_classes = lifeguard.enroll_set.all()
         return render(request,'payment/enrollment_cart.html',context={"enrolled_classes":enrolled_classes})
 
-class LifeguardCheckout(TemplateView):
+class LifeguardCheckout(FormView):
     template_name = "payment/lifeguard_checkout.html"
+    form_class = LifeguardCheckoutForm
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        client_token = generate_client_token()
+        context["client_token"] = client_token
+        return context
 
 # Create your views here.
 def new_checkout(request):
