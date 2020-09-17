@@ -43,3 +43,9 @@ class LifeguardCheckout(TestCase):
     def test_view_uses_correct_template(self):
         response = self.client.get(reverse('payment:lifeguard_checkout'))
         self.assertTemplateUsed(response,'payment/lifeguard_checkout.html')
+
+    def test_can_pay(self):
+        response = self.client.get(reverse('payment:lifeguard_checkout'))
+        self.assertEqual(response.status_code,302)
+
+
