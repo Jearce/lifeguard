@@ -24,6 +24,14 @@ class EnrollmentCart(View):
         enrolled_classes = lifeguard.enroll_set.all()
         return render(request,'payment/enrollment_cart.html',context={"enrolled_classes":enrolled_classes})
 
+    def post(self,request,*args,**kwargs):
+        lifeguard = self.request.user.lifeguard
+        enroll_pk=self.kwargs["pk"]
+        lifeguard.enroll_set.get(pk=enroll_pk).delete()
+        lifeguard.save()
+        return redirect("payment:enrollment_cart")
+
+
 class LifeguardCheckout(FormView):
     template_name = "payment/lifeguard_checkout.html"
     form_class = LifeguardCheckoutForm
