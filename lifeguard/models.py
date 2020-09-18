@@ -93,6 +93,7 @@ class Enroll(models.Model):
     lifeguard = models.ForeignKey(Lifeguard,on_delete=models.CASCADE)
     lifeguard_class = models.ForeignKey(LifeguardClass,on_delete=models.CASCADE)
     grade = models.PositiveIntegerField(blank=True,null=True)
+    paid = models.BooleanField(default=False)
 
     def __str__(self):
         return "Enrollment for {} in {}".format(self.lifeguard.user.first_name,self.lifeguard_class.course)
