@@ -5,6 +5,7 @@ from payment import views
 app_name = "payment"
 urlpatterns = [
     path("enrollment-cart/",views.EnrollmentCart.as_view(),name="enrollment_cart"),
+    path("enrollment-cart/<int:pk>",views.EnrollmentCart.as_view(),name="drop_enrollment"),
     path("lifeguard-checkout/",views.LifeguardCheckout.as_view(),name="lifeguard_checkout"),
 
     #path('new/',views.new_checkout,name="new_checkout"),
