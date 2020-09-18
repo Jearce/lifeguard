@@ -1,5 +1,5 @@
 {% extends 'sidebar.html' %}
-{% load crispy_forms_tags %} 
+{% load crispy_forms_tags %}
 
 {% block title %}
 <title>My Classes</title>
@@ -7,41 +7,42 @@
 
 {% block pagecontent %}
 <div class="container">
-{% if request.user.lifeguard.enroll_set.count > 0 %}
-		<h3 class="text-center mb-3">My classes</h3>
-		<div class="table responsive">
-			<table class="table table-bordered center-form">
-				<thead>
-					<tr>
-						<th scope="col">Class</th>
-						<th scope="col">Meeting Date</th>
-						<th scope="col">Meeting Times</th>
-					</tr>
-				</thead>
-				<tbody>
-					{% for enrollment in enrolled_classes %}
-					{% with class=enrollment.lifeguard_class %}
-					<tr>
-						<td>
-							<small>{{ class.course }}</small>
-						</td>
-						<td>
-							<small>{{ class.start_date|date }} - {{ class.end_date|date }}</small>
-						</td>
-						<td>
-							<small>{{ class.start_date|date:"P" }} - {{ class.end_date|date:"P" }}</small>
-						</td>
-					</tr>
-					{% endwith %}
-					{% endfor %}
-				</tbody>
-			</table>
+	{% if request.user.lifeguard.enroll_set.count > 0 %}
+	<h3 class="text-center mb-3">My classes</h3>
+	{% for enrollment in enrolled_classes %}
+	{% with class=enrollment.lifeguard_class %}
+	<div class="w-25 card border-dark mb-3 mt-3 center-form">
+		<div class="card-header">
+			<h3>{{ class.course }}</h3>
 		</div>
+		<div class="card-body">
+			<ul class="list-group list-group-flush">
+				<li class="list-group-item p-2">
+					<div class="d-flex justify-content-between">
+						<p>Meeting dates</p>
+						<p>
+							{{ class.start_date|date }} - {{ class.end_date|date }}
+						</p>
+					</div>
+				</li>
+				<li class="list-group-item">
+					<div class="d-flex justify-content-between">
+						<p>Meeting time</p>
+						<p>
+							{{ class.start_date|date:"P" }} - {{ class.end_date|date:"P" }}
+						</p>
+					</div>
+				</li>
+			</ul>
+		</div>
+	</div>
+	{% endwith %}
+	{% endfor %}
 	{% else %}
-	 <div class="w-25 alert alert-primary center-form text-center" role="alert">
-		 <h4>You have not enrolled in  any classes. You can enroll 
-			 <a href="{% url 'lifeguard:classes' %}" class="alert-link">here</a>.</h4>
-   </div>
+	<div class="w-25 alert alert-primary center-form text-center" role="alert">
+		<h4>You have not enrolled in  any classes. You can enroll
+			<a href="{% url 'lifeguard:classes' %}" class="alert-link">here</a>.</h4>
+	</div>
 	{% endif %}
 </div>
 {% endblock pagecontent %}

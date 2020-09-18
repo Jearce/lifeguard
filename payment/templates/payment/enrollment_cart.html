@@ -8,7 +8,7 @@
 {% block pagecontent %}
 <div class="container">
 	{% if request.user.lifeguard.enroll_set.count > 0 %}
-	  <h3 class="text-center mb-3">Enrollment Cart</h3>
+	  <h1 class="text-center mb-3">Enrollment Cart</h1>
 		{% for enrollment in enrolled_classes %}
 		{% with class=enrollment.lifeguard_class %}
 		  <div class="w-25 card border-dark mb-3 mt-3 center-form">
