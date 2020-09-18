@@ -22,18 +22,19 @@
 					</div>
 				</div>
 
-
 				<div class="card">
 					<div class="card-body">
 						<h5 class="card-title">My Classes</h5>
 						<ul class="list-group list-group-flush">
-							<li class="list-group-item">
-								{% if user.is_lifeguard and user.lifeguard.enroll_set.count != 0 %}
+							{% if user.is_lifeguard and user.lifeguard.enroll_set.count > 0 %}
+							  <li class="list-group-item">
 								 <a href="{% url 'lifeguard:enrolled_classes' %}">Enrolled Classes</a>
+								</li>
 								{% else %}
-								<p>You haven't enrolled in any classes.</p>
+							  <li class="list-group-item">
+									<p>You haven't enrolled in any classes.</p>
+								</li>
 								{% endif %}
-							</li>
 						</ul>
 					</div>
 				</div>
