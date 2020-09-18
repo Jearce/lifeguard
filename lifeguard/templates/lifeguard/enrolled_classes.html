@@ -7,23 +7,41 @@
 
 {% block pagecontent %}
 <div class="container">
-	<div class="row">
-		<div class="col mb-4">
-			<h1 class="mt-4 text-center">My classes</h1>
-			{% for enrolled_class in enrolled_classes %}
-			{% with class=enrolled_class.lifeguard_class %}
-			<div class="card bg-light mb-3">
-				<div class="card-header">{{ class.course }}</div>
-				<div class="card-body">
-					<div class="card-text">
-						<p>Start date: {{ class.start_date }}</p>
-						<p>End date: {{ class.end_date }}</p>
-					</div>
-				</div>
-			</div>
-			{% endwith %}
-			{% endfor %}
+{% if request.user.lifeguard.enroll_set.count > 0 %}
+		<h3 class="text-center mb-3">My classes</h3>
+		<div class="table responsive">
+			<table class="table table-bordered center-form">
+				<thead>
+					<tr>
+						<th scope="col">Class</th>
+						<th scope="col">Meeting Date</th>
+						<th scope="col">Meeting Times</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for enrollment in enrolled_classes %}
+					{% with class=enrollment.lifeguard_class %}
+					<tr>
+						<td>
+							<small>{{ class.course }}</small>
+						</td>
+						<td>
+							<small>{{ class.start_date|date }} - {{ class.end_date|date }}</small>
+						</td>
+						<td>
+							<small>{{ class.start_date|date:"P" }} - {{ class.end_date|date:"P" }}</small>
+						</td>
+					</tr>
+					{% endwith %}
+					{% endfor %}
+				</tbody>
+			</table>
 		</div>
-	</div>
+	{% else %}
+	 <div class="w-25 alert alert-primary center-form text-center" role="alert">
+		 <h4>You have not enrolled in  any classes. You can enroll 
+			 <a href="{% url 'lifeguard:classes' %}" class="alert-link">here</a>.</h4>
+   </div>
+	{% endif %}
 </div>
 {% endblock pagecontent %}
