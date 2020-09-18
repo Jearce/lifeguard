@@ -1,61 +1,69 @@
 {% extends 'sidebar.html' %}
 {% load crispy_forms_tags %}
 
+{% block title %}
+<title>Enrollment Cart</title>
+{% endblock title %}
+
 {% block pagecontent %}
 <div class="container">
 	{% if request.user.lifeguard.enroll_set.count > 0 %}
-		<h3 class="text-center mb-3">Enrollment Cart</h3>
-		<div class="table responsive">
-			<table class="table table-bordered center-form">
-				<thead>
-					<tr>
-						<th scope="col">Class</th>
-						<th scope="col">Meeting Date</th>
-						<th scope="col">Meeting Times</th>
-						<th scope="col">Cost {% if request.user.is_employee %} (employee discount applied) {% endif %}</th>
-						<th scope="col">Drop enrollment</th>
-					</tr>
-				</thead>
-				<tbody>
-					{% for enrollment in enrolled_classes %}
-					{% with class=enrollment.lifeguard_class %}
-					<tr>
-						<td>
-							<small>{{ class.course }}</small>
-						</td>
-						<td>
-							<small>{{ class.start_date|date }} - {{ class.start_date|date }}</small>
-						</td>
-						<td>
-							<small>{{ class.start_date|date:"P" }} - {{ class.start_date|date:"P" }}</small>
-						</td>
-						<td>
-							<small>
-								{% if request.user.is_employee %}
-										${{ class.employee_cost }}
-								{% else %}
-										${{ class.cost }}
-								{% endif %}
-							</small>
-						</td>
-						<td>
-							<form method="post" action="{% url 'payment:drop_enrollment' enrollment.pk %}">
-								{% csrf_token %}
-								<input type="submit" value="drop" class="btn btn-primary">
-							</form>
-						</td>
-					</tr>
-					{% endwith %}
-					{% endfor %}
-				</tbody>
-			</table>
-			<a class="btn btn-outline-primary btn-lg btn-block center-form mt-4 mb-4" id="id_continue_to_checkout" href="{% url 'payment:lifeguard_checkout' %}" role="button">continue to checkout</a>
-		</div>
-	{% else %}
-	 <div class="w-25 alert alert-primary center-form text-center" role="alert">
-		 <h4>You have no classes in your enrollment cart. You can enroll 
+	  <h3 class="text-center mb-3">Enrollment Cart</h3>
+		{% for enrollment in enrolled_classes %}
+		{% with class=enrollment.lifeguard_class %}
+		  <div class="w-25 card border-dark mb-3 mt-3 center-form">
+				<div class="card-header">
+					<h3>{{ class.course }}</h3>
+				</div>
+				<div class="card-body">
+					<ul class="list-group list-group-flush">
+						<li class="list-group-item p-2">
+							<div class="d-flex justify-content-between">
+								<p>Meeting dates</p>
+								<p>
+									{{ class.start_date|date }} - {{ class.end_date|date }}
+								</p>
+							</div>
+						</li>
+						<li class="list-group-item">
+							<div class="d-flex justify-content-between">
+								<p>Meeting time</p>
+								<p>
+									{{ class.start_date|date:"P" }} - {{ class.end_date|date:"P" }}
+								</p>
+							</div>
+						</li>
+						<li class="list-group-item">
+							<div class="d-flex justify-content-between">
+								<p>Cost {% if request.user.is_employee %} (employee discount applied) {% endif %}</p>
+								<p>
+									{% if request.user.is_employee %}
+									  ${{ class.employee_cost }}
+							    {% else %}
+							      ${{ class.cost }}
+							    {% endif %}
+						    </p>
+					    </div>
+				    </li>
+					</ul>
+				</div>
+				<div class="card-footer text-center">
+					<form method="post" action="{% url 'payment:drop_enrollment' enrollment.pk %}">
+						{% csrf_token %}
+						<input type="submit" value="drop enrollment" class="btn btn-outline-dark btn-block">
+					</form>
+				</div>
+			</div>
+	{% endwith %}
+	{% endfor %}
+	<a href="{% url 'payment:lifeguard_checkout' %}" role="button" class="w-25 btn btn-primary btn-lg btn-block center-form mt-3 mb-3">
+		continue to checkout
+	</a>
+ {% else %}
+   <div class="w-25 alert alert-primary center-form text-center" role="alert">
+		 <h4>You have no classes in your enrollment cart. You can enroll
 			 <a href="{% url 'lifeguard:classes' %}" class="alert-link">here</a>.</h4>
-   </div>
-	{% endif %}
+	 </div>
+ {% endif %}
 </div>
 {% endblock pagecontent %}

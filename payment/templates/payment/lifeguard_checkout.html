@@ -29,12 +29,12 @@
 									<h5 class="my-0 mb-3">{{ class.course }}</h5>
 									<small>Meeting dates:</small>
 									<p class="text-muted">
-										{{ class.start_date|date }} - {{ class.start_date|date }}
+										{{ class.start_date|date }} - {{ class.end_date|date }}
 									</p>
 
 									<small>Meeting time:</small>
 									<p class="text-muted">
-										{{ class.start_date|date:"P" }} - {{ class.start_date|date:"P" }}
+										{{ class.start_date|date:"P" }} - {{ class.end_date|date:"P" }}
 									</p>
 								</div>
 								  {% if lifeguard.user.is_employee %}
