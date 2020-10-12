@@ -18,7 +18,7 @@ class LifeguardCheckoutForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
-        self.helper.form_id = "lifeguard_payment_form"
+        self.helper.form_id = 'lifeguard_payment_form'
         self.helper.layout = Layout(
             HTML("<h3 class='mb-3 mt-3'>Billing Address</h3>"),
             Div(
