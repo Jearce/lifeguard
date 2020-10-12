@@ -9,6 +9,11 @@ from functional_tests.helpers import BaseTestLoginFixture
 from functional_tests import helpers
 from utils.test.helpers import create_user
 
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
+
 BASE_DIR = settings.BASE_DIR
 
 class LoginTest(BaseTestLoginFixture):
@@ -110,6 +115,7 @@ class RegisterLifeguardAndEmployeeTest(BaseTestLoginFixture):
         self.enroll_in_class()
 
         #makes payment
+        self.pay_for_lifeguard_class()
         self.fail("Finish Payment Test")
 
     def test_register_as_certified_lifeguard_and_employee(self):
@@ -216,7 +222,48 @@ class RegisterLifeguardAndEmployeeTest(BaseTestLoginFixture):
         self.assertIn(redirect_url,self.browser.current_url)
 
     def pay_for_lifeguard_class(self):
-        self.browser.find_element_by_id("lg_checkout_form").submit()
+
+        WebDriverWait(self.browser,20).until(
+            EC.presence_of_element_located(
+                (By.XPATH, '//div[@class="braintree-option braintree-option__card"]')
+            )
+        ).click()
+
+        #brain tree test card number
+        WebDriverWait(self.browser, 20).until(EC.frame_to_be_available_and_switch_to_it(
+            (By.XPATH,"//iframe[@id='braintree-hosted-field-number']"))
+        )
+
+        WebDriverWait(self.browser, 20).until(EC.element_to_be_clickable(
+            (By.XPATH, "//input[@class='number' and @id='credit-card-number']"))
+        ).send_keys("378282246310005")
+
+        self.browser.switch_to.default_content();
+
+        #WebDriverWait(self.browser,20).until(
+        #    EC.presence_of_element_located((By.XPATH, "//input[@id='credit-card-number']"))
+        #).send_keys("378282246310005")
+
+        #self.browser.find_element_by_xpath("//input[@id='credit-card-number']")
+
+        #WebDriverWait(self.browser,20).until(
+        #    EC.presence_of_element_located((By.ID, "braintree-hosted-field-experationDate"))
+        #).send_keys("12/25")
+
+        #experationDate
+        #WebDriverWait(self.browser, 20).until(EC.frame_to_be_available_and_switch_to_it(
+        #    (By.XPATH,"//iframe[@id='braintree-hosted-field-expirationDate']"))
+        #)
+
+        self.browser.switch_to.frame("braintree-hosted-field-expirationDate")
+        WebDriverWait(self.browser, 20).until(EC.element_to_be_clickable(
+            (By.XPATH, "//input[@class='expirationDate' and @id='expiration']"))
+        ).send_keys("12/25")
+
+        self.browser.switch_to.default_content();
+
+        self.browser.find_element_by_xpath("//form[@id='lifeguard_payment_form']").submit()
+        time.sleep(5)
 
     def continue_to_checkout(self):
         self.browser.find_element_by_id('id_continue_to_checkout').click()
