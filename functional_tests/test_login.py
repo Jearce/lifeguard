@@ -239,30 +239,15 @@ class RegisterLifeguardAndEmployeeTest(BaseTestLoginFixture):
         ).send_keys("378282246310005")
 
         self.browser.switch_to.default_content();
-
-        #WebDriverWait(self.browser,20).until(
-        #    EC.presence_of_element_located((By.XPATH, "//input[@id='credit-card-number']"))
-        #).send_keys("378282246310005")
-
-        #self.browser.find_element_by_xpath("//input[@id='credit-card-number']")
-
-        #WebDriverWait(self.browser,20).until(
-        #    EC.presence_of_element_located((By.ID, "braintree-hosted-field-experationDate"))
-        #).send_keys("12/25")
-
-        #experationDate
-        #WebDriverWait(self.browser, 20).until(EC.frame_to_be_available_and_switch_to_it(
-        #    (By.XPATH,"//iframe[@id='braintree-hosted-field-expirationDate']"))
-        #)
-
         self.browser.switch_to.frame("braintree-hosted-field-expirationDate")
+
         WebDriverWait(self.browser, 20).until(EC.element_to_be_clickable(
             (By.XPATH, "//input[@class='expirationDate' and @id='expiration']"))
         ).send_keys("12/25")
 
         self.browser.switch_to.default_content();
 
-        self.browser.find_element_by_xpath("//form[@id='lifeguard_payment_form']").submit()
+        self.browser.find_element_by_id("pay-btn").click()
         time.sleep(5)
 
     def continue_to_checkout(self):
