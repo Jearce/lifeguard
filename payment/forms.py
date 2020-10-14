@@ -41,5 +41,10 @@ class LifeguardCheckoutForm(forms.Form):
                      '''),
                 "nonce",
             ),
-            Submit('','Pay Now',css_class="btn btn-outline-primary btn-block btn-lg mt-3 mb-3"),
+            Submit(
+                '',
+                'Pay Now',
+                css_id="pay-btn",
+                css_class="btn btn-outline-primary btn-block btn-lg mt-3 mb-3"
+            ),
         )
