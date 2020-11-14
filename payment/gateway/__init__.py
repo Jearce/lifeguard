@@ -6,8 +6,8 @@ from django.conf import settings
 import braintree
 
 
-if settings.DEBUG:
-    secrets_file = 'config.json'
+#if settings.DEBUG:
+secrets_file = 'config.json'
 
 with open(secrets_file) as f:
     SECRETS = json.loads(f.read())
