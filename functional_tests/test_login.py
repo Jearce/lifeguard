@@ -248,7 +248,8 @@ class RegisterLifeguardAndEmployeeTest(BaseTestLoginFixture):
         self.browser.switch_to.default_content();
 
         self.browser.find_element_by_id("pay-btn").click()
-        time.sleep(5)
+
+        self.assertIn("payment/lifeguard-checkout/success",self.browser.current_url)
 
     def continue_to_checkout(self):
         self.browser.find_element_by_id('id_continue_to_checkout').click()
