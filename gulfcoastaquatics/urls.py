@@ -28,6 +28,7 @@ urlpatterns = [
     path('lifeguard/',include('lifeguard.urls')),
     path('users/',include('users.urls')),
     path('employee/',include('employee.urls')),
+    path('payment/',include('payment.urls')),
 ]
 
 if settings.DEBUG:

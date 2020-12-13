@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from django.db import models
+from django.db.models import Sum
 from users.models import User
 
 from dateutil.relativedelta import relativedelta
@@ -22,8 +23,16 @@ class Lifeguard(models.Model):
     certification = models.FileField(blank=False,null=True)
     online_portion_complete = models.BooleanField(default=False)
 
+    def get_cost_for_enrolls(self):
+        enrolled_class = LifeguardClass.objects.filter(students=self)
+        if  self.user.is_employee:
+            return enrolled_class.aggregate(Sum("employee_cost")).get("employee_cost__sum")
+        else:
+            return enrolled_class.aggregate(Sum("cost")).get("cost__sum")
+
+
     def certificate_expired(self):
-        date_from_being_certified = self.last_certified + self.get_experience()
+        date_from_being_certified = self.get_last_certified() + self.get_experience()
         return date_from_being_certified > self.get_experiation_date_of_certificate()
 
     def needs_review(self):
@@ -42,8 +51,14 @@ class Lifeguard(models.Model):
 
     @property
     def date_certified(self):
-        date_certified = datetime(self.last_certified.year,self.last_certified.month,self.last_certified.day)
+        date_certified = self.get_last_certified()
         return date_certified
+
+    def get_last_certified(self):
+        if self.last_certified:
+            return datetime(self.last_certified.year,self.last_certified.month,self.last_certified.day)
+        else:
+            return datetime.now()
 
     def __str__(self):
         return self.user.first_name + " " + self.user.last_name
@@ -52,7 +67,6 @@ class Lifeguard(models.Model):
         self.user.is_lifeguard = True
         self.user.save()
         super().save(*args,**kwargs)
-
 
 class LifeguardClass(models.Model):
     course = models.CharField(max_length=255)
@@ -79,6 +93,7 @@ class Enroll(models.Model):
     lifeguard = models.ForeignKey(Lifeguard,on_delete=models.CASCADE)
     lifeguard_class = models.ForeignKey(LifeguardClass,on_delete=models.CASCADE)
     grade = models.PositiveIntegerField(blank=True,null=True)
+    paid = models.BooleanField(default=False)
 
     def __str__(self):
         return "Enrollment for {} in {}".format(self.lifeguard.user.first_name,self.lifeguard_class.course)

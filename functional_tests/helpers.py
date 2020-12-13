@@ -2,15 +2,19 @@ import time
 import os
 
 from django.test import LiveServerTestCase
+from django.contrib.sites.models import Site
+from django.conf import settings
 
-import selenium
 from selenium import webdriver
+import selenium
 
-from lifeguard.models import Enroll
-from users.models import User
+from users.models import User,EmergencyContact,Address
+from lifeguard.models import LifeguardClass,Enroll,Lifeguard
+from employee.models import Transportation,Position,Employee,PDFFile
 
+from utils.test.helpers import create_user
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = settings.BASE_DIR
 
 class BaseTestFixture(LiveServerTestCase):
     fixtures = ['classes.json','positions.json','transportation.json']
@@ -20,20 +24,6 @@ class BaseTestFixture(LiveServerTestCase):
         super().setUpClass()
         cls.browser = webdriver.Chrome()
 
-        cls.credentials = {
-            'email':'test@example.com',
-            'first_name':'Larry',
-            'last_name':'John',
-            'phone':'121 382 8292',
-            'dob':'09/06/1995',
-            'street1':"123 Main St",
-            'state':'Oregon',
-            'city':'Portland',
-            'zip':'97035',
-            'password1':'2dhd7!42',
-            'password2':'2dhd7!42'
-        }
-
         cls.contact_information = {
             'first_name':'John',
             'last_name' : 'Doe',
@@ -42,10 +32,10 @@ class BaseTestFixture(LiveServerTestCase):
         }
 
         cls.address = {
-           'street1' : "123 Main St",
-           'city' : "San Diego",
-           'state' : "CA",
-           'zip' : "94103"
+            'street1' : "123 Main St",
+            'city' : "San Diego",
+            'state' : "CA",
+            'zip' : "94103"
         }
         cls.emergency_contact = {
             'name':'Mary Jane',
@@ -78,12 +68,6 @@ class BaseTestFixture(LiveServerTestCase):
             "applied_positions_2":"click",
         }
 
-        cls.employee_education = {
-            "school_name":"Django College",
-            "grade_year":"Freshmen",
-            "attending_college":"Yes",
-            "date_leaving_to_college":"9/10/2020"
-        }
         cls.employee_job_history = {
             "previous_employer":"Some Company",
             "job_title":"Tester",
@@ -98,14 +82,6 @@ class BaseTestFixture(LiveServerTestCase):
         cls.browser.quit()
         super().tearDownClass()
 
-    def enroll_in_class(self):
-        enrollment_btns = self.browser.find_elements_by_name('enroll-btn')
-
-        #choose an avaliable class
-        enrollment_btns[0].submit()
-        self.assertEqual(Enroll.objects.count(),1)
-        self.assertIn('users/dashboard/',self.browser.current_url)
-
     def fill_out_contact_information(self):
         self.general_form_input(self.contact_information,form_id="contact_information_form")
         self.assertIn('emergency-contact/',self.browser.current_url)
@@ -113,21 +89,8 @@ class BaseTestFixture(LiveServerTestCase):
     def fill_out_address_form(self,redirect_url):
         self.general_form_input(self.address,form_id="address_form")
         self.assertIn(redirect_url,self.browser.current_url)
-
-    def fill_employee_form(self,data):
         self.general_form_input(data,form_id="employee_form")
         self.assertIn('employee/education/',self.browser.current_url)
-
-    def fill_returning_lifeguard_form(self,redirect_url):
-        register_data = {
-           "already_certified" : "Y",
-           "payment_agreement":"click",
-           "payment_agreement_signature":"Larry Jones",
-           "no_refunds_agreement" : "click",
-           "electronic_signature" : "Larry Jones"
-        }
-        self.general_form_input(register_data,form_id="lifeguard_form")
-        self.assertIn(redirect_url,self.browser.current_url)
 
     def fill_out_emergency_contact(self):
         prefix = 'id_emergencycontact_set'
@@ -137,76 +100,6 @@ class BaseTestFixture(LiveServerTestCase):
             prefix=prefix
         )
         self.assertIn('/users/dashboard/',self.browser.current_url)
-
-    def fill_employee_education_form(self):
-        prefix = 'id_employeeeducation_set'
-        self.general_managment_form_input(
-            records=[self.employee_education],
-            form_id="education_form",
-            prefix=prefix
-        )
-        self.assertIn('employee/job-history/',self.browser.current_url)
-
-    def fill_employee_job_history(self,redirect_url):
-        prefix = 'id_jobhistory_set'
-        self.general_managment_form_input(
-            records=[self.employee_job_history],
-            form_id="job_history_form",
-            prefix=prefix
-        )
-        self.assertIn(redirect_url,self.browser.current_url)
-
-    def fill_already_lifeguard_form(self,redirect_url):
-        data = {
-            "last_certified":'05/11/2020',
-            "certification":os.path.join(BASE_DIR,'lifeguard/tests/certificate.pdf'),
-        }
-        self.general_form_input(data,form_id="already_certified_form")
-        self.assertIn(redirect_url,self.browser.current_url)
-
-    def register_new_lifeguard_who_wants_to_work(self,redirect_url):
-        #user is a new lifeguard
-        register_data = {
-           "already_certified_2" : "click", #user is a new lifeguard
-           "wants_to_work_for_company_1":"click", #and wants to work as a lifeguard
-           "payment_agreement":"click",
-           "payment_agreement_signature":"Larry Jones",
-           "no_refunds_agreement" : "click",
-           "electronic_signature" : "Larry Jones"
-        }
-        self.general_form_input(register_data,form_id="lifeguard_form")
-        self.assertIn(redirect_url,self.browser.current_url)
-
-    def register_new_lifeguard_who_applied_as_employee(self,redirect_url):
-        register_data = {
-           "already_certified_2" : "click",
-           "payment_agreement":"click",
-           "payment_agreement_signature":"Larry Jones",
-           "no_refunds_agreement" : "click",
-           "electronic_signature" : "Larry Jones"
-        }
-        self.general_form_input(register_data,form_id="lifeguard_form")
-        self.assertIn(redirect_url,self.browser.current_url)
-
-    def register_returning_lifeguard_who_applied_as_employee(self,redirect_url):
-        register_data = {
-           "already_certified_1" : "click",
-           "wants_to_work_for_company_1":"click", #and wants to work as a lifeguard
-           "payment_agreement":"click",
-           "payment_agreement_signature":"Larry Jones",
-           "no_refunds_agreement" : "click",
-           "electronic_signature" : "Larry Jones"
-        }
-        self.general_form_input(register_data,form_id="lifeguard_form")
-        self.assertIn(redirect_url,self.browser.current_url)
-
-    def start_at_home_page(self):
-        self.browser.get(self.live_server_url)
-        self.assertIn('Home',self.browser.title)
-
-    def start_registration(self,element_id):
-        self.browser.find_element_by_id(element_id).click()
-        self.assertIn('contact-information/',self.browser.current_url)
 
     def general_form_input(self,data,form_id):
         for key,value in data.items():
@@ -234,26 +127,66 @@ class BaseTestFixture(LiveServerTestCase):
                     element.send_keys(value)
         self.browser.find_element_by_id(form_id).submit()
 
+class BaseTestLoginFixture(BaseTestFixture):
+    def setUp(self):
+        super().setUp()
+        user_and_data = create_user()
+        self.user = user_and_data[0]
+        self.email = user_and_data[1]
+        self.password = user_and_data[2]
+
+        self.path_to_files = os.path.join(BASE_DIR,"functional_tests/files_used_to_test")
+        PDFFile.objects.create(
+            site=Site.objects.get_current(),
+            w4=f"{self.path_to_files}/w4.pdf",
+            i9=f"{self.path_to_files}/i9.pdf",
+            workers_comp=f"{self.path_to_files}/workers_comp.pdf",
+        )
+
+        EmergencyContact.objects.create(user=self.user,**self.emergency_contact)
+        Address.objects.create(user=self.user,**self.address)
+
+    def login(self):
+        self.browser.get('%s%s' % (self.live_server_url,'/users/login'))
+        self.general_form_input(
+            {'username':self.email,'password':self.password}
+            ,form_id='login-form')
+        #check user is redirected to dashboard on successful login
+        self.assertIn('dashboard',self.browser.current_url)
+
+    def fill_employee_form(self,data):
+        self.general_form_input(data,form_id="employee_form")
+        self.assertIn('employee/education/',self.browser.current_url)
+
+    def fill_employee_education_form(self):
+        employee_education = {
+            "school_name":"Django College",
+            "grade_year":"Freshmen",
+            "attending_college":"Yes",
+            "date_leaving_to_college":"9/10/2020"
+        }
+        prefix = 'id_employeeeducation_set'
+        self.general_managment_form_input(
+            records=[employee_education],
+            form_id="education_form",
+            prefix=prefix
+        )
+        self.assertIn('employee/job-history/',self.browser.current_url)
+
+    def fill_employee_job_history(self,redirect_url):
+        prefix = 'id_jobhistory_set'
+        self.general_managment_form_input(
+            records=[self.employee_job_history],
+            form_id="job_history_form",
+            prefix=prefix
+        )
+        self.assertIn(redirect_url,self.browser.current_url)
+
     def enroll_in_class(self):
         enrollment_btns = self.browser.find_elements_by_name('enroll-btn')
 
         #choose an avaliable class
         enrollment_btns[0].submit()
         self.assertEqual(Enroll.objects.count(),1)
-        self.assertIn('users/dashboard/',self.browser.current_url)
-
-    def create_user(self):
-        user = User.objects.create_user(
-            email=self.credentials['email'],
-            first_name=self.credentials['first_name'],
-            last_name=self.credentials['last_name'],
-            phone=self.credentials['phone'],
-            dob='1996-09-12',
-            password=self.credentials['password1']
-        )
-        return user
-
-    def make_payment(self):
-        pass
-
+        self.assertIn('payment/enrollment-cart/',self.browser.current_url)
 

@@ -7,3 +7,5 @@ __pycache__/
 *~
 *.sw*
 *.log
+*config.json
+files_used_to_test/
