@@ -11,8 +11,11 @@ it will be extended to track employees times and pools managed by the lifeguardi
 ### Move into repository
 > cd lifeguard
 
+### Create env
+> python -m venv env
+
 ### Download requirements
-> pip3 install -r requirements.txt
+> pip install -r requirements.txt
 
 ### Make migrations and migrate
 ```
