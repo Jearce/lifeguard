@@ -3,7 +3,6 @@ from django.urls import reverse,reverse_lazy
 from django.views.generic import CreateView,TemplateView
 from django.contrib.auth.views import LoginView
 from django.contrib.auth import logout,login,authenticate
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.edit import UpdateView,CreateView
 from django.contrib.auth import views as auth_views
 
@@ -17,7 +16,7 @@ from .forms import (CustomUserCreationForm,
 
 
 # Create your views here.
-class DashboardView(LoginRequiredMixin,TemplateView):
+class DashboardView(TemplateView):
     template_name = 'users/dashboard.html'
 
 class SignUpView(CreateView):
@@ -91,7 +90,7 @@ class PasswordResetDoneView(auth_views.PasswordResetDoneView):
 class PasswordResetCompleteView(auth_views.PasswordResetCompleteView):
     template_name="users/password_reset_complete.html"
 
-class ContactInformationUpdate(LoginRequiredMixin,UpdateView):
+class ContactInformationUpdate(UpdateView):
     model = User
     form_class = ContactInformationForm
     template_name = 'users/contact_information_form.html'
@@ -99,7 +98,7 @@ class ContactInformationUpdate(LoginRequiredMixin,UpdateView):
     def get_success_url(self):
         return reverse_lazy('users:emergency_contact')
 
-class EmergencyContactCreateOrUpdate(LoginRequiredMixin,UpdateView):
+class EmergencyContactCreateOrUpdate(UpdateView):
     model = EmergencyContact
     template_name = 'users/emergency_contact_form.html'
     form_class = EmergencyContactForm
@@ -123,7 +122,7 @@ class EmergencyContactCreateOrUpdate(LoginRequiredMixin,UpdateView):
     def get_success_url(self):
         return reverse_lazy('users:dashboard')
 
-class AddressCreateOrUpdate(LoginRequiredMixin,UpdateView):
+class AddressCreateOrUpdate(UpdateView):
     model = Address
     template_name = 'users/address_form.html'
     fields = ["street1","street2","city","state","zip"]

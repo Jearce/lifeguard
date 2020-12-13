@@ -9,63 +9,24 @@
 <div class="container">
 	<div class="row">
 		<div class="col mb-4">
-			{% if not user.is_lifeguard %}
-			<div class="alert alert-info">
-				You have have not completed the lifeguard application.
-				To enroll in one of our lifeguard classes please complete the application
-				<a href="{% url 'lifeguard:create' %}" class="alert-link">here</a>.
-			</div>
-			{% else %}
 			<h1 class="mt-4 text-center">Available Lifeguarding Classes</h1>
 			{% for class in classes %}
-			<div class="w-25 card border-dark mb-3 mt-3 center-form">
-				<div class="card-header">
-					<h3>{{ class.course }}</h3>
-				</div>
+			<div class="card bg-light mb-3">
+				<div class="card-header">{{ class.course }}</div>
 				<div class="card-body">
-					<ul class="list-group list-group-flush">
-						<li class="list-group-item">
-							<div class="d-flex justify-content-between">
-								<p>Meeting dates</p>
-								<p>
-									{{ class.start_date|date }} - {{ class.end_date|date }}
-								</p>
-							</div>
-						</li>
-						<li class="list-group-item">
-							<div class="d-flex justify-content-between">
-								<p>Meeting time</p>
-								<p>
-									{{ class.start_date|date:"P" }} - {{ class.end_date|date:"P" }}
-								</p>							
-							</div>
-						</li>
-						<li class="list-group-item">
-							<div class="d-flex justify-content-between">
-								<p>Cost</p>
-								<p>
-									${{ class.cost }}
-								</p>							
-							</div>
-						</li>
-						<li class="list-group-item">
-							<div class="d-flex justify-content-between">
-								<p>Employee cost</p>
-								<p>
-									${{ class.employee_cost }}
-								</p>
-						</li>
-					</ul>
-				</div>
-				<div class="card-footer text-center">
+					<div class="card-text">
+						<p>Start date: {{ class.start_date }}</p>
+						<p>End date: {{ class.end_date }}</p>
+						<p>Cost: {{ class.cost }}</p>
+						<p>Employee cost: {{ class.employee_cost }}</p>
+					</div>
 					<form method="post" action="{% url 'lifeguard:classes' class.id %}">
 						{% csrf_token %}
-						<input name="enroll-btn" class="btn btn-outline-dark btn-lg btn-block" type="submit" value="enroll">
+						<input name="enroll-btn" class="btn btn-primary" type="submit" value="enroll">
 					</form>
 				</div>
 			</div>
 			{% endfor %}
-			{% endif %}
 		</div>
 	</div>
 </div>

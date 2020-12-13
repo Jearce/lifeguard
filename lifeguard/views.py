@@ -13,7 +13,7 @@ from lifeguard.forms import LifeguardCertifiedForm,LifeguardForm
 class HomeView(TemplateView):
     template_name = 'home.html'
 
-class LifeguardCreateOrUpdate(LoginRequiredMixin,UpdateView):
+class LifeguardCreateOrUpdate(UpdateView):
     model = Lifeguard
     template_name = 'lifeguard/lifeguard_form.html'
     form_class = LifeguardForm
@@ -42,15 +42,13 @@ class LifeguardCreateOrUpdate(LoginRequiredMixin,UpdateView):
         user = self.request.user
         if user.lifeguard.already_certified:
             return reverse_lazy('lifeguard:already_certified')
-
         #if the user wants to work have them fill out the employee application if
         #they have not already done so
         elif user.lifeguard.wants_to_work_for_company and not user.is_employee:
             return reverse_lazy('employee:create')
-
         return reverse_lazy('lifeguard:classes')
 
-class LifeguardCertified(LoginRequiredMixin,UpdateView):
+class LifeguardCertified(UpdateView):
     template_name = "lifeguard/already_certified_form.html"
     form_class = LifeguardCertifiedForm
 
@@ -70,17 +68,15 @@ class LifeguardClasses(LoginRequiredMixin,View):
 
     def get(self,request,*args,**kwargs):
         user = self.request.user
-        if user.is_lifeguard:
+        if hasattr(user,'lifeguard'):
             lifeguard = user.lifeguard
-
             if lifeguard.already_certified:
-                needs_to_retake_class = not lifeguard.certificate_expired()
-
-                classes = LifeguardClass.objects.filter(
-                    lifeguard_certified_required=needs_to_retake_class,
-                    is_review=lifeguard.needs_review()
-                )
-
+                if lifeguard.certificate_expired():
+                    classes = LifeguardClass.objects.filter(lifeguard_certified_required=False)
+                elif lifeguard.needs_review():
+                    classes = LifeguardClass.objects.filter(lifeguard_certified_required=True,is_review=True)
+                else:
+                    classes = LifeguardClass.objects.filter(lifeguard_certified_required=True,is_review=False)
             else:
                 classes = LifeguardClass.objects.filter(lifeguard_certified_required=False)
         else:
@@ -89,32 +85,12 @@ class LifeguardClasses(LoginRequiredMixin,View):
         return render(request,'lifeguard/classes.html',context={'classes':classes})
 
     def post(self,request,*args,**kwargs):
+        lifeguard = Lifeguard.objects.get(user=request.user)
+        lifeguard_class = LifeguardClass.objects.get(pk=self.kwargs['pk'])
+        Enroll.objects.create(lifeguard=lifeguard,lifeguard_class=lifeguard_class)
 
-        user = self.request.user
-        class_pk = self.kwargs['pk']
-        if user.is_lifeguard:
-
-            lifeguard_class = LifeguardClass.objects.get(pk=class_pk)
-            Enroll.objects.create(
-                lifeguard=user.lifeguard,
-                lifeguard_class=lifeguard_class
-            )
-
-            return redirect("payment:enrollment_cart")
-
-        else:
-            return redirect("lifeguard:create")
-
-class EnrolledClasses(LoginRequiredMixin,View):
-    login_url= '/users/login/'
-
-    def get(self, request,*args,**kwargs):
-        user = self.request.user
-        enrolled_classes = user.lifeguard.enroll_set.all()
-        return render(
-            request,'lifeguard/enrolled_classes.html',
-            context={"enrolled_classes":enrolled_classes}
-        )
+        #TODO: redirect to payment view after successful enrollment
+        return redirect('users:dashboard')
 
 def lifeguard_registration(request):
     if request.method == 'GET':

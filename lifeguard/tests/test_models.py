@@ -1,14 +1,10 @@
 from django.test import TestCase
 
-from lifeguard.models import Lifeguard,Enroll,LifeguardClass
+from lifeguard.models import Lifeguard
 from users.models import User
-from lifeguard.tests.helpers import set_up_time
-
-from utils.test.helpers import LifeguardFactory
+from lifeguard.tests.helpers import set_up_time,LifeguardFactory
 
 class LifeguardTest(TestCase):
-    fixtures = ['classes.json']
-
     def setUp(self):
         self.password = 'secret!234'
         self.email = 'test@example.com'
@@ -57,45 +53,5 @@ class LifeguardTest(TestCase):
         lifeguard = self.factory.create()
         self.assertTrue(self.user.is_lifeguard)
 
-    def test_lifeguard_employee_charged_correct_price(self):
-        #lifeguard is/applied to employee position
-        lifeguard = self.factory.create()
-        lifeguard.user.is_employee = True
-        lifeguard.user.save()
-
-        #enrolls in a class
-        first_class = LifeguardClass.objects.first()
-        enroll = Enroll.objects.create(lifeguard=lifeguard,lifeguard_class=first_class)
-        lifeguard.enroll_set.add(enroll)
-        lifeguard.save()
-
-        #gets employee discount
-        self.assertEqual(first_class.employee_cost,lifeguard.get_cost_for_enrolls())
-
-    def test_lifeguard_charged_correct_price(self):
-        lifeguard = self.factory.create()
-
-        #enrolls in a class
-        first_class = LifeguardClass.objects.first()
-        enroll = Enroll.objects.create(lifeguard=lifeguard,lifeguard_class=first_class)
-        lifeguard.enroll_set.add(enroll)
-        lifeguard.save()
-
-        #gets employee discount
-        self.assertEqual(first_class.cost,lifeguard.get_cost_for_enrolls())
-
-    def test_charged_correct_price_for_many_enrolls(self):
-        lifeguard = self.factory.create()
-
-        #enrolls in classes
-        first_class = LifeguardClass.objects.first()
-        last_class = LifeguardClass.objects.last()
-        enroll1 = Enroll.objects.create(lifeguard=lifeguard,lifeguard_class=first_class)
-        enroll2 = Enroll.objects.create(lifeguard=lifeguard,lifeguard_class=last_class)
-        lifeguard.enroll_set.add(enroll1,enroll2)
-        lifeguard.save()
-
-        #gets employee discount
-        self.assertEqual(last_class.cost + first_class.cost,lifeguard.get_cost_for_enrolls())
 
 

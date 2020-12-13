@@ -31,9 +31,6 @@ class User(AbstractUser):
         diff =  relativedelta(now,dob)
         return diff.years
 
-    def get_full_name(self):
-        return self.first_name + " " + self.last_name
-
 class EmergencyContact(models.Model):
     name = models.CharField('name',max_length=255)
     user = models.ForeignKey(User,on_delete=models.CASCADE)
