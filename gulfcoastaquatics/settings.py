@@ -38,8 +38,10 @@ INSTALLED_APPS = [
     'users',
     'lifeguard',
     'employee',
+    'payment',
 
     'crispy_forms',
+    'django.contrib.humanize',
 
     'django.contrib.admin',
     'django.contrib.auth',

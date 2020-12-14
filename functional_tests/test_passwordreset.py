@@ -6,6 +6,7 @@ from django.core import mail
 from users.models import User
 
 from functional_tests.helpers import BaseTestFixture
+from utils.test.helpers import create_user
 
 DOMAIN = "http:\/\/example.com\/"
 
@@ -13,7 +14,7 @@ class PasswordResetTest(BaseTestFixture):
     def setUp(self):
         super().setUp()
         #user already has an account
-        self.user = self.create_user()
+        self.user = create_user()[0]
 
     def test_at_password_reset_page(self):
         self.browser.get('%s%s' % (self.live_server_url,'/users/password_reset/'))

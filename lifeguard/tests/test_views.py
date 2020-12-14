@@ -7,31 +7,36 @@ from django.test import TestCase
 from django.http import HttpRequest
 from django.contrib.auth import get_user_model
 
-from lifeguard import views
 from users.models import User,EmergencyContact
 from employee.models import Employee,Transportation,Position
+
+
+from lifeguard import views
 from lifeguard.models import LifeguardClass,Enroll,Lifeguard
-from lifeguard.tests.helpers import set_up_time,LifeguardFactory
+from lifeguard.tests.helpers import set_up_time
 
 from dateutil.relativedelta import relativedelta
-
-from utils.test.helpers import create_emergency_contact
+from utils.test.helpers import create_emergency_contact,create_user,LifeguardFactory
 
 class BaseUserSetUp(TestCase):
     def setUp(self):
-        self.email='test@example.com'
-        self.password='2dhd7!42'
-        self.credentials = {
-            'first_name':'Larry',
-            'last_name':'John',
-            'dob':'1995-06-09',
-            'phone':'121 382 8292',
+        self.generic_lifeguard_data = {
+            "already_certified":True,
+            "wants_to_work_for_company":True,
+            "payment_agreement":True,
+            "payment_agreement_signature":"Larry Johnson",
+            "no_refunds_agreement":True,
+            "electronic_signature":"Larry Johnson",
         }
-        self.user = User.objects.create_user(
-            email=self.email,
-            password=self.password,
-            **self.credentials
-        )
+
+        user_data = create_user()
+        self.user = user_data[0]
+        self.email = user_data[1]
+        self.password = user_data[2]
+        self.credentials = user_data[3]
+
+        user_login = self.client.login(email=self.email, password=self.password)
+
 
 class HomeViewTest(TestCase):
     def test_view_url_exists_at_desired_location(self):
@@ -195,12 +200,12 @@ class LifeguardAlreadyCertifiedTest(BaseUserSetUp):
         with open(path_to_certificate,'rb') as pdf:
             response = self.client.post(reverse('lifeguard:already_certified'),{'last_certified':'2000-06-09','certification':pdf})
             return response
+        return response
 
 class LifeguardClassesTest(BaseUserSetUp):
     fixtures = ['classes.json']
     def setUp(self):
         super().setUp()
-        user_login = self.client.login(email=self.email, password=self.password)
         self.lifeguard_data = {
             "already_certified":False,
             "wants_to_work_for_company":True,
@@ -217,14 +222,6 @@ class LifeguardClassesTest(BaseUserSetUp):
     def test_view_uses_correct_template(self):
         response = self.client.get(reverse('lifeguard:classes'))
         self.assertTemplateUsed(response,'lifeguard/classes.html')
-
-    def test_can_enroll_in_class(self):
-        Lifeguard.objects.create(user=self.user,**self.lifeguard_data)
-        classes = LifeguardClass.objects.all()
-        response = self.client.post(reverse('lifeguard:classes',kwargs={'pk':classes[0].id}))
-        self.assertEqual(response.status_code,302)
-        self.assertEqual(Enroll.objects.all().count(),1)
-        self.assertRedirects(response,reverse('lifeguard:payment'))
 
     def test_shows_only_review_classes(self):
         needs_review_time = set_up_time(years=2,days=15)
@@ -247,6 +244,50 @@ class LifeguardClassesTest(BaseUserSetUp):
             )
         )
 
+    def test_not_lifeguard_and_cant_enroll(self):
+        classes = LifeguardClass.objects.all()
+        response = self.client.post(reverse('lifeguard:classes',kwargs={'pk':classes[0].id}))
+        self.assertEqual(response.status_code,302)
+        self.assertEqual(Enroll.objects.all().count(),0)
+        #self.assertRedirects(response,reverse('lifeguard:create'))
+
+    def test_correct_redirect_on_successful_enroll(self):
+        lifeguard = LifeguardFactory(user=self.user).create()
+        response = self.client.get(reverse('lifeguard:classes'))
+        enroll_in_this_class = response.context["classes"][0]
+        response = self.client.post(reverse('lifeguard:classes',kwargs={"pk":enroll_in_this_class.pk}))
+        self.assertRedirects(response,reverse('payment:enrollment_cart'))
+
+class EnrolledClassesTest(BaseUserSetUp):
+    fixtures = ['classes.json']
+
+    def setUp(self):
+        super().setUp()
+        lifeguard_data = {
+            "already_certified":True,
+            "wants_to_work_for_company":True,
+            "payment_agreement":True,
+            "payment_agreement_signature":"Larry Johnson",
+            "no_refunds_agreement":True,
+            "electronic_signature":"Larry Johnson",
+        }
+        first_class = LifeguardClass.objects.all()[0]
+        lifeguard = Lifeguard.objects.create(user=self.user,**lifeguard_data)
+        Enroll.objects.create(lifeguard=lifeguard,lifeguard_class=first_class)
+
+    def test_view_uses_correct_template(self):
+        response = self.client.get(reverse('lifeguard:enrolled_classes'))
+        self.assertTemplateUsed(response,'lifeguard/enrolled_classes.html')
+
+    def test_view_url_exists_at_desired_location(self):
+        response = self.client.get(reverse('lifeguard:enrolled_classes'))
+        self.assertEqual(response.status_code,200)
+
+    def test_classes_are_in_context(self):
+        response = self.client.get(reverse('lifeguard:enrolled_classes'))
+        lifeguard_classes = response.context["enrolled_classes"]
+        self.assertEqual(lifeguard_classes.count(),1)
+
 class LifeguardRegistrationTest(BaseUserSetUp):
     def setUp(self):
         super().setUp()
@@ -257,6 +298,3 @@ class LifeguardRegistrationTest(BaseUserSetUp):
         self.assertEqual(response.status_code,302)
         registration_path = response.wsgi_request.session.get("registration_path")
         self.assertEqual(registration_path,"lifeguard:create")
-
-
-
