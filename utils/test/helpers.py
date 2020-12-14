@@ -38,7 +38,7 @@ class InlineFormsetManagmentFactory:
         for i,record in enumerate(self.records):
             for key,value in record.items():
                 mf[f"{prefix}-{i}-{key}"] = value
-                return mf
+        return mf
 
 class LifeguardFactory:
     def __init__(
