@@ -8,10 +8,11 @@
 {% block pagecontent %}
 <div class="container">
 	{% if request.user.lifeguard.enroll_set.count > 0 %}
-	  <h1 class="text-center mb-3">Enrollment Cart</h1>
-		{% for enrollment in enrolled_classes %}
-		{% with class=enrollment.lifeguard_class %}
-		  <div class="w-25 card border-dark mb-3 mt-3 center-form">
+	<h1 class="text-center mb-3">Enrollment Cart</h1>
+	{% for enrollment in enrolled_classes %}
+		{% if not enrollment.paid %}
+			{% with class=enrollment.lifeguard_class %}
+			<div class="w-25 card border-dark mb-3 mt-3 center-form">
 				<div class="card-header">
 					<h3>{{ class.course }}</h3>
 				</div>
@@ -38,13 +39,13 @@
 								<p>Cost {% if request.user.is_employee %} (employee discount applied) {% endif %}</p>
 								<p>
 									{% if request.user.is_employee %}
-									  ${{ class.employee_cost }}
-							    {% else %}
-							      ${{ class.cost }}
-							    {% endif %}
-						    </p>
-					    </div>
-				    </li>
+									${{ class.employee_cost }}
+									{% else %}
+									${{ class.cost }}
+									{% endif %}
+								</p>
+							</div>
+						</li>
 					</ul>
 				</div>
 				<div class="card-footer text-center">
@@ -54,19 +55,20 @@
 					</form>
 				</div>
 			</div>
-	{% endwith %}
+			{% endwith %}
+		{% endif %}
 	{% endfor %}
-	<a href="{% url 'payment:lifeguard_checkout' %}" 
-		id="id_continue_to_checkout" 
-		role="button"
-		class="w-25 btn btn-primary btn-lg btn-block center-form mt-3 mb-3">
+	<a href="{% url 'payment:lifeguard_checkout' %}"
+		id="id_continue_to_checkout"
+	role="button"
+ class="w-25 btn btn-primary btn-lg btn-block center-form mt-3 mb-3">
 		continue to checkout
 	</a>
- {% else %}
-   <div class="w-25 alert alert-primary center-form text-center" role="alert">
-		 <h4>You have no classes in your enrollment cart. You can enroll
-			 <a href="{% url 'lifeguard:classes' %}" class="alert-link">here</a>.</h4>
-	 </div>
- {% endif %}
+	{% else %}
+	<div class="w-25 alert alert-primary center-form text-center" role="alert">
+		<h4>You have no classes in your enrollment cart. You can enroll
+			<a href="{% url 'lifeguard:classes' %}" class="alert-link">here</a>.</h4>
+	</div>
+	{% endif %}
 </div>
 {% endblock pagecontent %}

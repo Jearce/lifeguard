@@ -66,7 +66,7 @@
 		<div class="list-group list-group-flush">
 			<a href="{% url "users:dashboard" %}" class="list-group-item list-group-item-action bg-light">Dashboard</a>
 			<a href="{% url "lifeguard:classes" %}" class="list-group-item list-group-item-action bg-light">Lifeguard Classes</a>
-			{% if user.lifeguard.enroll_set.count > 0 %}
+			{% if  user.lifeguard.get_unpaid_lifeguard_classes.count > 0 %}
 			<a href="{% url "payment:enrollment_cart" %}" class="list-group-item list-group-item-action bg-light">
 				Enrollment Cart
 			</a>
