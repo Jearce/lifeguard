@@ -124,6 +124,7 @@ class Checklist(models.Model):
     auth_signature = models.CharField(null=True,max_length=255)
     awknowledgement_form_signature = models.CharField(null=True,max_length=255)
     date = models.DateField(default=timezone.now)
+    complete = models.BooleanField(default=False)
 
     def __str__(self):
         return "Checklist for" +" "+ self.employee.user.get_full_name()
