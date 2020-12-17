@@ -27,7 +27,7 @@ class Lifeguard(models.Model):
         return self.enroll_set.filter(paid=False)
 
     def get_cost_for_enrolls(self):
-        enrolled_class = LifeguardClass.objects.filter(students=self)
+        enrolled_class = LifeguardClass.objects.filter(students=self,enroll__paid=False)
         if  self.user.is_employee:
             return enrolled_class.aggregate(Sum("employee_cost")).get("employee_cost__sum")
         else:
