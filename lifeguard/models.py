@@ -23,6 +23,9 @@ class Lifeguard(models.Model):
     certification = models.FileField(blank=False,null=True)
     online_portion_complete = models.BooleanField(default=False)
 
+    def get_unpaid_lifeguard_classes(self):
+        return self.enroll_set.filter(paid=False)
+
     def get_cost_for_enrolls(self):
         enrolled_class = LifeguardClass.objects.filter(students=self)
         if  self.user.is_employee:
