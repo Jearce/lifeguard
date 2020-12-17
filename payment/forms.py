@@ -8,7 +8,7 @@ class LifeguardCheckoutForm(forms.Form):
     region = forms.CharField(label="State",max_length=255)
     locality = forms.CharField(label="City",max_length=255)
     postal_code = forms.CharField(label="Zip",max_length=255)
-    set_as_default = forms.BooleanField(label="Set as default billing address")
+    set_as_default = forms.BooleanField(label="Set as default billing address",required=False)
 
     nonce = forms.CharField(
         max_length=1000,
