@@ -45,7 +45,7 @@ class LifeguardCheckout(FormView):
 
     def form_valid(self, form,**kwargs):
         lifeguard = self.request.user.lifeguard
-        cost = sum(enroll.lifeguard_class.cost  for enroll in lifeguard.enroll_set.all())
+        cost = lifeguard.get_cost_for_enrolls()
         result = transact({
             "amount": cost,
             'payment_method_nonce':form.cleaned_data["nonce"],
@@ -54,7 +54,7 @@ class LifeguardCheckout(FormView):
                 }
             })
         self.trasaction_id = result.transaction.id
-        for enroll in lifeguard.enroll_set.all():
+        for enroll in lifeguard.get_unpaid_lifeguard_classes():
             enroll.paid = True
             enroll.save()
         return super().form_valid(form)
