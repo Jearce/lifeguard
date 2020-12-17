@@ -1,4 +1,5 @@
 from django.shortcuts import render,redirect
+from django.urls import reverse_lazy
 from django.views.generic import View,TemplateView
 from django.views.generic.edit import FormView
 
@@ -42,34 +43,24 @@ class LifeguardCheckout(FormView):
         context["client_token"] = client_token
         return context
 
-# Create your views here.
-def new_checkout(request):
-    client_token = generate_client_token()
-    form = PaymentForm()
-    return render(request,'payment/new_checkout.html',context={'client_token':client_token,'form':form})
-
-def create_checkout(request):
-    if request.method == "POST":
-        form = PaymentForm(request.POST)
-        if form.is_valid():
-
-            lifeguard = request.user.lifeguard
-            cost = sum(enroll.lifeguard_class.cost  for enroll in lifeguard.enroll_set.all())
-
-            result = transact({
-                "amount": cost,
-                'payment_method_nonce':form.cleaned_data["nonce"],
-                'options':{
-                    'submit_for_settlement':True,
+    def form_valid(self, form,**kwargs):
+        lifeguard = self.request.user.lifeguard
+        cost = sum(enroll.lifeguard_class.cost  for enroll in lifeguard.enroll_set.all())
+        result = transact({
+            "amount": cost,
+            'payment_method_nonce':form.cleaned_data["nonce"],
+            'options':{
+                'submit_for_settlement':True,
                 }
             })
+        self.trasaction_id = result.transaction.id
+        return super().form_valid(form)
 
-            return redirect("payment:show_checkout",transaction_id=result.transaction.id)
+    def get_success_url(self):
+        return reverse_lazy('payment:show_checkout', kwargs = {'transaction_id': self.trasaction_id})
+        
 
 def show_checkout(request,transaction_id):
     transaction = find_transaction(transaction_id)
     result = {"header":"Success","transaction":transaction}
     return render(request,"payment/show.html",context=result)
-
-
-
