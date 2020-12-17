@@ -91,7 +91,7 @@
 											{% endif %}
 
 											{% if employee.is_hired %}
-											    {% if not user.employee.checklist %}
+											    {% if not user.employee.checklist or not user.employee.checklist.complete %}
 													<li class="list-group-item">
 														<a href='{% url 'employee:checklist' %}' id="employee_checklist">Employee Checklist</a>:
 														<span>
