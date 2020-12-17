@@ -22,7 +22,7 @@ TRANSACTION_SUCCESS_STATUSES = [
 class EnrollmentCart(View):
     def get(self, request, *args, **kwargs):
         lifeguard = self.request.user.lifeguard
-        enrolled_classes = lifeguard.enroll_set.all()
+        enrolled_classes = lifeguard.get_unpaid_lifeguard_classes()
         return render(request,'payment/enrollment_cart.html',context={"enrolled_classes":enrolled_classes})
 
     def post(self,request,*args,**kwargs):
@@ -54,6 +54,9 @@ class LifeguardCheckout(FormView):
                 }
             })
         self.trasaction_id = result.transaction.id
+        for enroll in lifeguard.enroll_set.all():
+            enroll.paid = True
+            enroll.save()
         return super().form_valid(form)
 
     def get_success_url(self):
