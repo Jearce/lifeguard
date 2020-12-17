@@ -22,7 +22,7 @@
 			<h3 class="mb-3 mt-3">Summary</h3>
 			<ul class="list-group mb-3 mt-3">
 				{% with lifeguard=user.lifeguard %}
-				  {% for enrollment in lifeguard.enroll_set.all %}
+				  {% for enrollment in lifeguard.get_unpaid_lifeguard_classes %}
 					  {% with class=enrollment.lifeguard_class %}
 							<li class="list-group-item d-flex justify-content-between lh-condensed">
 								<div>
