@@ -6,18 +6,12 @@ from django.conf import settings
 import braintree
 
 
-#if settings.DEBUG:
-secrets_file = 'config.json'
-
-with open(secrets_file) as f:
-    SECRETS = json.loads(f.read())
-
 gateway = braintree.BraintreeGateway(
     braintree.Configuration(
-        environment=SECRETS["BT_ENVIRONMENT"],
-        merchant_id=SECRETS["BT_MERCHANT_ID"],
-        public_key=SECRETS["BT_PUBLIC_KEY"],
-        private_key=SECRETS["BT_PRIVATE_KEY"],
+        environment=os.environ.get("BT_ENVIRONMENT"),
+        merchant_id=os.environ.get("BT_MERCHANT_ID"),
+        public_key=os.environ.get("BT_PUBLIC_KEY"),
+        private_key=os.environ.get("BT_PRIVATE_KEY"),
     )
 )
 
