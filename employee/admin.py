@@ -34,9 +34,14 @@ class EmployeeAdmin(admin.ModelAdmin):
         ChecklistFilter,
     )
 
+    def get_object(self, request, object_id, from_field=None):
+        obj = super().get_object(request, object_id, from_field=from_field)
+        request.employee = obj
+        return obj
+
     def formfield_for_manytomany(self,db_field,request,**kwargs):
         if db_field.name == 'applied_positions':
-            kwargs["queryset"] = models.Position.objects.filter(employee=request.user.employee)
+            kwargs["queryset"] = models.Position.objects.filter(employee=request.employee)
         return super().formfield_for_manytomany(db_field,request,**kwargs)
 
     def delete_queryset(self,request,queryset):
