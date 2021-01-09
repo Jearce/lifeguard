@@ -31,7 +31,7 @@ SECRET_KEY = os.getenv('SECRET')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['gca-dev-app.herokuapp.com', 'localhost']
 
 
 # Application definition
@@ -175,4 +175,5 @@ else:
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 
 import dj_database_url
-DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
+prod_db = dj_database_url.config(conn_max_age=600, ssl_require=True)
+DATABASES['default'].update(prod_db)
