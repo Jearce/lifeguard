@@ -29,9 +29,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.getenv('SECRET')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = os.getenv('DEBUG') == "TRUE"
 
-ALLOWED_HOSTS = ['gca-dev-app.herokuapp.com', 'localhost']
+ALLOWED_HOSTS = ['gca-dev-app.herokuapp.com', 'localhost', 'gca-bucket.s3.amazonaws.com/static/admin/*']
 
 
 # Application definition
@@ -139,10 +139,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 CRISPY_TEMPLATE_PACK = "bootstrap4"
 
-#STATIC_URL = '/static/'
-#MEDIA_URL = '/media/'
-#MEDIA_ROOT = os.path.join(BASE_DIR,'media')
-
 AUTH_USER_MODEL = 'users.User'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' #development only
@@ -174,6 +170,7 @@ else:
 
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 
-import dj_database_url
-prod_db = dj_database_url.config(conn_max_age=600, ssl_require=True)
-DATABASES['default'].update(prod_db)
+if not DEBUG:
+    import dj_database_url
+    prod_db = dj_database_url.config(conn_max_age=600, ssl_require=True)
+    DATABASES['default'].update(prod_db)
