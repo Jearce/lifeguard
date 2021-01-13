@@ -10,3 +10,4 @@ __pycache__/
 *config.json
 files_used_to_test/
 media/
+static/
