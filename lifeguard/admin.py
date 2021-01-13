@@ -9,6 +9,7 @@ class LifeguardAdmin(admin.ModelAdmin):
     list_display = (
         'user',
         'class_needed',
+        'years_since_last_certified'
     )
 
     def class_needed(self,obj):
@@ -25,6 +26,12 @@ class LifeguardAdmin(admin.ModelAdmin):
             e.user.is_lifeguard = False
             e.user.save()
         return super().delete_queryset(request,queryset)
+
+    def years_since_last_certified(self, obj):
+        if obj.already_certified:
+            return obj.get_experience().years
+
+
 
 admin.site.register(models.LifeguardClass)
 admin.site.register(models.Enroll)
