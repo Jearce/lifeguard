@@ -113,7 +113,6 @@ class EmployeeEducationTest(CommonSetUp):
 
     def test_view_url_exists_at_desired_location(self):
         response = self.client.get(reverse('employee:education'))
-        print(response.context["form"])
         self.assertEqual(response.status_code,200)
 
     def test_view_uses_correct_template(self):
@@ -179,8 +178,8 @@ class JobHistoryTest(CommonSetUp):
                 "start_date":"2000-06-09",
                 "end_date":"2010-06-09",
                 "reason_for_leaving":"The time felt right",
-                "employee":'1',
-                "id":'1',
+                "employee":"",
+                "id":'',
             },
             {
                 "previous_employer":"My School Company",
@@ -189,7 +188,7 @@ class JobHistoryTest(CommonSetUp):
                 "start_date":"2010-06-09",
                 "end_date":"2011-06-09",
                 "reason_for_leaving":"School ended",
-                "employee":'1',
+                "employee":"",
                 "id":''
             }
         ]
@@ -221,7 +220,9 @@ class JobHistoryTest(CommonSetUp):
 
     def test_update_job_history(self):
         employee = self.create_employee()
-        JobHistory.objects.create(employee=employee,**self.create_job_history_data[0])
+        job = JobHistory.objects.create(employee=employee,**self.create_job_history_data[0])
+        self.update_job_history_data[0].update({'employee':employee.user.id})
+        self.update_job_history_data[0].update({'id':job.id})
         management_factory = InlineFormsetManagmentFactory(
             formset=JobHistoryInlineFormset,
             extra=2,
