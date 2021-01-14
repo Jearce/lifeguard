@@ -92,6 +92,18 @@ class LifeguardClass(models.Model):
     def __str__(self):
         return self.course
 
+
+class LifeguardClassSession(models.Model):
+    lifeguard_class = models.ForeignKey(LifeguardClass, on_delete=models.CASCADE)
+    date = models.DateField()
+    start_time = models.TimeField()
+    end_time = models.TimeField()
+
+    def __str__(self):
+        return "Class session for %s" %self.lifeguard_class
+
+    
+
 class Enroll(models.Model):
     lifeguard = models.ForeignKey(Lifeguard,on_delete=models.CASCADE)
     lifeguard_class = models.ForeignKey(LifeguardClass,on_delete=models.CASCADE)
