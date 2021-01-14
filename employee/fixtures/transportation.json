@@ -1,1 +1,1 @@
-[{"model": "employee.transportation", "pk": 1, "fields": {"name": "Car", "description": "I will drive myself"}}]
+[{"model": "employee.transportation", "pk": 1, "fields": {"name": "Car"}}]
