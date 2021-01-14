@@ -183,19 +183,20 @@ class EmergencyContactCreateOrUpdateTest(BaseUserSetUp):
         self.assertTemplateUsed(response,'users/emergency_contact_form.html')
 
     def test_emergency_contact_update(self):
-        management_factory = InlineFormsetManagmentFactory(
-            EmergencyContactInlineFormSet,
-            extra=2,
-            initial=1,
-            min_num=0,
-            max_num=2,
-            records=self.emergency_contacts_to_update
-        )
-        new_em_contacts = management_factory.create_management_form()
-
         #user already created emergency contact
-        EmergencyContact.objects.create(user=self.user,**self.emergency_contacts[0])
+        em = EmergencyContact.objects.create(user=self.user,**self.emergency_contacts[0])
         self.assertEqual(EmergencyContact.objects.filter(user=self.user).count(),1)
+
+        self.emergency_contacts_to_update[0].update({'id': em.id})
+        management_factory = InlineFormsetManagmentFactory(
+                    EmergencyContactInlineFormSet,
+                    extra=2,
+                    initial=1,
+                    min_num=0,
+                    max_num=2,
+                    records=self.emergency_contacts_to_update
+                )
+        new_em_contacts = management_factory.create_management_form()
 
         #user updates the current em and adds another em
         response = self.client.post(reverse('users:emergency_contact'),new_em_contacts)
@@ -203,7 +204,7 @@ class EmergencyContactCreateOrUpdateTest(BaseUserSetUp):
         self.assertEqual(EmergencyContact.objects.filter(user=self.user).count(),2)
 
     def test_emergency_contact_create(self):
-        #Emergency Contact
+                #Emergency Contact
         management_factory = InlineFormsetManagmentFactory(
             EmergencyContactInlineFormSet,
             extra=2,
