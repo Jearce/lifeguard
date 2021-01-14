@@ -35,27 +35,26 @@ class Lifeguard(models.Model):
 
 
     def certificate_expired(self):
-        date_from_being_certified = self.get_last_certified() + self.get_experience()
-        return date_from_being_certified > self.get_experiation_date_of_certificate()
+        experience = self.get_experience()
+        if experience.years > 2:
+            return True
+        elif experience.years == 2:
+            return True if experience.days >= 30 else False
+        else:
+            return False
+
+
 
     def needs_review(self):
         experience = self.get_experience()
         return experience.years == 2 and experience.days < 30
 
-    def get_experiation_date_of_certificate(self):
-        #certifcate is valid for 2 years and 30 days of being certified
-        duration_of_certificate = relativedelta(years=2,days=30)
-        return self.date_certified + duration_of_certificate
-
     def get_experience(self):
-        now = datetime.now()
-        diff = relativedelta(now,self.date_certified)
-        return diff
+        return relativedelta(datetime.now(),self.date_certified)
 
     @property
     def date_certified(self):
-        date_certified = self.get_last_certified()
-        return date_certified
+        return self.get_last_certified()
 
     def get_last_certified(self):
         if self.last_certified:
