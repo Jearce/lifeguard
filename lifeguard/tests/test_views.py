@@ -91,7 +91,7 @@ class LifeguardCreateTest(BaseUserSetUp):
             "contract_employment_agreement":True,
             "electronic_signature":"Larry Johnson",
         }
-        self.transportation = Transportation.objects.create(name="Car",description="I will drive by car")
+        self.transportation = Transportation.objects.create(name="Car")
         self.position1 = Position.objects.create(title="Lifeguard",minimum_age=15,lifeguard_required=True)
         self.position2 = Position.objects.create(title="Supervisor",minimum_age=18,lifeguard_required=False)
 

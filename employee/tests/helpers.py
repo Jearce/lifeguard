@@ -26,8 +26,7 @@ class CommonSetUp(TestCase):
             title="Lifeguard", minimum_age=15, lifeguard_required=True)
         cls.position2 = Position.objects.create(
             title="Supervisor", minimum_age=18, lifeguard_required=False)
-        cls.transportation = Transportation.objects.create(
-            name="Car", description="I will drive by car")
+        cls.transportation = Transportation.objects.create(name="Car")
 
         # w4,i9,workers comp, and vaccination record
         cls.path_to_test_files = set_up_pdf_files_for_download()

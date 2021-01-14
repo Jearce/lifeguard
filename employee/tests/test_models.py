@@ -10,7 +10,7 @@ class EmployeeTest(TestCase):
     def setUp(self):
         self.position1 = Position.objects.create(title="Lifeguard",minimum_age=15,lifeguard_required=True)
         self.position2 = Position.objects.create(title="Supervisor",minimum_age=18,lifeguard_required=False)
-        self.transportation = Transportation.objects.create(name="Car",description="I will drive by car")
+        self.transportation = Transportation.objects.create(name="Car")
         self.user = User.objects.create_user(
             email="test@example.com",
             password="t3es3t123!",
