@@ -72,17 +72,13 @@ class LifeguardClasses(LoginRequiredMixin,View):
         user = self.request.user
         if user.is_lifeguard:
             lifeguard = user.lifeguard
-
-            if lifeguard.already_certified:
-                needs_to_retake_class = not lifeguard.certificate_expired()
-
-                classes = LifeguardClass.objects.filter(
-                    lifeguard_certified_required=needs_to_retake_class,
-                    is_review=lifeguard.needs_review()
-                )
-
+            if not lifeguard.already_certified or lifeguard.certificate_expired():
+                classes = LifeguardClass.objects.filter(lifeguard_certified_required=False,is_review=False)
             else:
-                classes = LifeguardClass.objects.filter(lifeguard_certified_required=False)
+                classes = LifeguardClass.objects.filter(
+                    lifeguard_certified_required=True,
+                    is_review=lifeguard.needs_review()
+                    )
         else:
             classes = LifeguardClass.objects.all()
 
