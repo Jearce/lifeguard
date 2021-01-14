@@ -113,6 +113,7 @@ class EmployeeEducationTest(CommonSetUp):
 
     def test_view_url_exists_at_desired_location(self):
         response = self.client.get(reverse('employee:education'))
+        print(response.context["form"])
         self.assertEqual(response.status_code,200)
 
     def test_view_uses_correct_template(self):
@@ -140,7 +141,8 @@ class EmployeeEducationTest(CommonSetUp):
 
         EmployeeEducation.objects.create(employee=self.employee,**self.previous_education)
         self.assertEqual(EmployeeEducation.objects.count(),1)
-
+        #update because id is auto incremented from previous db drop in testing with postgres
+        self.new_educations[0].update({"id":EmployeeEducation.objects.all()[0].id})
         management_factory = InlineFormsetManagmentFactory(
             formset=EducationInlineFormset,
             extra=2,
