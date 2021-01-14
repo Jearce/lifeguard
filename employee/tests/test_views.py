@@ -38,13 +38,15 @@ class EmployeeCreateOrUpdateTest(CommonSetUp):
         self.assertRedirects(response,reverse('users:emergency_contact'))
 
     def test_create_employee(self):
-        response =self.client.post(reverse('employee:create'),{**self.employee_data,"applied_positions":(1,2)})
+        positions = Position.objects.all()
+        response =self.client.post(reverse('employee:create'),{**self.employee_data,"applied_positions":(positions[0].id,positions[0].id)})
         self.assertEqual(response.status_code,302)
         self.assertEqual(Employee.objects.count(),1)
 
     def test_update_employee(self):
         employee = self.create_employee()
-        response =self.client.post(reverse('employee:create'),{**self.employee_data,"applied_positions":1})
+        positions = Position.objects.all()
+        response =self.client.post(reverse('employee:create'),{**self.employee_data,"applied_positions":positions[0].id})
         self.assertEqual(response.status_code,302)
         self.assertEqual(Employee.objects.count(),1)
 
