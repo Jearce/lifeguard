@@ -31,7 +31,10 @@ SECRET_KEY = os.getenv('SECRET')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG') == "TRUE"
 
-ALLOWED_HOSTS = ['gca-dev-app.herokuapp.com', 'localhost', 'gca-bucket.s3.amazonaws.com/static/admin/*']
+if DEBUG:
+    ALLOWED_HOSTS = ['*']
+else:
+    ALLOWED_HOSTS = ['gca-dev-app.herokuapp.com', 'gca-bucket.s3.amazonaws.com/static/admin/*']
 
 
 # Application definition
