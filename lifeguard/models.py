@@ -89,6 +89,9 @@ class LifeguardClass(models.Model):
         default=False,
     )
 
+    def get_sessions(self):
+        return self.lifeguardclasssession_set.all().order_by("date")
+
     def __str__(self):
         return self.course
 
