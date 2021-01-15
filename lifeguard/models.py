@@ -71,6 +71,10 @@ class Lifeguard(models.Model):
         super().save(*args,**kwargs)
 
 class LifeguardClass(models.Model):
+
+    class Meta:
+        verbose_name = "Session"
+
     course = models.CharField(max_length=255)
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
@@ -96,6 +100,10 @@ class LifeguardClass(models.Model):
 
 
 class LifeguardClassSession(models.Model):
+
+    class Meta:
+        verbose_name = "Session date"
+
     lifeguard_class = models.ForeignKey(LifeguardClass, on_delete=models.CASCADE)
     date = models.DateField()
     start_time = models.TimeField()
