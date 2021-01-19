@@ -56,5 +56,13 @@ class LifeguardClassSessionAdmin(admin.ModelAdmin):
     list_filter = ('lifeguard_class',)
 
 
+@admin.register(models.Enroll)
+class EnrollAdmin(admin.ModelAdmin):
+    list_display = ('lifeguard','lifeguard_class', 'paid', 'grade')
+    list_filter = ('lifeguard_class', 'paid',)
+
+    search_fields = ('lifeguard__user__first_name','lifeguard__user__last_name')
+
+
+
 admin.site.register(models.LifeguardClass)
-admin.site.register(models.Enroll)
