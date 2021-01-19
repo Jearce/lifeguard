@@ -10,7 +10,7 @@
 
 				<div class="card">
 					<div class="card-body">
-						<h5 class="card-title">Applications</h5>
+						<h5 class="card-title">Forms</h5>
 						<ul class="list-group list-group-flush">
 							<li class="list-group-item">
 								<a href="{% url 'lifeguard:create' %}" id="id_lifeguard_registration">Lifeguard Registration</a>
@@ -48,7 +48,7 @@
 
 				<div class="card">
 					<div class="card-body">
-						<h5 class="card-title text-center">To Do List</h5>
+						<h5 class="card-title text-center">To-Do</h5>
 						<ul class="list-group list-group-flush">
 
 							{% if not user.emergencycontact_set.all.exists %}
@@ -69,7 +69,7 @@
 													Please fill out the lifeguard application.
 												</span>
 											</li>
-											{% endif %}
+										{% endif %}	
 
 									    {% if not employee.employeeeducation_set.all.exists %}
 											<li class="list-group-item">
@@ -79,19 +79,19 @@
 													education form.
 												</span>
 											</li>
-											{% endif %}
+										{% endif %}	
 
-											{% if not employee.jobhistory_set.all.exists %}
+										{% if not employee.jobhistory_set.all.exists %}
 											<li class="list-group-item">
 												<a href="{% url 'employee:job_history' %}">Employement History Form</a>:
 												<span>
 													To complete your employee application please fill out the employement history form.
 												</span>
 											</li>
-											{% endif %}
+										{% endif %}	
 
-											{% if employee.is_hired %}
-											    {% if not user.employee.checklist or not user.employee.checklist.complete %}
+										{% if employee.is_hired %}
+										    {% if not user.employee.checklist or not user.employee.checklist.complete %}
 													<li class="list-group-item">
 														<a href='{% url 'employee:checklist' %}' id="employee_checklist">Employee Checklist</a>:
 														<span>
@@ -99,14 +99,17 @@
 															This will ensure you are paid as soon as your check is ready.
 														</span>
 													</li>
-													{% else %}
+											{% else %}
 													<li class="list-group-item text-center">
 														You have no tasks to do at the moment.
 													</li>
-													{% endif %}
 											{% endif %}
+										{% else %}
+										<li class="list-group-item">
+											You have no tasks to do at the moment.
+										</li>
+										{% endif %}
 									{% endwith %}
-
 							{% else %}
 							<li class="list-group-item">
 								You have no tasks to do at the moment.
