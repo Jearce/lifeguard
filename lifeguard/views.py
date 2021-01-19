@@ -81,8 +81,8 @@ class LifeguardClasses(LoginRequiredMixin,View):
                     )
         else:
             classes = LifeguardClass.objects.all()
-
-        return render(request,'lifeguard/classes.html',context={'classes':classes})
+         
+        return render(request,'lifeguard/classes.html',context={'classes':classes.order_by('start_date')})
 
     def post(self,request,*args,**kwargs):
 
