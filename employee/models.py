@@ -107,7 +107,7 @@ class Checklist(models.Model):
     ACCOUNT_TYPES = [('S',"Savings Account"),("C","Checkings Account")]
 
     employee = models.OneToOneField(Employee,on_delete=models.CASCADE)
-    photo_id = models.FileField(null=True, blank=True)
+    photo_id = models.FileField("Photo Identification",null=True, blank=True)
     social_security_card = models.FileField(null=True, blank=True)
     social_security_number = models.CharField(null=True, blank=True, max_length=10)
     birth_certificate = models.FileField(blank=True,null=True)
@@ -119,7 +119,7 @@ class Checklist(models.Model):
     banking_name = models.CharField(null=True,blank=True, max_length=255)
     account_type = models.CharField(choices=ACCOUNT_TYPES,max_length=1,null=True, blank=True, default=None)
     account_number = models.CharField(null=True,blank=True,max_length=255)
-    savings_number = models.CharField(null=True,blank=True,max_length=255)
+    router_number = models.CharField(null=True,blank=True,max_length=255)
     email_address = models.EmailField(null=True,blank=True,max_length=255)
     auth_signature = models.CharField(null=True,blank=True,max_length=255)
     awknowledgement_form_signature = models.CharField(null=True, blank=True,max_length=255)
@@ -131,9 +131,10 @@ class Checklist(models.Model):
 
 class PDFFile(models.Model):
     site = models.OneToOneField(Site,on_delete=models.CASCADE)
-    w4 = models.FileField()
-    i9 = models.FileField()
-    workers_comp = models.FileField()
+    w4 = models.FileField(blank=True, null=True)
+    i9 = models.FileField(blank=True, null=True)
+    workers_comp = models.FileField(blank=True, null=True)
+    employee_handbook = models.FileField(blank=True, null=True)
 
     def __str__(self):
         return f"PDF files for {self.site.name}"
