@@ -76,8 +76,8 @@ class LifeguardClass(models.Model):
         verbose_name = "Session"
 
     course = models.CharField(max_length=255)
-    start_date = models.DateTimeField()
-    end_date = models.DateTimeField()
+    start_date = models.DateField()
+    end_date = models.DateField()
     cost = models.DecimalField(max_digits=6, decimal_places=2)
     employee_cost = models.DecimalField(max_digits=6, decimal_places=2)
     students = models.ManyToManyField(Lifeguard,through="Enroll")
