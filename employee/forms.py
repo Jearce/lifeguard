@@ -169,7 +169,7 @@ class ChecklistForm(ModelForm):
             'banking_name',
             'account_type',
             'account_number',
-            'savings_number',
+            'router_number',
             'email_address',
             'auth_signature',
             'awknowledgement_form_signature',
@@ -177,13 +177,12 @@ class ChecklistForm(ModelForm):
 
         widgets = {
             "need_to_fill_out_wavier":CheckboxInput,
-            'account_type':RadioSelect,
-
         }
 
         labels = {
             "w4":"",
             "i9":"",
+            "router_number":"",
             "workers_comp":"",
             "vaccination_record":"Hepatitis B Vaccine Record",
             'birth_certificate':"Birth certificate - ONLY if you are 15",
@@ -224,6 +223,7 @@ class ChecklistForm(ModelForm):
                     Div('social_security_card',css_class="form-group col"),
                     css_class="form-row"
                 ),
+                HTML("<p><b>Note</b> photo identification can include: drivers license, passport, picture id, or student id.</p>"),
                 css_class = "isolate-form"
             ),
             Div(
@@ -285,7 +285,7 @@ class ChecklistForm(ModelForm):
             'banking_name',
             'account_type',
             'account_number',
-            'savings_number',
+            Div(HTML("Routing number (<a href='https://www.magnifymoney.com/blog/banking/routing-number/'>How to find routing number</a>)"),"router_number"),
             'email_address',
             HTML("""
                  <p>Authorization:</p>
