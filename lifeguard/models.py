@@ -22,6 +22,7 @@ class Lifeguard(models.Model):
     last_certified = models.DateField(blank=False,null=True)
     certification = models.FileField(blank=False,null=True)
     online_portion_complete = models.BooleanField(default=False)
+    online_record = models.FileField(blank=True, null=True)
 
     def get_unpaid_lifeguard_classes(self):
         return self.enroll_set.filter(paid=False)
