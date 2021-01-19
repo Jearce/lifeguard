@@ -120,8 +120,18 @@ class CustomUserAdmin(UserAdmin):
     def is_hired_employee(self,obj):
         return obj.employee.is_hired
 
+@admin.register(EmergencyContact)
+class EmergencyContactAdmin(admin.ModelAdmin):
+    list_display = ('user','user_name', 'emergency_contact_name', 'phone', 'relationship')
+    search_fields = ('user__first_name','user__last_name', 'user__email')
+
+    def user_name(self, obj):
+        return obj.user.get_full_name()
+
+    def emergency_contact_name(self, obj):
+        return obj.name
+
 admin.site.register(User, CustomUserAdmin)
-admin.site.register(EmergencyContact)
 admin.site.register(Address)
 
 
