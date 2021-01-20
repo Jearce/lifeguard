@@ -1,10 +1,13 @@
 from django.contrib import admin
 from django import forms
+from django.urls import reverse
+from django.utils.html import format_html
+
+
 from lifeguard import models
 
-from dateutil.relativedelta import relativedelta
 
-# Register your models here.
+from dateutil.relativedelta import relativedelta
 
 
 @admin.register(models.Lifeguard)
@@ -12,7 +15,10 @@ class LifeguardAdmin(admin.ModelAdmin):
     list_display = (
         'user',
         'class_needed',
-        'years_since_last_certified'
+        'already_certified',
+        'date_certificate_expires',
+        'wants_to_work',
+        'employee_application'
     )
 
     def class_needed(self, obj):
@@ -30,9 +36,17 @@ class LifeguardAdmin(admin.ModelAdmin):
             e.user.save()
         return super().delete_queryset(request, queryset)
 
-    def years_since_last_certified(self, obj):
+    def date_cerificate_expires(self, obj):
         if obj.already_certified:
-            return obj.get_experience().years
+            return obj.date_certifcate_expires
+
+    def wants_to_work(self, obj):
+        return "Yes" if obj.wants_to_work_for_company else "No"
+
+    def employee_application(self,obj):
+        if obj.wants_to_work_for_company and obj.user.is_employee:
+            url =  reverse('admin:employee_employee_change',args=(obj.user.employee.pk,))
+            return format_html("<a href='{url}'>application</a>",url=url)
 
 
 class LifeguardClassSessionForm(forms.ModelForm):
@@ -58,8 +72,23 @@ class LifeguardClassSessionAdmin(admin.ModelAdmin):
 
 @admin.register(models.Enroll)
 class EnrollAdmin(admin.ModelAdmin):
-    list_display = ('lifeguard','lifeguard_class', 'paid', 'grade')
-    list_filter = ('lifeguard_class', 'paid',)
+    list_display = (
+        'lifeguard',
+        'lifeguard_class',
+        'paid',
+        'grade',
+        'brick',
+        'tread',
+        'swim_300',
+        )
+
+    list_filter = (
+        'lifeguard_class',
+         'paid',
+         'brick',
+         'tread',
+         'swim_300'
+         )
 
     search_fields = ('lifeguard__user__first_name','lifeguard__user__last_name')
 
