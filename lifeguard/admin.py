@@ -16,7 +16,7 @@ class LifeguardAdmin(admin.ModelAdmin):
         'user',
         'class_needed',
         'already_certified',
-        'date_certificate_expires',
+        'certificate_expires_on',
         'wants_to_work',
         'employee_application'
     )
@@ -36,7 +36,7 @@ class LifeguardAdmin(admin.ModelAdmin):
             e.user.save()
         return super().delete_queryset(request, queryset)
 
-    def date_cerificate_expires(self, obj):
+    def cerificate_expires_on(self, obj):
         if obj.already_certified:
             return obj.date_certifcate_expires
 
