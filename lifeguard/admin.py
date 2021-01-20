@@ -38,7 +38,7 @@ class LifeguardAdmin(admin.ModelAdmin):
 
     def certificate_expires_on(self, obj):
         if obj.already_certified:
-            return obj.date_certifcate_expires
+            return obj.date_certificate_expires
 
     def wants_to_work(self, obj):
         return "Yes" if obj.wants_to_work_for_company else "No"
