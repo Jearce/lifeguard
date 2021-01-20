@@ -169,10 +169,11 @@ class LifeguardAlreadyCertifiedTest(BaseUserSetUp):
             "no_refunds_agreement":True,
             "electronic_signature":"Larry Johnson",
         }
-        def test_view_url_exists_at_desired_location(self):
-            self.create_lifeguard(self.certified_lifeguard)
-            response = self.client.get(reverse('lifeguard:already_certified'))
-            self.assertEqual(response.status_code,200)
+
+    def test_view_url_exists_at_desired_location(self):
+        self.create_lifeguard(self.certified_lifeguard)
+        response = self.client.get(reverse('lifeguard:already_certified'))
+        self.assertEqual(response.status_code,200)
 
     def test_view_uses_correct_template(self):
         self.create_lifeguard(self.certified_lifeguard)
@@ -223,10 +224,20 @@ class LifeguardClassesTest(BaseUserSetUp):
         response = self.client.get(reverse('lifeguard:classes'))
         self.assertTemplateUsed(response,'lifeguard/classes.html')
 
+    def test_shows_only_lifeguard_classes(self):
+        expired_certificate_time = set_up_time(years=2, days=31)
+        lifeguard = LifeguardFactory(user=self.user,last_certified=expired_certificate_time).create()
+        self.assertEqual(Lifeguard.objects.count(),1)
+        self.assertTrue(lifeguard.certificate_expired())
+        response = self.client.get(reverse('lifeguard:classes'))
+        self.assertTrue(all(not(lgclass.is_review and lgclass.lifeguard_certified_required) for lgclass in response.context['classes']))
+
+
     def test_shows_only_review_classes(self):
         needs_review_time = set_up_time(years=2,days=15)
         lifeguard = LifeguardFactory(user=self.user,last_certified=needs_review_time).create()
         self.assertEqual(Lifeguard.objects.count(),1)
+        self.assertFalse(lifeguard.certificate_expired())
 
         response = self.client.get(reverse('lifeguard:classes'))
         self.assertTrue(all(lgclass.is_review for lgclass in response.context['classes']))
@@ -235,6 +246,7 @@ class LifeguardClassesTest(BaseUserSetUp):
         needs_refresher_time = set_up_time(years=1,days=15)
         lifeguard = LifeguardFactory(user=self.user,last_certified=needs_refresher_time).create()
         self.assertEqual(Lifeguard.objects.count(),1)
+        self.assertFalse(lifeguard.certificate_expired())
 
         response = self.client.get(reverse('lifeguard:classes'))
         self.assertTrue(
