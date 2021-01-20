@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from django.db import models
 from django.db.models import Sum
@@ -24,8 +24,20 @@ class Lifeguard(models.Model):
     online_portion_complete = models.BooleanField(default=False)
     online_record = models.FileField(blank=True, null=True)
 
+
+    @property
+    def date_certified(self):
+        return self.get_last_certified()
+
+    @property
+    def date_certificate_expires(self):
+        #expires at 2 years and 30 days -> 760 days
+        return self.get_last_certified() + timedelta(days=760) 
+
+
     def get_unpaid_lifeguard_classes(self):
         return self.enroll_set.filter(paid=False)
+
 
     def get_cost_for_enrolls(self):
         enrolled_class = LifeguardClass.objects.filter(students=self,enroll__paid=False)
@@ -36,26 +48,17 @@ class Lifeguard(models.Model):
 
 
     def certificate_expired(self):
-        experience = self.get_experience()
-        if experience.years > 2:
-            return True
-        elif experience.years == 2:
-            return True if experience.days >= 30 else False
-        else:
-            return False
-
+        return self.date_certificate_expires < datetime.now()
 
 
     def needs_review(self):
         experience = self.get_experience()
         return experience.years == 2 and experience.days < 30
 
+
     def get_experience(self):
         return relativedelta(datetime.now(),self.date_certified)
 
-    @property
-    def date_certified(self):
-        return self.get_last_certified()
 
     def get_last_certified(self):
         if self.last_certified:
@@ -63,13 +66,16 @@ class Lifeguard(models.Model):
         else:
             return datetime.now()
 
-    def __str__(self):
-        return self.user.first_name + " " + self.user.last_name
 
     def save(self,*args,**kwargs):
         self.user.is_lifeguard = True
         self.user.save()
         super().save(*args,**kwargs)
+
+
+    def __str__(self):
+        return self.user.first_name + " " + self.user.last_name
+
 
 class LifeguardClass(models.Model):
 
@@ -120,6 +126,9 @@ class Enroll(models.Model):
     lifeguard_class = models.ForeignKey(LifeguardClass,on_delete=models.CASCADE)
     grade = models.PositiveIntegerField(blank=True,null=True)
     paid = models.BooleanField(default=False)
+    brick = models.BooleanField("Passed brick test",blank=True, null=True)
+    tread = models.BooleanField("Can tread for 2 minutes",blank=True, null=True)
+    swim_300 = models.BooleanField("Can swim 300 meters",blank=True, null=True)
 
     def __str__(self):
         return "Enrollment for {} in {}".format(self.lifeguard.user.first_name,self.lifeguard_class.course)
