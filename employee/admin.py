@@ -42,7 +42,6 @@ class EmployeeAdmin(admin.ModelAdmin):
 
     def formfield_for_manytomany(self,db_field,request,**kwargs):
         if db_field.name == 'applied_positions' and hasattr(request,'employee'):
-            print("yes")
             kwargs["queryset"] = models.Position.objects.filter(employee=request.employee)
         return super().formfield_for_manytomany(db_field,request,**kwargs)
 
