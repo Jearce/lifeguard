@@ -18,6 +18,18 @@
 			{% else %}
 			<h1 class="mt-4 text-center">Available Lifeguarding Classes</h1>
 			{% for class in classes %}
+			  {% if class.is_refresher %}
+			     <div class="w-25 card border-dark mb-3 mt-3 center-form">
+					    <div class="card-header">
+						  <h3>{{ class.course }}</h3>
+						</div>
+						<div class="card-body">
+							<p>Looks like you need a refresher this season.</p>
+							<p>Please go to this <a href='{{ class.refresher_url }}'>link</a> to access the refresher course.</p>
+							<p>Thank you!</p>
+						</div>
+				</div>
+			  {% else %}
 			<div class="w-25 card border-dark mb-3 mt-3 center-form">
 				<div class="card-header">
 					<h3>{{ class.course }}</h3>
@@ -52,6 +64,7 @@
 					</form>
 				</div>
 			</div>
+			  {% endif %}
 			{% endfor %}
 			{% endif %}
 		</div>
