@@ -77,13 +77,13 @@ class CustomUserAdmin(UserAdmin):
     form = CustomUserChangeForm
     model = User
     list_display = (
-        'email',
         'first_name',
         'last_name',
+        'email',
         'age',
         'phone',
         'employee_application',
-        'lifeguard_application',
+        'lifeguard_registration',
     )
 
     list_filter = (
@@ -113,9 +113,9 @@ class CustomUserAdmin(UserAdmin):
         url =  reverse('admin:employee_employee_change',args=(obj.employee.pk,))
         return format_html("<a href='{url}'>application</a>",url=url)
 
-    def lifeguard_application(self,obj):
+    def lifeguard_registration(self,obj):
         url =  reverse('admin:lifeguard_lifeguard_change',args=(obj.lifeguard.pk,))
-        return format_html("<a href='{url}'>application</a>",url=url)
+        return format_html("<a href='{url}'>registration</a>",url=url)
 
     def is_hired_employee(self,obj):
         return obj.employee.is_hired
