@@ -60,6 +60,7 @@ class Employee(models.Model):
     is_hired = models.BooleanField("hire",choices=BOOLEAN_CHOICES,blank=True,null=True)
     application_under_review = models.BooleanField(default=False)
     created_on = models.DateTimeField(auto_now_add=True)
+    completed_orientation = models.BooleanField(choices=BOOLEAN_CHOICES,default=False)
 
     def applied_to_lifeguard_position(self):
         return any(position.lifeguard_required for position in self.applied_positions.all())
