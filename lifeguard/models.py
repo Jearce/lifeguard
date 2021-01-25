@@ -94,10 +94,16 @@ class LifeguardClass(models.Model):
         default=False,
     )
     is_review = models.BooleanField(
-        "Is this class a review for expiring lifeguard certificates?",
+        "Is this class a review?",
         choices=[(True, "Yes"),(False,"No")],
         default=False,
     )
+    is_refresher = models.BooleanField(
+        "Is this class a refresher?",
+        choices=[(True, "Yes"),(False,"No")],
+        default=False,
+    )
+    refresher_url = models.CharField(max_length=255,null=True,blank=True)
 
     def get_sessions(self):
         return self.lifeguardclasssession_set.all().order_by("date")
