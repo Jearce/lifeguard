@@ -3,11 +3,7 @@ from django import forms
 from django.urls import reverse
 from django.utils.html import format_html
 
-
 from lifeguard import models
-
-
-from dateutil.relativedelta import relativedelta
 
 
 @admin.register(models.Lifeguard)
@@ -25,7 +21,7 @@ class LifeguardAdmin(admin.ModelAdmin):
         exper = obj.get_experience().years
         if obj.needs_review():
             return "needs review"
-        elif obj.get_experience().years >= 1 and obj.user.is_employee:
+        elif (obj.get_experience().days > 1 or obj.get_experience.years >= 1) and obj.user.is_employee:
             return "needs refresher"
         elif exper == 0 and not obj.already_certified:
             return "certificate class"
@@ -63,6 +59,26 @@ class LifeguardClassSessionForm(forms.ModelForm):
         return self.cleaned_data
 
 
+class LifeguardClassForm(forms.ModelForm):
+
+    class Meta:
+        fields = '__all__'
+        model = models.LifeguardClass
+
+    def clean(self):
+        is_refresher = self.cleaned_data.get('is_refresher')
+        refresher_url = self.cleaned_data.get('refresher_url')
+        if is_refresher and not refresher_url :
+            raise forms.ValidationError("Refresher class must have a refresher url")
+        return self.cleaned_data
+
+
+@admin.register(models.LifeguardClass)
+class LifeguardClassAdmin(admin.ModelAdmin):
+    form = LifeguardClassForm
+
+
+
 @admin.register(models.LifeguardClassSession)
 class LifeguardClassSessionAdmin(admin.ModelAdmin):
     form = LifeguardClassSessionForm
@@ -91,7 +107,3 @@ class EnrollAdmin(admin.ModelAdmin):
          )
 
     search_fields = ('lifeguard__user__first_name','lifeguard__user__last_name')
-
-
-
-admin.site.register(models.LifeguardClass)
