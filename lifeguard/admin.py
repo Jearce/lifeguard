@@ -29,9 +29,9 @@ class LifeguardClassFilter(admin.SimpleListFilter):
 @admin.register(models.Lifeguard)
 class LifeguardAdmin(admin.ModelAdmin):
     list_display = (
-        'user',
         'first_name',
         'last_name',
+        'user',
         'class_needed',
         'already_certified',
         'certificate_expires_on',
