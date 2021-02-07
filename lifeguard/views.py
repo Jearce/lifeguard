@@ -75,10 +75,10 @@ class LifeguardClasses(LoginRequiredMixin,View):
             if not lifeguard.already_certified or lifeguard.certificate_expired():
                 classes = LifeguardClass.objects.filter(lifeguard_certified_required=False,is_review=False)
             else:
-                classes = LifeguardClass.objects.filter(
-                    lifeguard_certified_required=True,
-                    is_review=lifeguard.needs_review()
-                    )
+                if lifeguard.certificate_expires_during_season():
+                    classes = LifeguardClass.objects.filter(is_review=True)
+                else:
+                    classes = LifeguardClass.objects.filter(lifeguard_certified_required=True,is_review=lifeguard.needs_review())
         else:
             classes = LifeguardClass.objects.all()
          
