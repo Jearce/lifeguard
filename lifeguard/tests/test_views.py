@@ -216,13 +216,16 @@ class LifeguardClassesTest(BaseUserSetUp):
             "electronic_signature":"Larry Johnson",
         }
 
+
     def test_view_url_exists_at_desired_location(self):
         response = self.client.get(reverse('lifeguard:classes'))
         self.assertEqual(response.status_code,200)
 
+
     def test_view_uses_correct_template(self):
         response = self.client.get(reverse('lifeguard:classes'))
         self.assertTemplateUsed(response,'lifeguard/classes.html')
+
 
     def test_shows_only_lifeguard_classes(self):
         expired_certificate_time = set_up_time(years=2, days=31)
@@ -233,6 +236,14 @@ class LifeguardClassesTest(BaseUserSetUp):
         self.assertTrue(all(not(lgclass.is_review and lgclass.lifeguard_certified_required) for lgclass in response.context['classes']))
 
 
+    def test_show_reviews_for_certifcates_that_expire_during_the_season(self):
+        expires_during_season = datetime(datetime.now().year,5,30) - relativedelta(years=2,days=30)
+        lifeguard = LifeguardFactory(user=self.user,last_certified=expires_during_season).create()
+        self.assertEqual(Lifeguard.objects.count(),1)
+        response = self.client.get(reverse('lifeguard:classes'))
+        self.assertTrue(all(lgclass.is_review for lgclass in response.context['classes']))
+
+
     def test_shows_only_review_classes(self):
         needs_review_time = set_up_time(years=2,days=15)
         lifeguard = LifeguardFactory(user=self.user,last_certified=needs_review_time).create()
@@ -241,6 +252,7 @@ class LifeguardClassesTest(BaseUserSetUp):
 
         response = self.client.get(reverse('lifeguard:classes'))
         self.assertTrue(all(lgclass.is_review for lgclass in response.context['classes']))
+
 
     def test_shows_only_certified_and_nonreview_classes(self):
         needs_refresher_time = set_up_time(years=1,days=15)
@@ -256,6 +268,7 @@ class LifeguardClassesTest(BaseUserSetUp):
             )
         )
 
+
     def test_not_lifeguard_and_cant_enroll(self):
         classes = LifeguardClass.objects.all()
         response = self.client.post(reverse('lifeguard:classes',kwargs={'pk':classes[0].id}))
@@ -263,12 +276,14 @@ class LifeguardClassesTest(BaseUserSetUp):
         self.assertEqual(Enroll.objects.all().count(),0)
         #self.assertRedirects(response,reverse('lifeguard:create'))
 
+
     def test_correct_redirect_on_successful_enroll(self):
         lifeguard = LifeguardFactory(user=self.user).create()
         response = self.client.get(reverse('lifeguard:classes'))
         enroll_in_this_class = response.context["classes"][0]
         response = self.client.post(reverse('lifeguard:classes',kwargs={"pk":enroll_in_this_class.pk}))
         self.assertRedirects(response,reverse('payment:enrollment_cart'))
+
 
 class EnrolledClassesTest(BaseUserSetUp):
     fixtures = ['classes.json']
