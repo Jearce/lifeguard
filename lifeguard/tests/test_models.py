@@ -1,3 +1,5 @@
+from datetime import date, datetime, timedelta
+from dateutil.relativedelta import relativedelta
 from django.test import TestCase
 
 from lifeguard.models import Lifeguard,Enroll,LifeguardClass
@@ -37,13 +39,10 @@ class LifeguardTest(TestCase):
 
         self.assertFalse(lifeguard.needs_review())
 
-    def test_certificate_is_expired(self):
-        expired_time = set_up_time(years=2,days=30)
-
-        self.factory.last_certified = expired_time
+    def test_certificate_expired_before_season(self):
+        self.factory.last_certified = datetime(datetime.now().year,2,25) - relativedelta(years=2,days=30)
         lifeguard = self.factory.create()
-
-        self.assertTrue(lifeguard.certificate_expired())
+        self.assertTrue(lifeguard.certificate_expired_before_season())
 
     def test_certificate_is_not_expired(self):
         still_valid_time = set_up_time(years=2,days=15)
@@ -99,3 +98,13 @@ class LifeguardTest(TestCase):
         self.assertEqual(last_class.cost + first_class.cost,lifeguard.get_cost_for_enrolls())
 
 
+    def test_certificate_expires_during_beginning_of_season(self):
+        self.factory.last_certified = datetime(datetime.now().year,5,30) - relativedelta(years=2,days=30)
+        lifeguard = self.factory.create()
+        self.assertTrue(lifeguard.certificate_expires_during_season())
+    
+
+    def test_certificate_expires_during_end_of_season(self):
+        self.factory.last_certified = datetime(datetime.now().year,6,30) - relativedelta(years=2,days=30)
+        lifeguard = self.factory.create()
+        self.assertTrue(lifeguard.certificate_expires_during_season())
