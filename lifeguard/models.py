@@ -47,8 +47,19 @@ class Lifeguard(models.Model):
             return enrolled_class.aggregate(Sum("cost")).get("cost__sum")
 
 
+    def certificate_expired_before_season(self):
+        return self.date_certificate_expires < datetime(datetime.now().year,3,1)
+
     def certificate_expired(self):
         return self.date_certificate_expires < datetime.now()
+
+
+
+    def certificate_expires_during_season(self):
+        now = datetime.now()
+        start_of_march = datetime(now.year,3,1)
+        end_of_july = datetime(now.year,7,30)
+        return (self.date_certificate_expires >= start_of_march) and (self.date_certificate_expires <= end_of_july)
 
 
     def needs_review(self):
