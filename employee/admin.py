@@ -26,10 +26,15 @@ class ChecklistFilter(admin.SimpleListFilter):
 @admin.register(models.Employee)
 class EmployeeAdmin(admin.ModelAdmin):
     list_display = (
+        'first_name',
+        'last_name',
         'user',
         'created_on',
         'check_list'
     )
+
+    search_fields = ('user__email', 'user__phone',
+                     'user__first_name', 'user__last_name')
 
     list_filter = (
         ChecklistFilter,
@@ -55,6 +60,11 @@ class EmployeeAdmin(admin.ModelAdmin):
         url = reverse('admin:employee_checklist_change',args=(obj.checklist.pk,))
         return format_html("<a href='{url}'>checklist</a>",url=url)
 
+    def first_name(self, obj):
+        return obj.user.first_name
+
+    def last_name(self, obj):
+        return obj.user.last_name
 
 
 admin.site.register(models.Transportation)
