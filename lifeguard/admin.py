@@ -5,24 +5,43 @@ from django.utils.html import format_html
 
 from lifeguard import models
 
+
 class LifeguardClassFilter(admin.SimpleListFilter):
     title = ('lifeguard class')
     parameter_name = "class needed"
 
-    def lookups(self,request,model_admin):
+    def lookups(self, request, model_admin):
         return (
-            ('review',"needs review"),
-            ('refresher',"needs refresher"),
-            ('lifeguard',"needs lifeguard class"),
+            ('review', "needs review"),
+            ('refresher', "needs refresher"),
+            ('lifeguard', "needs lifeguard class"),
         )
 
-    def queryset(self,request,queryset):
+    def queryset(self, request, queryset):
         if self.value() == "review":
-            return queryset.filter(id__in=[ obj.id for obj in queryset if obj.needs_review()])
+            return queryset.filter(id__in=[obj.id for obj in queryset if obj.needs_review()])
         if self.value() == "refresher":
             return queryset.filter(id__in=[obj.id for obj in queryset if (obj.get_experience().days > 1 or obj.get_experience().years >= 1) and obj.user.is_employee])
         if self.value() == "lifeguard":
             return queryset.filter(id__in=[obj.id for obj in queryset if obj.certificate_expired() or not obj.already_certified])
+
+
+class LifeguardEnrolledFilter(admin.SimpleListFilter):
+    title = ('session enrollment')
+    parameter_name = "has enrolled"
+
+    def lookups(self, request, model_admin):
+        return (
+            ("y", "yes"),
+            ("n", "no")
+        )
+
+    def queryset(self, request, queryset):
+        lifeguards_enrolled = [enroll.lifeguard.id for enroll in models.Enroll.objects.all()]
+        if self.value() == "y":
+            return queryset.filter(id__in=lifeguards_enrolled)
+        if self.value() == "n":
+            return queryset.exclude(id__in=lifeguards_enrolled)
 
 
 
@@ -39,10 +58,10 @@ class LifeguardAdmin(admin.ModelAdmin):
         'employee_application'
     )
 
-    search_fields = ('user__email','user__phone','user__first_name','user__last_name')
+    search_fields = ('user__email', 'user__phone',
+                     'user__first_name', 'user__last_name')
 
-    list_filter = (LifeguardClassFilter,)
-
+    list_filter = (LifeguardClassFilter,LifeguardEnrolledFilter,)
 
     def class_needed(self, obj):
         if obj.needs_review():
@@ -52,35 +71,30 @@ class LifeguardAdmin(admin.ModelAdmin):
         elif obj.user.is_employee:
             return "needs refresher"
 
-
     def delete_queryset(self, request, queryset):
         for e in queryset:
             e.user.is_lifeguard = False
             e.user.save()
         return super().delete_queryset(request, queryset)
 
-
     def certificate_expires_on(self, obj):
         if obj.already_certified:
             return obj.date_certificate_expires
 
-
-    def first_name(self,obj):
+    def first_name(self, obj):
         return obj.user.first_name
 
-
-    def last_name(self,obj):
+    def last_name(self, obj):
         return obj.user.last_name
-
 
     def wants_to_work(self, obj):
         return "Yes" if obj.wants_to_work_for_company else "No"
 
-
-    def employee_application(self,obj):
+    def employee_application(self, obj):
         if obj.wants_to_work_for_company and obj.user.is_employee:
-            url =  reverse('admin:employee_employee_change',args=(obj.user.employee.pk,))
-            return format_html("<a href='{url}'>application</a>",url=url)
+            url = reverse('admin:employee_employee_change',
+                          args=(obj.user.employee.pk,))
+            return format_html("<a href='{url}'>application</a>", url=url)
 
 
 class LifeguardClassSessionForm(forms.ModelForm):
@@ -106,8 +120,9 @@ class LifeguardClassForm(forms.ModelForm):
     def clean(self):
         is_refresher = self.cleaned_data.get('is_refresher')
         refresher_url = self.cleaned_data.get('refresher_url')
-        if is_refresher and not refresher_url :
-            raise forms.ValidationError("Refresher class must have a refresher url")
+        if is_refresher and not refresher_url:
+            raise forms.ValidationError(
+                "Refresher class must have a refresher url")
         return self.cleaned_data
 
 
@@ -116,11 +131,10 @@ class LifeguardClassAdmin(admin.ModelAdmin):
     form = LifeguardClassForm
 
 
-
 @admin.register(models.LifeguardClassSession)
 class LifeguardClassSessionAdmin(admin.ModelAdmin):
     form = LifeguardClassSessionForm
-    list_display = ('lifeguard_class','date', 'start_time', 'end_time',)
+    list_display = ('lifeguard_class', 'date', 'start_time', 'end_time',)
     list_filter = ('lifeguard_class',)
 
 
@@ -134,14 +148,15 @@ class EnrollAdmin(admin.ModelAdmin):
         'brick',
         'tread',
         'swim_300',
-        )
+    )
 
     list_filter = (
         'lifeguard_class',
-         'paid',
-         'brick',
-         'tread',
-         'swim_300'
-         )
+        'paid',
+        'brick',
+        'tread',
+        'swim_300'
+    )
 
-    search_fields = ('lifeguard__user__first_name','lifeguard__user__last_name')
+    search_fields = ('lifeguard__user__first_name',
+                     'lifeguard__user__last_name')
