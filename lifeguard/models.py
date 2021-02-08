@@ -104,6 +104,10 @@ class LifeguardClass(models.Model):
         choices=[(True, "Yes"),(False,"No")],
         default=False,
     )
+    max_enrollment = models.PositiveIntegerField(default=20)
+    min_enrollment = models.PositiveIntegerField(default=10)
+    is_available = models.BooleanField(default=True)
+
     is_review = models.BooleanField(
         "Is this class a review?",
         choices=[(True, "Yes"),(False,"No")],
@@ -116,8 +120,18 @@ class LifeguardClass(models.Model):
     )
     refresher_url = models.CharField(max_length=255,null=True,blank=True)
 
+
     def get_sessions(self):
         return self.lifeguardclasssession_set.all().order_by("date")
+
+
+    def meets_min_enrollment(self):
+        return self.enroll_set.count() >= self.min_enrollment
+
+
+    def exceeds_max_enrollment(self):
+        return self.enroll_set.count() >= self.max_enrollment
+
 
     def __str__(self):
         return self.course
