@@ -1,4 +1,5 @@
 {% extends 'sidebar.html' %}
+
 {% block pagecontent %}
 
 <div class="container">
@@ -6,6 +7,15 @@
 		<div class="col">
 			<h4 class="text-center mb-3 mt-3">Pay now and secure your spot</h4>
 		</div>
+		<div id="form-container">
+			<div id="sq-card-number"></div>
+			<div class="third" id="sq-expiration-date"></div>
+			<div class="third" id="sq-cvv"></div>
+			<div class="third" id="sq-postal-code"></div>
+			<button id="sq-creditcard" class="button-credit-card" onclick="onGetCardNonce(event)">Pay $1.00</button>
+			Hello
+		  </div>
+
 	</div>
 	<div class="row center-form">
 		<div class="col-md-6">
@@ -18,7 +28,6 @@
 								<div id="bt-dropin"></div>
 							</div>
 						</section>
-
 						{{ form.nonce }}
 						<button class="btn btn-outline-primary btn-block btn-lg" type="submit" id="submit-button"><span>Pay Now</span></button>
 					</form>

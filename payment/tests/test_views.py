@@ -72,5 +72,3 @@ class LifeguardCheckout(TestCase):
     def test_can_pay(self):
         response = self.client.get(reverse('payment:lifeguard_checkout'))
         self.assertEqual(response.status_code,302)
-
-

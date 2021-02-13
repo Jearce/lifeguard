@@ -4,6 +4,102 @@
 
 {% block title %}
 <title>Lifeguard Checkout</title>
+	<style>
+	* {
+		  -webkit-font-smoothing: antialiased;
+		  -moz-osx-font-smoothing: grayscale;
+						
+	}
+
+	body, html {
+		  background-color: #F7F8F9;
+		  color: #373F4A;
+		  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+		  font-weight: normal;
+		  height: 100%;
+												
+	}
+
+	button {
+		  border: 0;
+	    font-weight: 500;
+	}
+
+	fieldset {
+		  margin: 0;
+	    padding: 0;
+	    border: 0;
+	}
+
+	.third {
+		float: left;
+	  width: calc((100% - 32px) / 3);
+	  padding: 0;
+	  margin: 0 16px 16px 0;
+	}
+
+	.third:last-of-type {
+		  margin-right: 0;
+				
+	}
+
+	/* Define how SqPaymentForm iframes should look */
+	.sq-input {
+		  height: 56px;
+		  box-sizing: border-box;
+		  border: 1px solid #E0E2E3;
+		  background-color: white;
+	    border-radius: 6px;
+	    display: inline-block;
+	    -webkit-transition: border-color .2s ease-in-out;
+	    -moz-transition: border-color .2s ease-in-out;
+	    -ms-transition: border-color .2s ease-in-out;
+	    transition: border-color .2s ease-in-out;
+	}
+
+	/* Define how SqPaymentForm iframes should look when they have focus */
+	.sq-input--focus {
+		  border: 1px solid #4A90E2;
+				
+	}
+
+	/* Define how SqPaymentForm iframes should look when they contain invalid values */
+	.sq-input--error {
+		  border: 1px solid #E02F2F;
+				
+	}
+
+	#sq-card-number {
+		  margin-bottom: 16px;
+				
+	}
+
+	/* Customize the "Pay with Credit Card" button */
+	.button-credit-card {
+		  width: 100%;
+		  height: 56px;
+		  margin-top: 10px;
+		  background: #4A90E2;
+		  border-radius: 6px;
+			cursor: pointer;
+		  display: block;
+		  color: #FFFFFF;
+		  font-size: 16px;
+		  line-height: 24px;
+		  font-weight: 700;
+		  letter-spacing: 0;
+		  text-align: center;
+		  -webkit-transition: background .2s ease-in-out;
+		  -moz-transition: background .2s ease-in-out;
+		  -ms-transition: background .2s ease-in-out;
+		  transition: background .2s ease-in-out;
+	}
+
+	.button-credit-card:hover {
+		  background-color: #4281CB;
+				
+	}
+	</style>
 {% endblock title%}
 
 {% block pagecontent %}
@@ -22,27 +118,27 @@
 			<h3 class="mb-3 mt-3">Summary</h3>
 			<ul class="list-group mb-3 mt-3">
 				{% with lifeguard=user.lifeguard %}
-				  {% for enrollment in lifeguard.get_unpaid_lifeguard_classes %}
-					  {% with class=enrollment.lifeguard_class %}
-							<li class="list-group-item d-flex justify-content-between lh-condensed">
-								<div>
-									<h5 class="my-0 mb-3">{{ class.course }}</h5>
-								</div>
-								  {% if lifeguard.user.is_employee %}
-									<span class="text-muted" style="text-decoration: line-through;">
-										${{ class.cost }}
-									</span>
-									<span class="text-muted">
-										${{ class.employee_cost }}
-									</span>
-									{% else %}
-									<span class="text-muted">
-										${{ class.cost }}
-									</span>
-									{% endif %}
-							</li>
-						{% endwith %}
-					{% endfor %}
+				{% for enrollment in lifeguard.get_unpaid_lifeguard_classes %}
+				{% with class=enrollment.lifeguard_class %}
+				<li class="list-group-item d-flex justify-content-between lh-condensed">
+					<div>
+						<h5 class="my-0 mb-3">{{ class.course }}</h5>
+					</div>
+					{% if lifeguard.user.is_employee %}
+					<span class="text-muted" style="text-decoration: line-through;">
+						${{ class.cost }}
+					</span>
+					<span class="text-muted">
+						${{ class.employee_cost }}
+					</span>
+					{% else %}
+					<span class="text-muted">
+						${{ class.cost }}
+					</span>
+					{% endif %}
+				</li>
+				{% endwith %}
+				{% endfor %}
 				{% endwith %}
 
 				{% if request.user.is_employee %}
@@ -64,34 +160,126 @@
 	</div>
 </div>
 
-<script src="https://js.braintreegateway.com/web/dropin/1.24.0/js/dropin.min.js"></script>
 <script>
-	var form = document.querySelector('#lifeguard_payment_form');
-	var client_token = '{{ client_token }}';
+	const idempotency_key = uuidv4();
+	const getAddressElements = (fromId) => {
+		return Array.from(document.getElementById("lifeguard_payment_form").elements)
+			.filter((e) => e.id.startsWith("id_"));
+	}
 
-	braintree.dropin.create({
-		authorization: client_token,
-		container: '#bt-dropin',
-		paypal: {
-			flow: 'vault'
-		}
-	}, function (createErr, instance) {
-		form.addEventListener('submit', function (event) {
-			event.preventDefault();
+	// Create and initialize a payment form object
+	const paymentForm = new SqPaymentForm({
+		// Initialize the payment form elements
 
-			instance.requestPaymentMethod(function (err, payload) {
-				if (err) {
-					console.log('Error', err);
+		//TODO: Replace with your sandbox application ID
+		applicationId: "sandbox-sq0idb-fRnSpB4HYaAGfC3ZnFdirQ",
+		inputClass: 'sq-input',
+		autoBuild: false,
+		// Customize the CSS for SqPaymentForm iframe elements
+		inputStyles: [{
+			fontSize: '16px',
+			lineHeight: '24px',
+			padding: '16px',
+			placeholderColor: '#a0a0a0',
+			backgroundColor: 'transparent',
+		}],
+		// Initialize the credit card placeholders
+		cardNumber: {
+			elementId: 'sq-card-number',
+			placeholder: 'Card Number'
+		},
+		cvv: {
+			elementId: 'sq-cvv',
+			placeholder: 'CVV'
+		},
+		expirationDate: {
+			elementId: 'sq-expiration-date',
+			placeholder: 'MM/YY'
+		},
+		postalCode: {
+			elementId: 'sq-postal-code',
+			placeholder: 'Postal'
+		},
+		// SqPaymentForm callback functions
+		callbacks: {
+			/*
+			* callback function: cardNonceResponseReceived
+			* Triggered when: SqPaymentForm completes a card nonce request
+			*/
+			cardNonceResponseReceived: function (errors, nonce, cardData) {
+				if (errors) {
+					// Log errors from nonce generation to the browser developer console.
+						console.error('Encountered errors:');
+					errors.forEach(function (error) {
+						console.error('  ' + error.message);
+					});
+					alert('Encountered errors, check browser developer console for more details');
 					return;
 				}
 
-				// Add the nonce to the form and submit
-				document.querySelector('#id_nonce').value = payload.nonce;
-				form.submit();
-			});
-		});
+				let inputs = getAddressElements("lifeguard_payment_form"); 
+				let address = {};
+				for(const ipt of inputs) {
+					address[ipt.name] = ipt.name === "set_as_default" ? ipt.checked : ipt.value;
+				}
+
+				fetch('process-payment', {
+					method: 'POST',
+					headers: {
+						'Accept': 'application/json',
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify({
+						nonce: nonce,
+						idempotency_key: idempotency_key,
+						location_id: "LVPZ5PW7SQ5B6",
+						customer_address: address
+					})
+				})
+					.catch(err => {
+						alert('Network error: ' + err);
+					})
+					.then(response => {
+						if (!response.ok) {
+							return response.json().then(
+								errorInfo => Promise.reject(errorInfo));
+						}
+						return response.json();
+					})
+					.then(data => {
+						console.log(data);
+						if(data.success) {
+							window.location = "/users/dashboard/";
+						}
+					})
+					.catch(err => {
+						console.error(err);
+						alert('Payment failed to complete!\nCheck browser developer console for more details');
+					});
+			}
+		}
 	});
+
+	paymentForm.build();
+	function uuidv4() {
+		return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+		var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+		return v.toString(16);
+	});
+}
+
+	function onGetCardNonce(event) {
+		// Don't submit the form until SqPaymentForm returns with a nonce
+		event.preventDefault();
+		let inputs = getAddressElements("lifeguard_payment_form"); 
+		inputs.forEach((e) => {
+			if(e.id.includes("set_as_default")) return;
+			else if(!e.value) e.style.setProperty("border-color","red");
+			else e.style.removeProperty("border-color");
+		})
+
+		// Request a nonce from the SqPaymentForm object
+		paymentForm.requestCardNonce();
+	}
 </script>
-
 {% endblock pagecontent %}
-
