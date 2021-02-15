@@ -27,14 +27,14 @@
 						<h5 class="card-title">My Classes</h5>
 						<ul class="list-group list-group-flush">
 							{% if user.is_lifeguard and user.lifeguard.enroll_set.count > 0 %}
-							  <li class="list-group-item">
-								 <a href="{% url 'lifeguard:enrolled_classes' %}">Enrolled Classes</a>
-								</li>
-								{% else %}
-							  <li class="list-group-item">
-									<p>You haven't enrolled in any classes.</p>
-								</li>
-								{% endif %}
+							<li class="list-group-item">
+								<a href="{% url 'lifeguard:enrolled_classes' %}">Enrolled Classes</a>
+							</li>
+							{% else %}
+							<li class="list-group-item">
+								<p>You haven't enrolled in any classes.</p>
+							</li>
+							{% endif %}
 						</ul>
 					</div>
 				</div>
@@ -59,57 +59,57 @@
 
 							{% if user.is_employee %}
 
-							    {% with employee=user.employee %}
+							{% with employee=user.employee %}
 
-									   {% if employee.applied_to_lifeguard_position and not employee.user.is_lifeguard %}
-											<li class="list-group-item">
-												<a href="{% url 'lifeguard:create' %}">Lifeguard Application</a>:
-												<span>
-													You have applied to a position that requires a lifeguard certificate.
-													Please fill out the lifeguard application.
-												</span>
-											</li>
-										{% endif %}	
+							{% if employee.applied_to_lifeguard_position and not employee.user.is_lifeguard %}
+							<li class="list-group-item">
+								<a href="{% url 'lifeguard:create' %}">Lifeguard Application</a>:
+								<span>
+									You have applied to a position that requires a lifeguard certificate.
+									Please fill out the lifeguard application.
+								</span>
+							</li>
+							{% endif %}
 
-									    {% if not employee.employeeeducation_set.all.exists %}
-											<li class="list-group-item">
-												<a href="{% url 'employee:education' %}">Eduation Form</a>:
-												<span>
-													To complete your employee application please fill out the employee
-													education form.
-												</span>
-											</li>
-										{% endif %}	
+							{% if not employee.employeeeducation_set.all.exists %}
+							<li class="list-group-item">
+								<a href="{% url 'employee:education' %}">Eduation Form</a>:
+								<span>
+									To complete your employee application please fill out the employee
+									education form.
+								</span>
+							</li>
+							{% endif %}
 
-										{% if not employee.jobhistory_set.all.exists %}
-											<li class="list-group-item">
-												<a href="{% url 'employee:job_history' %}">Employement History Form</a>:
-												<span>
-													To complete your employee application please fill out the employement history form.
-												</span>
-											</li>
-										{% endif %}	
+							{% if not employee.jobhistory_set.all.exists %}
+							<li class="list-group-item">
+								<a href="{% url 'employee:job_history' %}">Employement History Form</a>:
+								<span>
+									To complete your employee application please fill out the employement history form.
+								</span>
+							</li>
+							{% endif %}
 
-										{% if employee.is_hired %}
-										    {% if not user.employee.checklist or not user.employee.checklist.complete %}
-													<li class="list-group-item">
-														<a href='{% url 'employee:checklist' %}' id="employee_checklist">Employee Checklist</a>:
-														<span>
-															Please fill out the employee checklist as soon as possible.
-															This will ensure you are paid as soon as your check is ready.
-														</span>
-													</li>
-											{% else %}
-													<li class="list-group-item text-center">
-														You have no tasks to do at the moment.
-													</li>
-											{% endif %}
-										{% else %}
-										<li class="list-group-item">
-											You have no tasks to do at the moment.
-										</li>
-										{% endif %}
-									{% endwith %}
+							{% if employee.is_hired %}
+							{% if not user.employee.checklist or not user.employee.checklist.complete %}
+							<li class="list-group-item">
+								<a href='{% url 'employee:checklist' %}' id="employee_checklist">Employee Checklist</a>:
+								<span>
+									Please fill out the employee checklist as soon as possible.
+									This will ensure you are paid as soon as your check is ready.
+								</span>
+							</li>
+							{% else %}
+							<li class="list-group-item text-center">
+								You have no tasks to do at the moment.
+							</li>
+							{% endif %}
+							{% else %}
+							<li class="list-group-item">
+								You have no tasks to do at the moment.
+							</li>
+							{% endif %}
+							{% endwith %}
 							{% else %}
 							<li class="list-group-item">
 								You have no tasks to do at the moment.
@@ -138,6 +138,40 @@
 			</div>
 		</div>
 	</div>
+
+	<!-- Modal -->
+	<div class="modal fade" id="successPaymentModal" tabindex="-1" role="dialog" aria-labelledby="paymentModalTitle" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="paymentModalTitle">Your payment was successfully processed!</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body" id="modalBody">
+
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
 <!-- /#page-content-wrapper -->
 {% endblock pagecontent %}
+
+{% block js %}
+<script>
+	if(window.localStorage.paymentResults){
+		let paymentResults = JSON.parse(window.localStorage.paymentResults);
+		$('#successPaymentModal').modal("toggle");
+		console.log(paymentResults);
+		window.localStorage.paymentResults = '';
+		document.getElementById("modalBody").innerHTML = `Thank you for your purchase. You can see your recipt <a href=${paymentResults.receipt_url}>here</a>.`
+
+
+	}
+</script>
+{% endblock js %}
