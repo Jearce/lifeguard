@@ -244,7 +244,7 @@
 					})
 					.then(data => {
 						if(data.success) {
-							window.localStorage.setItem("paymentResults",JSON.stringify(data));
+							window.localStorage.setItem("paymentResults",JSON.stringify(data.result.payment));
 							window.location = "/users/dashboard/";
 						} else {
 							throw new Error(data);
