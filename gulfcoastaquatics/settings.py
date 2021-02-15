@@ -32,9 +32,9 @@ SECRET_KEY = os.getenv('SECRET')
 DEBUG = os.getenv('DEBUG') == "TRUE"
 
 if DEBUG:
-    ALLOWED_HOSTS = ['*']
+    ALLOWED_HOSTS = ['*','gca-bucket-prod.s3.amazonaws.com']
 else:
-    ALLOWED_HOSTS = ['gca-dev-app.herokuapp.com', 'gca-bucket.s3.amazonaws.com/static/admin/*']
+    ALLOWED_HOSTS = ['gca-dev-app.herokuapp.com', 'gca-bucket-prod.s3.amazonaws.com/static/*']
 
 
 # Application definition
@@ -165,6 +165,9 @@ if USE_S3:
     PUBLIC_MEDIA_LOCATION = 'media'
     MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{PUBLIC_MEDIA_LOCATION}/'
     DEFAULT_FILE_STORAGE = 'storage_backends.PublicMediaStorage'
+    # s3 private media settings
+    PRIVATE_MEDIA_LOCATION = 'private'
+    PRIVATE_FILE_STORAGE = 'storage_backends.PrivateMediaStorage'
 else:
     STATIC_URL = '/static/'
     STATIC_ROOT = os.path.join(BASE_DIR, 'static')
