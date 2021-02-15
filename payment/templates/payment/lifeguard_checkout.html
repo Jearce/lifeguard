@@ -244,8 +244,8 @@
 					})
 					.then(data => {
 						if(data.success) {
-							window.location = "/users/dashboard/";
 							window.localStorage.setItem("paymentResults",JSON.stringify(data));
+							window.location = "/users/dashboard/";
 						} else {
 							throw new Error(data);
 						}
