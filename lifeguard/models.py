@@ -4,6 +4,8 @@ from django.db import models
 from django.db.models import Sum
 from users.models import User
 
+from storage_backends import PublicMediaStorage, PrivateMediaStorage
+
 from dateutil.relativedelta import relativedelta
 
 # Create your models here.
@@ -20,7 +22,7 @@ class Lifeguard(models.Model):
     no_refunds_agreement = models.BooleanField()
     electronic_signature = models.CharField("Electronic signature",max_length=255)
     last_certified = models.DateField(blank=False,null=True)
-    certification = models.FileField(blank=False,null=True)
+    certification = models.FileField(storage=PrivateMediaStorage(),blank=False,null=True)
     online_portion_complete = models.BooleanField(default=False)
     online_record = models.FileField(blank=True, null=True)
 
