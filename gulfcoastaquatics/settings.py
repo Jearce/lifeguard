@@ -151,6 +151,8 @@ SITE_ID = 1
 USE_S3 = os.getenv('USE_S3') == 'TRUE'
 if USE_S3:
     # aws settings
+    #AWS_S3_SIGNATURE_VERSION="s3v4"
+    #AWS_S3_REGION_NAME = 'us-east-2'
     AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
     AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
     AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
@@ -168,6 +170,8 @@ if USE_S3:
     # s3 private media settings
     PRIVATE_MEDIA_LOCATION = 'private'
     PRIVATE_FILE_STORAGE = 'storage_backends.PrivateMediaStorage'
+    AWS_S3_REGION_NAME = 'us-east-2' #change to your region
+    AWS_S3_SIGNATURE_VERSION = 's3v4'
 else:
     STATIC_URL = '/static/'
     STATIC_ROOT = os.path.join(BASE_DIR, 'static')
