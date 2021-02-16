@@ -4,7 +4,9 @@ from django.contrib.sites.models import Site
 
 from users.models import User
 
-# Create your models here.
+from storage_backends import PublicMediaStorage, PrivateMediaStorage
+
+
 
 BOOLEAN_CHOICES = [(True,"Yes"),(False,"No")]
 
@@ -73,6 +75,7 @@ class Employee(models.Model):
     def __str__(self):
         return self.user.email
 
+
 class EmployeeEducation(models.Model):
     employee = models.ForeignKey(Employee,on_delete=models.CASCADE)
     school_name = models.CharField(
@@ -95,6 +98,7 @@ class EmployeeEducation(models.Model):
         null=True,
     )
 
+
 class JobHistory(models.Model):
     employee = models.ForeignKey(Employee,on_delete=models.CASCADE)
     previous_employer = models.CharField(max_length=255)
@@ -104,18 +108,19 @@ class JobHistory(models.Model):
     end_date = models.DateField("Ending date of employement?")
     reason_for_leaving = models.TextField()
 
+
 class Checklist(models.Model):
     ACCOUNT_TYPES = [('S',"Savings Account"),("C","Checkings Account")]
 
     employee = models.OneToOneField(Employee,on_delete=models.CASCADE)
     photo_id = models.FileField("Photo Identification",null=True, blank=True)
-    social_security_card = models.FileField(null=True, blank=True)
+    social_security_card = models.FileField(storage=PrivateMediaStorage(),null=True, blank=True)
     social_security_number = models.CharField(null=True, blank=True, max_length=10)
-    birth_certificate = models.FileField(blank=True,null=True)
-    w4 = models.FileField(null=True, blank=True)
-    i9 = models.FileField(null=True, blank=True)
-    workers_comp = models.FileField(null=True, blank=True)
-    vaccination_record = models.FileField(blank=True,null=True)
+    birth_certificate = models.FileField(storage=PrivateMediaStorage(),blank=True,null=True)
+    w4 = models.FileField(storage=PrivateMediaStorage(),null=True, blank=True)
+    i9 = models.FileField(storage=PrivateMediaStorage(),null=True, blank=True)
+    workers_comp = models.FileField(storage=PrivateMediaStorage(),null=True, blank=True)
+    vaccination_record = models.FileField(storage=PrivateMediaStorage(),blank=True,null=True)
     hepB_waiver_signature = models.CharField(blank=True,null=True,max_length=255)
     banking_name = models.CharField(null=True,blank=True, max_length=255)
     account_type = models.CharField(choices=ACCOUNT_TYPES,max_length=1,null=True, blank=True, default=None)
@@ -139,5 +144,3 @@ class PDFFile(models.Model):
 
     def __str__(self):
         return f"PDF files for {self.site.name}"
-
-
