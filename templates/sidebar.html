@@ -79,7 +79,7 @@
 			{% endif %}
 
 			{% if  user.is_superuser %}
-			<a href="" id="id_admin_panel" class="list-group-item list-group-item-action bg-light">
+			<a href="{% url "users:admin_panel" %}" id="id_admin_panel" class="list-group-item list-group-item-action bg-light">
 				Admin panel (in beta)
 			</a>
 			{% endif %}
