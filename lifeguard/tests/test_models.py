@@ -108,3 +108,14 @@ class LifeguardTest(TestCase):
         self.factory.last_certified = datetime(datetime.now().year,6,30) - relativedelta(years=2,days=30)
         lifeguard = self.factory.create()
         self.assertTrue(lifeguard.certificate_expires_during_season())
+
+    def test_get_unpaid_classes(self):
+        lifeguard = self.factory.create()
+
+        #enroll in some classes
+        first_class = LifeguardClass.objects.first()
+        last_class = LifeguardClass.objects.last()
+        Enroll.objects.create(lifeguard=lifeguard,lifeguard_class=first_class, paid=True)
+        Enroll.objects.create(lifeguard=lifeguard,lifeguard_class=last_class)
+        self.assertTrue(lifeguard.get_unpaid_lifeguard_classes().count() == 1)
+        self.assertFalse(lifeguard.get_unpaid_lifeguard_classes().first().paid)
