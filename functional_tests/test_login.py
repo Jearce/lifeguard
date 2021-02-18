@@ -3,7 +3,7 @@ import time
 
 from django.conf import settings
 
-from employee.models import Employee,Transportation,Position
+from employee.models import Employee, Transportation, Position
 
 from functional_tests.helpers import BaseTestLoginFixture
 from functional_tests import helpers
@@ -16,24 +16,26 @@ from selenium.webdriver.support import expected_conditions as EC
 
 BASE_DIR = settings.BASE_DIR
 
+
 class LoginTest(BaseTestLoginFixture):
     def test_at_login_page(self):
-        self.browser.get('%s%s' % (self.live_server_url,'/users/login'))
-        self.assertIn('Login',self.browser.title)
+        self.browser.get('%s%s' % (self.live_server_url, '/users/login'))
+        self.assertIn('Login', self.browser.title)
 
     def test_login(self):
         self.login()
+
 
 class RegisterEmployeeTest(BaseTestLoginFixture):
     def test_register_as_employee_and_apply_as_nonlifeguard(self):
         self.login()
 
-        #clicks on employee registration link
+        # clicks on employee registration link
         self.browser.find_element_by_id('id_employee_registration').click()
 
-        #now fills out employee,education, and job history forms
-        #only applies to a non lifeguard position
-        self.fill_employee_form({**self.employee_data,**self.only_supervisor})
+        # now fills out employee,education, and job history forms
+        # only applies to a non lifeguard position
+        self.fill_employee_form({**self.employee_data, **self.only_supervisor})
         self.fill_employee_education_form()
         self.fill_employee_job_history(redirect_url="/users/dashboard/")
 
@@ -43,36 +45,37 @@ class RegisterEmployeeTest(BaseTestLoginFixture):
         employee = self.create_employee()
         self.login()
         self.browser.find_element_by_id('application_status').click()
-        self.assertIn('/application-status/',self.browser.current_url)
+        self.assertIn('/application-status/', self.browser.current_url)
 
     def test_complete_employee_checklist(self):
         employee = self.create_employee(hired=True)
         self.login()
         self.browser.find_element_by_id('employee_checklist').click()
-        self.assertIn('/employee-checklist/',self.browser.current_url)
+        self.assertIn('/employee-checklist/', self.browser.current_url)
         self.fill_employee_checklist(redirect_url="/users/dashboard/")
 
-    def fill_employee_checklist(self,redirect_url):
+    def fill_employee_checklist(self, redirect_url):
         employee_checklist = {
-            "photo_id":f"{self.path_to_files}/photoid.pdf",
-            "social_security_card":f"{self.path_to_files}/social.pdf",
-            "social_security_number":"444-44-444",
-            "birth_certificate":f"{self.path_to_files}/birthcertificate.pdf",
-            "w4":f"{self.path_to_files}/w4.pdf",
-            "i9":f"{self.path_to_files}/i9.pdf",
-            "workers_comp":f"{self.path_to_files}/workers_comp.pdf",
-            "vaccination_record":f"{self.path_to_files}/vaccination.pdf",
-            "banking_name":"Banking 123",
-            "account_type_1":"click",#choose savings
-            "account_number":"19282739",
-            "savings_number":"1728327",
-            "auth_signature":"Larry Johnson",
-            "awknowledgement_form_signature":"Larry Johnson",
+            "photo_id": f"{self.path_to_files}/photoid.pdf",
+            "social_security_card": f"{self.path_to_files}/social.pdf",
+            "social_security_number": "444-44-444",
+            "birth_certificate": f"{self.path_to_files}/birthcertificate.pdf",
+            "w4": f"{self.path_to_files}/w4.pdf",
+            "i9": f"{self.path_to_files}/i9.pdf",
+            "workers_comp": f"{self.path_to_files}/workers_comp.pdf",
+            "vaccination_record": f"{self.path_to_files}/vaccination.pdf",
+            "banking_name": "Banking 123",
+            "account_type_1": "click",  # choose savings
+            "account_number": "19282739",
+            "savings_number": "1728327",
+            "auth_signature": "Larry Johnson",
+            "awknowledgement_form_signature": "Larry Johnson",
         }
-        self.general_form_input(data=employee_checklist,form_id="employee_checklist_form")
-        self.assertIn(redirect_url,self.browser.current_url)
+        self.general_form_input(data=employee_checklist,
+                                form_id="employee_checklist_form")
+        self.assertIn(redirect_url, self.browser.current_url)
 
-    def create_employee(self,hired=None):
+    def create_employee(self, hired=None):
         employee = Employee.objects.create(
             user=self.user,
             home_phone="712 634 3328",
@@ -95,162 +98,179 @@ class RegisterEmployeeTest(BaseTestLoginFixture):
         employee.save()
         return employee
 
+
 class RegisterLifeguardAndEmployeeTest(BaseTestLoginFixture):
     def test_register_new_lifeguard_and_employee(self):
 
         self.login()
 
-        #clicks on lifeguard registration link
+        # clicks on lifeguard registration link
         self.browser.find_element_by_id('id_lifeguard_registration').click()
 
-        #fills out lifeguard form and selects they want to work for company
-        self.register_new_lifeguard_who_wants_to_work(redirect_url="/employee/create/")
+        # fills out lifeguard form and selects they want to work for company
+        self.register_new_lifeguard_who_wants_to_work(
+            redirect_url="/employee/create/")
 
-        #now fills out employee,education, and job history forms
-        self.fill_employee_form({**self.employee_data,**self.lifeguard_and_supervisor})
+        # now fills out employee,education, and job history forms
+        self.fill_employee_form(
+            {**self.employee_data, **self.lifeguard_and_supervisor})
         self.fill_employee_education_form()
         self.fill_employee_job_history(redirect_url="lifeguard/classes/")
 
-        #picks a class to attend
+        # picks a class to attend
         self.enroll_in_class()
 
-        #makes payment
+        # continue to payment
+        self.continue_to_checkout()
+
+        # makes payment
         self.pay_for_lifeguard_class()
         self.fail("Finish Payment Test")
 
     def test_register_as_certified_lifeguard_and_employee(self):
         self.login()
 
-        #clicks on lifeguard registration link
+        # clicks on lifeguard registration link
         self.browser.find_element_by_id('id_lifeguard_registration').click()
 
-        #register lifeguard who is already filled out the employee application
-        self.register_returning_lifeguard_who_applied_as_employee(redirect_url="/lifeguard/already-certified/")
+        # register lifeguard who is already filled out the employee application
+        self.register_returning_lifeguard_who_applied_as_employee(
+            redirect_url="/lifeguard/already-certified/")
         self.fill_already_lifeguard_form(redirect_url="/employee/create/")
 
-        #now fills out employee,education, and job history forms
-        self.fill_employee_form({**self.employee_data,**self.lifeguard_and_supervisor})
+        # now fills out employee,education, and job history forms
+        self.fill_employee_form(
+            {**self.employee_data, **self.lifeguard_and_supervisor})
         self.fill_employee_education_form()
         self.fill_employee_job_history(redirect_url="/lifeguard/classes/")
 
-        #picks a class to attend
+        # picks a class to attend
         self.enroll_in_class()
 
-        #makes payment
+        # makes payment
         self.fail("Finish Payment Test")
 
     def test_register_as_employee_and_apply_as_lifeguard(self):
-        #creates account and is taken to the dashboard
+        # creates account and is taken to the dashboard
         self.login()
 
-        #clicks on employee registration link
+        # clicks on employee registration link
         self.browser.find_element_by_id('id_employee_registration').click()
 
-        #now fills out employee,education, and job history forms
-        self.fill_employee_form({**self.employee_data,**self.lifeguard_and_supervisor})
+        # now fills out employee,education, and job history forms
+        self.fill_employee_form(
+            {**self.employee_data, **self.lifeguard_and_supervisor})
         self.fill_employee_education_form()
         self.fill_employee_job_history(redirect_url="/lifeguard/create/")
 
-        #register lifeguard who is already filled out the employee application
-        self.register_new_lifeguard_who_applied_as_employee(redirect_url="/lifeguard/classes/")
+        # register lifeguard who is already filled out the employee application
+        self.register_new_lifeguard_who_applied_as_employee(
+            redirect_url="/lifeguard/classes/")
 
-        #picks a class to attend
+        # picks a class to attend
         self.enroll_in_class()
 
-        #continue to payment
+        # continue to payment
         self.continue_to_checkout()
 
-        #pay for class
+        # pay for class
         self.pay_for_lifeguard_class()
 
-        #makes payment
+        # makes payment
         self.fail("Finish Payment Test")
 
-    def fill_returning_lifeguard_form(self,redirect_url):
+    def fill_returning_lifeguard_form(self, redirect_url):
         register_data = {
-            "already_certified" : "Y",
-            "payment_agreement":"click",
-            "payment_agreement_signature":"Larry Jones",
-            "no_refunds_agreement" : "click",
-            "electronic_signature" : "Larry Jones"
+            "already_certified": "Y",
+            "payment_agreement": "click",
+            "payment_agreement_signature": "Larry Jones",
+            "no_refunds_agreement": "click",
+            "electronic_signature": "Larry Jones"
         }
-        self.general_form_input(register_data,form_id="lifeguard_form")
-        self.assertIn(redirect_url,self.browser.current_url)
+        self.general_form_input(register_data, form_id="lifeguard_form")
+        self.assertIn(redirect_url, self.browser.current_url)
 
-    def fill_already_lifeguard_form(self,redirect_url):
+    def fill_already_lifeguard_form(self, redirect_url):
         data = {
-            "last_certified":'05/11/2020',
-            "certification":os.path.join(BASE_DIR,'lifeguard/tests/certificate.pdf'),
+            "last_certified": '05/11/2020',
+            "certification": os.path.join(BASE_DIR, 'lifeguard/tests/certificate.pdf'),
         }
-        self.general_form_input(data,form_id="already_certified_form")
-        self.assertIn(redirect_url,self.browser.current_url)
+        self.general_form_input(data, form_id="already_certified_form")
+        self.assertIn(redirect_url, self.browser.current_url)
 
-    def register_new_lifeguard_who_wants_to_work(self,redirect_url):
-        #user is a new lifeguard
+    def register_new_lifeguard_who_wants_to_work(self, redirect_url):
+        # user is a new lifeguard
         register_data = {
-            "already_certified_2" : "click", #user is a new lifeguard
-            "wants_to_work_for_company_1":"click", #and wants to work as a lifeguard
-            "payment_agreement":"click",
-            "payment_agreement_signature":"Larry Jones",
-            "no_refunds_agreement" : "click",
-            "electronic_signature" : "Larry Jones"
+            "already_certified_2": "click",  # user is a new lifeguard
+            "wants_to_work_for_company_1": "click",  # and wants to work as a lifeguard
+            "payment_agreement": "click",
+            "payment_agreement_signature": "Larry Jones",
+            "no_refunds_agreement": "click",
+            "electronic_signature": "Larry Jones"
         }
-        self.general_form_input(register_data,form_id="lifeguard_form")
-        self.assertIn(redirect_url,self.browser.current_url)
+        self.general_form_input(register_data, form_id="lifeguard_form")
+        self.assertIn(redirect_url, self.browser.current_url)
 
-    def register_new_lifeguard_who_applied_as_employee(self,redirect_url):
+    def register_new_lifeguard_who_applied_as_employee(self, redirect_url):
         register_data = {
-            "already_certified_2" : "click",
-            "payment_agreement":"click",
-            "payment_agreement_signature":"Larry Jones",
-            "no_refunds_agreement" : "click",
-            "electronic_signature" : "Larry Jones"
+            "already_certified_2": "click",
+            "payment_agreement": "click",
+            "payment_agreement_signature": "Larry Jones",
+            "no_refunds_agreement": "click",
+            "electronic_signature": "Larry Jones"
         }
-        self.general_form_input(register_data,form_id="lifeguard_form")
-        self.assertIn(redirect_url,self.browser.current_url)
+        self.general_form_input(register_data, form_id="lifeguard_form")
+        self.assertIn(redirect_url, self.browser.current_url)
 
-    def register_returning_lifeguard_who_applied_as_employee(self,redirect_url):
+    def register_returning_lifeguard_who_applied_as_employee(self, redirect_url):
         register_data = {
-            "already_certified_1" : "click",
-            "wants_to_work_for_company_1":"click", #and wants to work as a lifeguard
-            "payment_agreement":"click",
-            "payment_agreement_signature":"Larry Jones",
-            "no_refunds_agreement" : "click",
-            "electronic_signature" : "Larry Jones"
+            "already_certified_1": "click",
+            "wants_to_work_for_company_1": "click",  # and wants to work as a lifeguard
+            "payment_agreement": "click",
+            "payment_agreement_signature": "Larry Jones",
+            "no_refunds_agreement": "click",
+            "electronic_signature": "Larry Jones"
         }
-        self.general_form_input(register_data,form_id="lifeguard_form")
-        self.assertIn(redirect_url,self.browser.current_url)
+        self.general_form_input(register_data, form_id="lifeguard_form")
+        self.assertIn(redirect_url, self.browser.current_url)
 
     def pay_for_lifeguard_class(self):
 
-        WebDriverWait(self.browser,20).until(
-            EC.presence_of_element_located(
-                (By.XPATH, '//div[@class="braintree-option braintree-option__card"]')
-            )
-        ).click()
+        billing_address = {
+            "country": "123 Main St",
+            "region": "San Diego",
+            "locality": "CA",
+            "postal_code": "94103"
+        }
 
-        #brain tree test card number
-        WebDriverWait(self.browser, 20).until(EC.frame_to_be_available_and_switch_to_it(
-            (By.XPATH,"//iframe[@id='braintree-hosted-field-number']"))
+        self.general_form_input(billing_address,"address_form",False)
+
+        WebDriverWait(self.browser, 20).until(
+            EC.presence_of_element_located(
+                (By.XPATH, "//div[@id='form-container']")
+            )
         )
 
-        WebDriverWait(self.browser, 20).until(EC.element_to_be_clickable(
-            (By.XPATH, "//input[@class='number' and @id='credit-card-number']"))
-        ).send_keys("378282246310005")
+        iframe_ids = ['sq-card-number',
+                      'sq-expiration-date',
+                      'sq-cvv',
+                      'sq-postal-code']
 
-        self.browser.switch_to.default_content();
-        self.browser.switch_to.frame("braintree-hosted-field-expirationDate")
+        card_data = ["4111 1111 1111 1111", "11/30", "111", "1111"]
 
-        WebDriverWait(self.browser, 20).until(EC.element_to_be_clickable(
-            (By.XPATH, "//input[@class='expirationDate' and @id='expiration']"))
-        ).send_keys("12/25")
+        for id, data in zip(iframe_ids, card_data):
+            xpath = f"//iframe[@id='{id}']"
+            print(xpath)
+            WebDriverWait(self.browser, 20).until(EC.frame_to_be_available_and_switch_to_it(
+                (By.XPATH, xpath))
+            )
+            self.browser.find_element_by_xpath("//input").send_keys(data)
+            self.browser.switch_to.default_content()
 
-        self.browser.switch_to.default_content();
-
-        self.browser.find_element_by_id("pay-btn").click()
-
-        self.assertIn("payment/lifeguard-checkout/success",self.browser.current_url)
+        self.browser.find_element_by_id("sq-creditcard").click()
+        time.sleep(2) #wait for redirect to happen
+        self.assertIn("dashboard",self.browser.current_url)
 
     def continue_to_checkout(self):
         self.browser.find_element_by_id('id_continue_to_checkout').click()
-
+        self.assertIn("lifeguard-checkout", self.browser.current_url)
