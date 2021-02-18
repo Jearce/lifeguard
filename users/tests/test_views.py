@@ -97,6 +97,7 @@ class DashboardViewTest(BaseUserSetUp):
         response = self.client.get('/users/dashboard/')
         self.assertTemplateUsed(response,'users/dashboard.html')
 
+
 class ContactUpdateViewTest(BaseUserSetUp):
     def setUp(self):
         super().setUp()
@@ -123,6 +124,7 @@ class ContactUpdateViewTest(BaseUserSetUp):
         self.user.refresh_from_db()
         self.assertEqual(self.user.first_name,'John')
         self.assertRedirects(response,reverse('users:emergency_contact'))
+
 
 class EmergencyContactCreateOrUpdateTest(BaseUserSetUp):
     def setUp(self):
@@ -272,3 +274,17 @@ class AddressCreateOrUpdateTest(BaseUserSetUp):
         response = self.client.post(reverse('users:address'),self.new_address)
         self.assertEqual(response.status_code,302)
         self.assertEqual(self.user.address_set.count(),1)
+
+
+class AdminPanelViewTest(BaseUserSetUp):
+    def setUp(self):
+        super().setUp()
+
+    def test_view_url_exists_at_desired_location(self):
+        response = self.client.get(reverse('users:admin_panel'))
+        self.assertEqual(response.status_code,200)
+
+
+    #def test_view_uses_correct_template(self):
+    #    response = self.client.get(reverse('users:emergency_contact'))
+    #    self.assertTemplateUsed(response,'users/emergency_contact_form.html')
