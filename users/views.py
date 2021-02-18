@@ -3,7 +3,7 @@ from django.urls import reverse,reverse_lazy
 from django.views.generic import CreateView, TemplateView, View
 from django.contrib.auth.views import LoginView
 from django.contrib.auth import logout,login,authenticate
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin,PermissionRequiredMixin
 from django.views.generic.edit import UpdateView,CreateView
 from django.contrib.auth import views as auth_views
 
@@ -144,8 +144,9 @@ class AddressCreateOrUpdate(LoginRequiredMixin,UpdateView):
             return reverse_lazy('users:dashboard')
 
 
-class AdminPanelView(View):
+class AdminPanelView(PermissionRequiredMixin, View):
     template_name = "users/admin_panel.html"
+    permission_required = "user.is_superuser"
 
     def get(self,request,*args,**kwargs):
         users = User.objects.all()

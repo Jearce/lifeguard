@@ -279,6 +279,8 @@ class AddressCreateOrUpdateTest(BaseUserSetUp):
 class AdminPanelViewTest(BaseUserSetUp):
     def setUp(self):
         super().setUp()
+        self.user.is_superuser = True
+        self.user.save()
 
     def test_view_url_exists_at_desired_location(self):
         response = self.client.get(reverse('users:admin_panel'))
