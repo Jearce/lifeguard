@@ -284,7 +284,6 @@ class AdminPanelViewTest(BaseUserSetUp):
         response = self.client.get(reverse('users:admin_panel'))
         self.assertEqual(response.status_code,200)
 
-
-    #def test_view_uses_correct_template(self):
-    #    response = self.client.get(reverse('users:emergency_contact'))
-    #    self.assertTemplateUsed(response,'users/emergency_contact_form.html')
+    def test_view_uses_correct_template(self):
+        response = self.client.get(reverse('users:admin_panel'))
+        self.assertTemplateUsed(response,'users/admin_panel.html')
