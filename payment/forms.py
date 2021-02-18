@@ -24,6 +24,7 @@ class LifeguardCheckoutForm(forms.Form):
                 'locality',
                 'postal_code',
                 'set_as_default',
+                css_id="address_form"
             ),
 
             HTML("<h3 class='mb-3 mt-3'>Payment</h3>"),
