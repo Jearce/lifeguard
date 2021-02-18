@@ -101,7 +101,7 @@ class BaseTestFixture(LiveServerTestCase):
         )
         self.assertIn('/users/dashboard/',self.browser.current_url)
 
-    def general_form_input(self,data,form_id):
+    def general_form_input(self,data,form_id,submit=True):
         for key,value in data.items():
             try:
                 element = self.browser.find_element_by_id(f"id_{key}")
@@ -115,7 +115,8 @@ class BaseTestFixture(LiveServerTestCase):
                     self.browser.execute_script("arguments[0].click();",element)
             else:
                 element.send_keys(value)
-        self.browser.find_element_by_id(form_id).submit()
+
+        if submit: self.browser.find_element_by_id(form_id).submit()
 
     def general_managment_form_input(self,records,form_id,prefix):
         for i,record in enumerate(records):
