@@ -142,4 +142,3 @@ class AddressCreateOrUpdate(LoginRequiredMixin,UpdateView):
         else:
             #user is updating their address
             return reverse_lazy('users:dashboard')
-
