@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 
 from django.db import models
 from django.db.models import Sum
+from django.conf import settings
 from users.models import User
 
 from storage_backends import PublicMediaStorage, PrivateMediaStorage
@@ -22,7 +23,7 @@ class Lifeguard(models.Model):
     no_refunds_agreement = models.BooleanField()
     electronic_signature = models.CharField("Electronic signature",max_length=255)
     last_certified = models.DateField(blank=False,null=True)
-    certification = models.FileField(storage=PrivateMediaStorage(),blank=False,null=True)
+    certification = models.FileField(storage=PrivateMediaStorage() if settings.USE_S3 else None,blank=False,null=True)
     online_portion_complete = models.BooleanField(default=False)
     online_record = models.FileField(blank=True, null=True)
 

@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from django.conf import settings
 from django.contrib.sites.models import Site
 
 from users.models import User
@@ -109,18 +110,15 @@ class JobHistory(models.Model):
     reason_for_leaving = models.TextField()
 
 
+def set_private_storage():
+    return PrivateMediaStorage() if settings.USE_S3 else None
+
 class Checklist(models.Model):
     ACCOUNT_TYPES = [('S',"Savings Account"),("C","Checkings Account")]
 
     employee = models.OneToOneField(Employee,on_delete=models.CASCADE)
     photo_id = models.FileField("Photo Identification",null=True, blank=True)
-    social_security_card = models.FileField(storage=PrivateMediaStorage(),null=True, blank=True)
     social_security_number = models.CharField(null=True, blank=True, max_length=10)
-    birth_certificate = models.FileField(storage=PrivateMediaStorage(),blank=True,null=True)
-    w4 = models.FileField(storage=PrivateMediaStorage(),null=True, blank=True)
-    i9 = models.FileField(storage=PrivateMediaStorage(),null=True, blank=True)
-    workers_comp = models.FileField(storage=PrivateMediaStorage(),null=True, blank=True)
-    vaccination_record = models.FileField(storage=PrivateMediaStorage(),blank=True,null=True)
     hepB_waiver_signature = models.CharField(blank=True,null=True,max_length=255)
     banking_name = models.CharField(null=True,blank=True, max_length=255)
     account_type = models.CharField(choices=ACCOUNT_TYPES,max_length=1,null=True, blank=True, default=None)
@@ -131,6 +129,14 @@ class Checklist(models.Model):
     awknowledgement_form_signature = models.CharField(null=True, blank=True,max_length=255)
     date = models.DateField(default=timezone.now)
     complete = models.BooleanField(default=False)
+
+    social_security_card = models.FileField(storage=set_private_storage(),null=True, blank=True)
+    birth_certificate = models.FileField(storage=set_private_storage(),blank=True,null=True)
+    w4 = models.FileField(storage=set_private_storage(),null=True, blank=True)
+    i9 = models.FileField(storage=set_private_storage(),null=True, blank=True)
+    workers_comp = models.FileField(storage=set_private_storage(),null=True, blank=True)
+    vaccination_record = models.FileField(storage=set_private_storage(),blank=True,null=True)
+
 
     def __str__(self):
         return "Checklist for" +" "+ self.employee.user.get_full_name()
