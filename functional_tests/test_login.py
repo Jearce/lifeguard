@@ -65,9 +65,9 @@ class RegisterEmployeeTest(BaseTestLoginFixture):
             "workers_comp": f"{self.path_to_files}/workers_comp.pdf",
             "vaccination_record": f"{self.path_to_files}/vaccination.pdf",
             "banking_name": "Banking 123",
-            "account_type_1": "click",  # choose savings
+            "account_type": "S",  # choose savings
             "account_number": "19282739",
-            "savings_number": "1728327",
+            "router_number": "1728327",
             "auth_signature": "Larry Johnson",
             "awknowledgement_form_signature": "Larry Johnson",
         }
