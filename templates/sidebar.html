@@ -71,11 +71,19 @@
 		<div class="list-group list-group-flush">
 			<a href="{% url "users:dashboard" %}" class="list-group-item list-group-item-action bg-light">Dashboard</a>
 			<a href="{% url "lifeguard:classes" %}" class="list-group-item list-group-item-action bg-light">Lifeguard Certification</a>
+
 			{% if  user.lifeguard.get_unpaid_lifeguard_classes.count > 0 %}
 			<a href="{% url "payment:enrollment_cart" %}" class="list-group-item list-group-item-action bg-light">
 				Enrollment Cart
 			</a>
 			{% endif %}
+
+			{% if  user.is_superuser %}
+			<a href="" id="id_admin_panel" class="list-group-item list-group-item-action bg-light">
+				Admin panel (in beta)
+			</a>
+			{% endif %}
+
 			<a href="#" class="list-group-item list-group-item-action bg-light">Profile</a>
 		</div>
 	</div>
