@@ -7,7 +7,7 @@
 
 {% block pagecontent %}
 <div class="container">
-	{% if request.user.lifeguard.enroll_set.count > 0 %}
+	{% if request.user.lifeguard.get_unpaid_lifeguard_classes.count > 0 %}
 	<h1 class="text-center mb-3">Enrollment Cart</h1>
 	{% for enrollment in enrolled_classes %}
 	{% if not enrollment.paid %}
