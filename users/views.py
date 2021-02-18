@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect
 from django.urls import reverse,reverse_lazy
-from django.views.generic import CreateView,TemplateView
+from django.views.generic import CreateView, TemplateView, View
 from django.contrib.auth.views import LoginView
 from django.contrib.auth import logout,login,authenticate
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -142,3 +142,11 @@ class AddressCreateOrUpdate(LoginRequiredMixin,UpdateView):
         else:
             #user is updating their address
             return reverse_lazy('users:dashboard')
+
+
+class AdminPanelView(View):
+    template_name = "users/admin_panel.html"
+
+    def get(self,request,*args,**kwargs):
+        users = User.objects.all()
+        return render(request,self.template_name,context={'users':users})
