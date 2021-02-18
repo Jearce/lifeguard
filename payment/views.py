@@ -6,6 +6,7 @@ from django.views.generic import View, TemplateView
 from django.views.generic.edit import FormView
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from payment.forms import LifeguardCheckoutForm
 
@@ -18,7 +19,7 @@ client = Client(
 )
 
 
-class EnrollmentCart(View):
+class EnrollmentCart(LoginRequiredMixin,View):
     def get(self, request, *args, **kwargs):
         lifeguard = self.request.user.lifeguard
         enrolled_classes = lifeguard.get_unpaid_lifeguard_classes()
@@ -32,7 +33,7 @@ class EnrollmentCart(View):
         return redirect("payment:enrollment_cart")
 
 
-class LifeguardCheckout(FormView):
+class LifeguardCheckout(LoginRequiredMixin,FormView):
     template_name = "payment/lifeguard_checkout.html"
     form_class = LifeguardCheckoutForm
 
