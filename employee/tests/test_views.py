@@ -322,4 +322,3 @@ class EmployeeCheckListTest(CommonSetUp):
     def test_view_uses_correct_template(self):
         response = self.client.get(reverse('employee:checklist'))
         self.assertTemplateUsed(response,'employee/checklist_form.html')
-
