@@ -1,0 +1,88 @@
+{% extends 'sidebar.html' %}
+
+{% block title %}
+<title>Admin Panel</title>
+<style>
+
+.table, .flex {
+	padding: 15px;
+}
+
+.flex {
+	display: flex;
+}
+
+
+.filters form {
+	display: flex;
+	flex-direction: column;
+	padding: 5px;
+}
+
+.table {
+	display: grid;
+}
+
+button {
+	padding: 15px;
+}
+
+
+</style>
+{% endblock title %}
+
+{% block pagecontent %}
+<div class="flex filters">
+	<form>
+		Lifeguard Registration
+		<select>
+			<option value="0">no</option>
+			<option value="1">yes</option>
+		</select>
+	</form>
+	<form>
+		Employee application
+		<select>
+			<option value="0">no</option>
+			<option value="1">yes</option>
+		</select>
+	</form>
+</div>
+<div class="table">
+	<table>
+		<tr>
+			<th>Email</th>
+			<th>Age</th>
+			<th>Name</th>
+			<th>Phone</th>
+			<th>LG Registration</th>
+			<th>Employee Application</th>
+		</tr>
+		{% for user in users %}
+		<tr>
+			<td>{{ user.email }}</td>
+			<td>{{ user.age }}</td>
+			<td>{{ user.get_full_name }}</td>
+			<td>{{ user.phone }}</td>
+			<td>
+				{% if user.is_lifeguard %}
+				Yes
+				{% else %}
+				No
+				{% endif %}
+			</td>
+			<td>
+				{% if user.is_employee %}
+				Yes
+				{% else %}
+				No
+				{% endif %}
+			</td>
+		</tr>
+		{% endfor %}
+	</table>
+</div>
+<div class="flex">
+	<a id="id_add_user" href="" role="button" class="btn btn-primary">Add User</a>
+</div>
+{% endblock pagecontent %}
