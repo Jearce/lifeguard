@@ -1,3 +1,5 @@
+import json
+
 from django.urls import resolve,reverse
 from django.http import HttpRequest
 from django.test import TestCase
@@ -322,3 +324,12 @@ class EmployeeCheckListTest(CommonSetUp):
     def test_view_uses_correct_template(self):
         response = self.client.get(reverse('employee:checklist'))
         self.assertTemplateUsed(response,'employee/checklist_form.html')
+
+
+class GetPositionsTest(CommonSetUp):
+
+    def test_can_get_list_of_postions(self):
+        response = self.client.get(reverse('employee:positions'))
+        self.assertEqual(response.status_code,200)
+        data = json.loads(response.content)
+        self.assertTrue(data[0].get("title"))
