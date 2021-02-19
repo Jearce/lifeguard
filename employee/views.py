@@ -4,8 +4,10 @@ from django.views.generic.edit import UpdateView
 from django.views.generic import TemplateView
 from django.views.generic.detail import DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core import serializers
+from django.http import JsonResponse
 
-from .models import Employee,EmployeeEducation,JobHistory,Checklist
+from .models import Employee,EmployeeEducation,JobHistory,Checklist,Position
 
 from .forms import (EmployeeForm,
                     EducationInlineFormset,
@@ -114,3 +116,8 @@ def employee_registration(request):
     if request.method == 'GET':
         request.session["registration_path"] = "employee:create"
         return redirect("users:contact_information",pk=request.user.pk)
+
+def get_positions(request):
+    if request.method == 'GET':
+        positions = list(Position.objects.values())
+        return JsonResponse(positions,safe=False)
