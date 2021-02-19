@@ -151,3 +151,26 @@ class AdminPanelView(PermissionRequiredMixin, View):
     def get(self,request,*args,**kwargs):
         users = User.objects.all()
         return render(request,self.template_name,context={'users':users})
+
+
+class AdminAddUserView(PermissionRequiredMixin,CreateView):
+    permission_required = "user.is_superuser"
+    model = User
+    form_class = CustomUserCreationForm
+    template_name = 'users/admin_add_user.html'
+
+    def form_valid(self,form):
+        valid = super().form_valid(form)
+        valid.save()
+
+        email = form.cleaned_data['email']
+        new_user = User.objects.get(email=email)
+
+        #create address and
+        assign_address_to_user(new_user,form.cleaned_data)
+        return valid
+
+    def get_success_url(self):
+        return reverse_lazy('users:admin_panel')
+
+
