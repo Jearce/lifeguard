@@ -282,10 +282,29 @@ class AdminPanelViewTest(BaseUserSetUp):
         self.user.is_superuser = True
         self.user.save()
 
+
     def test_view_url_exists_at_desired_location(self):
         response = self.client.get(reverse('users:admin_panel'))
         self.assertEqual(response.status_code,200)
 
+
     def test_view_uses_correct_template(self):
         response = self.client.get(reverse('users:admin_panel'))
         self.assertTemplateUsed(response,'users/admin_panel.html')
+
+
+class AdminAddUserViewTest(BaseUserSetUp):
+    def setUp(self):
+        super().setUp()
+        self.user.is_superuser = True
+        self.user.save()
+
+
+    def test_view_url_exists_at_desired_location(self):
+        response = self.client.get(reverse('users:admin_add_user'))
+        self.assertEqual(response.status_code,200)
+
+
+    def test_view_uses_correct_template(self):
+        response = self.client.get(reverse('users:admin_add_user'))
+        self.assertTemplateUsed(response,'users/admin_add_user.html')
