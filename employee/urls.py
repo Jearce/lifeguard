@@ -9,4 +9,5 @@ urlpatterns = [
     path('registration/',views.employee_registration,name="registration"),
     path('application-status/',views.ApplicationStatus.as_view(),name="application_status"),
     path('employee-checklist/',views.EmployeeChecklist.as_view(),name="checklist"),
+    path('positions/',views.get_positions,name="positions"),
 ]
