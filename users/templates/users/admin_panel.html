@@ -83,6 +83,6 @@ button {
 	</table>
 </div>
 <div class="flex">
-	<a id="id_add_user" href="" role="button" class="btn btn-primary">Add User</a>
+	<a id="id_add_user" href="{% url 'users:admin_add_user' %}" role="button" class="btn btn-primary">Add User</a>
 </div>
 {% endblock pagecontent %}
