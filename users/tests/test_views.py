@@ -299,6 +299,20 @@ class AdminAddUserViewTest(BaseUserSetUp):
         self.user.is_superuser = True
         self.user.save()
 
+        self.credentials = {
+            'email':'another@example.com',
+            'first_name':'Larry',
+            'last_name':'John',
+            'dob':'1995-06-09',
+            'phone':'121 382 8292',
+            'street1':"123 Main St",
+            'state':'Oregon',
+            'city':'Portland',
+            'zip':'97035',
+            'password1':'2dhd7!42',
+            'password2':'2dhd7!42'
+        }
+
 
     def test_view_url_exists_at_desired_location(self):
         response = self.client.get(reverse('users:admin_add_user'))
@@ -308,3 +322,10 @@ class AdminAddUserViewTest(BaseUserSetUp):
     def test_view_uses_correct_template(self):
         response = self.client.get(reverse('users:admin_add_user'))
         self.assertTemplateUsed(response,'users/admin_add_user.html')
+
+
+    def test_can_add_user(self):
+        response = self.client.post(reverse('users:admin_add_user'),data=self.credentials)
+        users = User.objects.all()
+        self.assertEqual(users.count(),2)
+        self.assertEqual(Address.objects.count(),1)
