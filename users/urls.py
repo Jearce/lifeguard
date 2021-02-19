@@ -19,4 +19,5 @@ urlpatterns = [
     path('emergency-contact/',views.EmergencyContactCreateOrUpdate.as_view(),name='emergency_contact'),
     path('address/',views.AddressCreateOrUpdate.as_view(),name='address'),
     path('admin-panel/',views.AdminPanelView.as_view(),name='admin_panel'),
+    path('admin/add-user',views.AdminAddUserView.as_view(),name='admin_add_user'),
 ]
