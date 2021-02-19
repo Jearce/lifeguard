@@ -22,12 +22,17 @@ class AdminTest(BaseTestLoginFixture):
         self.user.is_superuser = True
         self.user.save()
 
-
     def test_is_super_user(self):
         self.assertTrue(self.user.is_superuser)
-
 
     def test_has_access_to_admin_panel(self):
         self.login()
         self.browser.find_element_by_id("id_admin_panel").click()
-        self.assertIn("admin-panel",self.browser.current_url)
+        self.assertIn("admin-panel", self.browser.current_url)
+
+    def test_can_add_user(self):
+        self.login()
+        self.browser.find_element_by_id("id_admin_panel").click()
+        self.browser.find_element_by_id("id_add_user").click()
+        self.assertIn("add-user",self.browser.current_url)
+        
