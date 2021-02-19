@@ -161,7 +161,7 @@ class AdminAddUserView(PermissionRequiredMixin,CreateView):
 
     def form_valid(self,form):
         valid = super().form_valid(form)
-        valid.save()
+        form.save()
 
         email = form.cleaned_data['email']
         new_user = User.objects.get(email=email)
