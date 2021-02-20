@@ -2,7 +2,7 @@
 
 {% block head %}
 <!-- link to the SqPaymentForm library -->
-<script type="text/javascript" src="https://js.squareupsandbox.com/v2/paymentform"></script>
+<script type="text/javascript" src="https://js.squareup.com/v2/paymentform"></script>
 {% endblock head %}
 
 {% block style %}
@@ -81,6 +81,9 @@
 			{% if  user.is_superuser %}
 			<a href="{% url "users:admin_panel" %}" id="id_admin_panel" class="list-group-item list-group-item-action bg-light">
 				Admin panel (in beta)
+			</a>
+			<a href="{% url "admin:index" %}" id="id_admin_panel" class="list-group-item list-group-item-action bg-light">
+				Admin Pages
 			</a>
 			{% endif %}
 
