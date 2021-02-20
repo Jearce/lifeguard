@@ -33,18 +33,9 @@ button {
 
 {% block pagecontent %}
 <div class="flex filters">
-	<form>
-		Lifeguard Registration
+	<form id="id_position_filter">
+		Filter by position
 		<select>
-			<option value="0">no</option>
-			<option value="1">yes</option>
-		</select>
-	</form>
-	<form>
-		Employee application
-		<select>
-			<option value="0">no</option>
-			<option value="1">yes</option>
 		</select>
 	</form>
 </div>
@@ -85,4 +76,37 @@ button {
 <div class="flex">
 	<a id="id_add_user" href="{% url 'users:admin_add_user' %}" role="button" class="btn btn-primary">Add User</a>
 </div>
+
+<script>
+	let postionFilterOptions = document.querySelector("#id_position_filter select");
+
+	fetch("/employee/positions")
+		.then(r => r.json())
+		.then(positions =>
+			renderOptions(postionFilterOptions,positions)
+		);
+
+	postionFilterOptions.addEventListener("change",() => {
+		if(postionFilterOptions.value){
+			let position_id = postionFilterOptions.value;
+		} else {
+
+		}
+	});
+
+	const createOption = (value,inner) => {
+		let option = document.createElement("option");
+   	option.setAttribute("value",value);
+		option.innerHTML = inner;
+		return option
+	}
+
+	function renderOptions(parent,positions){
+		postionFilterOptions.appendChild(createOption("","---------------"));
+		positions.forEach(p => {
+			let option = createOption(p.id,p.title);
+			postionFilterOptions.appendChild(option);
+		});
+	}
+</script>
 {% endblock pagecontent %}
