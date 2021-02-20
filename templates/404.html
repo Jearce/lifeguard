@@ -1,0 +1,20 @@
+{% block content %}
+<div class="container">
+	<div>
+		<h2>404 Not Found</h2>
+		<p>The resource you requested was not found.</p>
+		{% if user.is_authenticated %}
+		<p>
+		<a href="{% url "users:dashboard" %}" id="id_admin_panel">
+			dashboard
+		</a>
+		</p>
+		{% else %}
+		<p>
+		You can <a href="{% url 'users:signup' %}">sign up</a> here or <a href="{% url 'users:login' %}">login</a> here.
+		</p>
+		{% endif %}
+	</div>
+</div>
+{% endblock content %}
+
