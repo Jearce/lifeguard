@@ -28,6 +28,7 @@ class BaseUserSetUp(TestCase):
         )
         self.client.login(email=self.email,password=self.password)
 
+
 class SignUpViewTest(TestCase):
 
     def setUp(self):
@@ -329,3 +330,4 @@ class AdminAddUserViewTest(BaseUserSetUp):
         users = User.objects.all()
         self.assertEqual(users.count(),2)
         self.assertEqual(Address.objects.count(),1)
+
