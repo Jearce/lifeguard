@@ -40,7 +40,7 @@ button {
 	</form>
 </div>
 <div class="table">
-	<table>
+	<table id="id_user_table">
 		<tr>
 			<th>Email</th>
 			<th>Age</th>
@@ -50,7 +50,7 @@ button {
 			<th>Employee Application</th>
 		</tr>
 		{% for user in users %}
-		<tr>
+		<tr class="data-row">
 			<td>{{ user.email }}</td>
 			<td>{{ user.age }}</td>
 			<td>{{ user.get_full_name }}</td>
@@ -86,17 +86,54 @@ button {
 			renderOptions(postionFilterOptions,positions)
 		);
 
+	function createRow(employee){
+		let tr = document.createElement("tr");
+		tr.setAttribute("class","data-row");
+		let emailCell = createCell(employee.email);
+		tr.appendChild(emailCell);
+		let ageCell = createCell(employee.age);
+		tr.appendChild(ageCell);
+		let nameCell = createCell(employee.name);
+		tr.appendChild(nameCell);
+		let phoneCell = createCell(employee.phone);
+		tr.appendChild(phoneCell);
+		let isLifeguardCell = createCell(employee.is_lifeguard ? "Yes" : "No");
+		tr.appendChild(isLifeguardCell);
+		let isEmployeeCell = createCell(employee.is_employee ? "Yes" : "No");
+		tr.appendChild(isEmployeeCell);
+		return tr;
+	}
+
+	function createCell(inner){
+		let cell = document.createElement("td");
+		cell.innerHTML = inner;
+		return cell;
+	}
+
 	postionFilterOptions.addEventListener("change",() => {
 		if(postionFilterOptions.value){
 			let position_id = postionFilterOptions.value;
+			fetch(`/employee/employees?position_id=${position_id}`)
+				.then(res => res.json())
+				.then((employees) => {
+					let table = document.getElementById("id_user_table");
+					let dataRows = table.getElementsByClassName("data-row");
+					while(dataRows[0]) {
+						  dataRows[0].parentNode.removeChild(dataRows[0]);
+					}
+					for(let employee of employees){
+						let row = createRow(employee);
+						table.appendChild(row);
+					}
+				});
 		} else {
-
+			window.location.reload();
 		}
 	});
 
 	const createOption = (value,inner) => {
 		let option = document.createElement("option");
-   	option.setAttribute("value",value);
+		option.setAttribute("value",value);
 		option.innerHTML = inner;
 		return option
 	}
