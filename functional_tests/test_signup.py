@@ -3,7 +3,7 @@ from functional_tests.helpers import BaseTestFixture
 class SignUpTest(BaseTestFixture):
     def setUp(self):
         #user lands on homepage
-        self.browser.get(self.live_server_url)
+        self.browser.get(self.live_server_url+"/users/signup")
 
     def test_signup(self):
         self.signup()
@@ -25,11 +25,6 @@ class SignUpTest(BaseTestFixture):
         }
 
         #select account opitions to get to sign up link
-        self.browser.find_element_by_class_name('navbar-toggler').click()
-        self.browser.implicitly_wait(10)
-        self.browser.find_element_by_id('navbarDropdown').click()
-        self.browser.find_element_by_id('id_signup').click()
-
         self.assertIn('signup',self.browser.current_url)
         self.general_form_input(credentials,form_id="signup_form")
         self.assertIn('emergency-contact/',self.browser.current_url)

@@ -6,19 +6,13 @@
 {% endblock title %}
 
 {% block content %}
-
-<div class="container-fluid">
-	<div id="navbar">
-		{% include 'navbar.html' %}
-	</div>
-</div>
-
 <div class="container">
 	<h3 class="mb-3 mt-4 text-center">Log In</h3>
 	<form class="w-25 center-form isolate-form shadow-form" method="post" id='login-form'>
 		{% csrf_token %}
 		{{ form|crispy }}
 		<p><a href="{% url 'users:password_reset' %}" id="id_password_reset">Forgot password?</a></p>
+		<p><a href="{% url 'users:signup' %}" id="id_signup">Need to create an account?</a></p>
 		<input class="btn btn-outline-primary btn-block bt-lg mb-2" type="submit" value="Log in">
 	</form>
 </div>
