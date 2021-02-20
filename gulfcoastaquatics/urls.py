@@ -36,6 +36,8 @@ urlpatterns = [
     path('payment/',include('payment.urls')),
 ]
 
+admin.site.site_url = "/users/dashboard"
+
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)
