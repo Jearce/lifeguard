@@ -69,7 +69,7 @@ class LogInView(LoginView):
 
 def logout_user(request):
     logout(request)
-    return redirect('home')
+    return redirect('users:login')
 
 class PasswordResetView(auth_views.PasswordResetView):
     template_name="users/password_reset_form.html"
