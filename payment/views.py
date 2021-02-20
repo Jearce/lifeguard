@@ -7,6 +7,7 @@ from django.views.generic.edit import FormView
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.conf import settings
 
 from payment.forms import LifeguardCheckoutForm
 
@@ -14,7 +15,7 @@ from square.client import Client
 
 client = Client(
     square_version="2021-01-21",
-    access_token="EAAAEFAP-jK_en4dqaPNJVzm7lhm4V9HfW1CdRU17thGNvmghgonLx3TTyStivAH",
+    access_token=settings.SQUARE_ACCESS_TOKEN,
     environment="sandbox"
 )
 

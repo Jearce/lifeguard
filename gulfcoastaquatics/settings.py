@@ -31,6 +31,9 @@ SECRET_KEY = os.getenv('SECRET')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG') == "TRUE"
 
+
+SQUARE_ACCESS_TOKEN = os.getenv('SQUARE_ACCESS_TOKEN')
+
 if DEBUG:
     ALLOWED_HOSTS = ['*','gca-bucket-prod.s3.amazonaws.com']
 else:
