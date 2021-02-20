@@ -129,5 +129,17 @@ def get_employees(request):
     if request.method == 'GET':
         position_id = request.GET.get("position_id")
         if position_id:
-            employees = list(Employee.objects.filter(applied_positions__in=[position_id]).values())
+            employees = [
+                    {
+                        "email":employee.user.email,
+                        "age": employee.user.age(),
+                        "name": employee.user.get_full_name(),
+                        "phone": employee.user.phone,
+                        "is_lifeguard":employee.user.is_lifeguard,
+                        "is_employee":employee.user.is_employee,
+                    }
+                    for employee in Employee.objects.filter(applied_positions__in=[position_id])]
             return JsonResponse(employees,safe=False)
+        else:
+            return JsonResponse({})
+
