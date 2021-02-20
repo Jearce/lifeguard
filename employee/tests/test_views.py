@@ -24,6 +24,9 @@ from utils.test.helpers import create_emergency_contact
 
 class EmployeeCreateOrUpdateTest(CommonSetUp):
 
+    def setUp(self):
+        self.login()
+
     def test_view_url_exists_at_desired_location(self):
         self.create_emergency_contact()
         response = self.client.get(reverse('employee:create'))
@@ -324,6 +327,22 @@ class EmployeeCheckListTest(CommonSetUp):
     def test_view_uses_correct_template(self):
         response = self.client.get(reverse('employee:checklist'))
         self.assertTemplateUsed(response,'employee/checklist_form.html')
+
+
+class GetEmployeesTest(CommonSetUp):
+
+    def setUp(self):
+        super().setUp()
+        self.user.is_superuser = True
+        self.user.save()
+
+    def test_can_get_employees_by_position(self):
+        employee = self.create_employee()
+        position = employee.applied_positions.first()
+        response = self.client.get(reverse('employee:employees'),{"position_id":position.id})
+        self.assertEqual(response.status_code,200)
+        data = json.loads(response.content)
+        self.assertEqual(len(data),1)
 
 
 class GetPositionsTest(CommonSetUp):
