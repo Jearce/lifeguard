@@ -6,6 +6,7 @@ from django.views.generic.detail import DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core import serializers
 from django.http import JsonResponse
+from django.contrib.auth.decorators import permission_required
 
 from .models import Employee,EmployeeEducation,JobHistory,Checklist,Position
 
@@ -117,7 +118,16 @@ def employee_registration(request):
         request.session["registration_path"] = "employee:create"
         return redirect("users:contact_information",pk=request.user.pk)
 
+
 def get_positions(request):
     if request.method == 'GET':
         positions = list(Position.objects.values())
         return JsonResponse(positions,safe=False)
+
+@permission_required("user.is_superuser")
+def get_employees(request):
+    if request.method == 'GET':
+        position_id = request.GET.get("position_id")
+        if position_id:
+            employees = list(Employee.objects.filter(applied_positions__in=[position_id]).values())
+            return JsonResponse(employees,safe=False)
