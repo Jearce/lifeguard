@@ -24,8 +24,6 @@ from utils.test.helpers import create_emergency_contact
 
 class EmployeeCreateOrUpdateTest(CommonSetUp):
 
-    def setUp(self):
-        self.login()
 
     def test_view_url_exists_at_desired_location(self):
         self.create_emergency_contact()
